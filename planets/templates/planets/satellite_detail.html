@@ -1,0 +1,7 @@
+﻿<h1>Спутник: {{ satellite.satellite_name }}</h1>
+<ul>
+    <li>Тип: {{ satellite.get_satellite_type_display }}</li>
+    <li>Радиус: {{ satellite.satellite_radius }}</li>
+    <li>Планета: {{ satellite.planet.planet_name }}</li>
+</ul>
+<a href="{% url 'planet_detail' satellite.planet.pk %}">← Назад к планете {{ satellite.planet.name }}</a>

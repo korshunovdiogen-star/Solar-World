@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="{% static 'css/planet_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <meta charset="UTF-8">
+    <title>Навигационная карта Солнечной Системы</title>
+</head>
+<body>
+    <h1>Планеты Солнечной системы</h1>
+
+
+    <div class="main-layout">
+
+        <!-- ЛЕВАЯ КОЛОНКА -->
+        <div class="side-column">
+            <div class="side-panel">
+                <div style="text-transform: uppercase; margin-bottom: 10px; color: #00d4ff;">Навигация: Сектор 0-14</div>
+                <div class="data-line"><span>Объект:</span> <span>Sol System</span></div>
+                <div class="data-line"><span>Координаты:</span> <span>X: 14.52 | Y: 9.18</span></div>
+                <div class="data-line"><span>Скорость:</span> <span>29.78 км/с</span></div>
+            </div>
+
+            <div class="side-panel">
+                <div style="text-transform: uppercase; margin-bottom: 10px; color: #00d4ff;">Анализ сигналов</div>
+                <div style="font-size: 0.85em; opacity: 0.7;">
+                    > Обнаружен радиовсплеск...<br>
+                    > Источник: Неизвестен<br>
+                    > Частота: 1420 МГц (H I)<br>
+                    <span style="color: #00ff88;">[ СИГНАЛ СТАБИЛЕН ]</span>
+                </div>
+            </div>
+            {% include "includes/nav_button.html" with url_name="main" button_text="На главную" %}
+        </div>
+
+        <div class="space-container">
+            {% include "planets/solar_map.html" %}
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА -->
+        <div class="side-column">
+            <div class="side-panel">
+                <div style="text-transform: uppercase; margin-bottom: 10px; color: #00d4ff;">Бортовой журнал. Миссия: «Восток-1», 12 апреля 1961 г.</div>
+                <div style="font-style: italic; line-height: 1.4;">
+                    Запись № 1<br>
+                    "— Поехали! Шум в кабине слабо слышен. Все проходит нормально, самочувствие хорошее, настроение бодрое, все отлично.<br>
+                    — Мы все желаем вам доброго полета. Все нормально?<br>
+                    — Спасибо. До свидания, до скорой встречи, дорогие друзья! Вижу облака, посадочную площадку... Красота-то какая!"
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div style="text-transform: uppercase; margin-bottom: 10px; color: #00d4ff;">Текущие задачи</div>
+                <div class="data-line"><span>● Картография:</span> <span class="status-ok">100%</span></div>
+                <div class="data-line"><span>● Поиск аномалий:</span> <span>42%</span></div>
+                <div class="data-line"><span>● Связь с ЦУП:</span> <span style="color: #ffcc00;">Wait...</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Передаём путь к звуку в глобальную переменную
+        window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
+    </script>
+    <script src="{% static 'js/button.js' %}"></script>
+
+</body>
+</html>

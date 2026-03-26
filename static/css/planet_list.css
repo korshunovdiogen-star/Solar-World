@@ -1,0 +1,191 @@
+/* Подключаем шрифты */
+@import url('https://fonts.googleapis.com');
+
+/* 1. ОБЩИЕ НАСТРОЙКИ И ФОН */
+body {
+	margin: 0;
+	padding: 0;
+	/* Глубокий космос + сетка координат */
+	background: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px), radial-gradient(circle at center, #0a111a 0%, #020203 100%);
+	background-size: 60px 60px, 60px 60px, 100% 100%;
+	color: #b0f2ff;
+	font-family: 'Rajdhani', sans-serif;
+	overflow-x: hidden;
+	min-height: 100vh;
+}
+
+
+/* 2. ЗАГОЛОВОК */
+h1, .header-title {
+	grid-column: 1 / -1; /* Заголовок на всю ширину сверху */
+	font-family: 'Orbitron', sans-serif;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 12px;
+	color: #00d4ff;
+	text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+	margin: 30px 0;
+}
+
+/* 3. ЦЕНТРАЛЬНАЯ КАРТА */
+.space-container {
+	position: relative; /* Чтобы SVG прилип к картинке */
+	grid-column: 2; /* Явно ставим во вторую колонку */
+	width: 100%;
+	min-height: 200px; /* Чтобы контейнер не схлопнулся до загрузки фото */
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	border: 1px solid rgba(0, 212, 255, 0.3);
+	background: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 40px rgba(0, 212, 255, 0.1); /* Мягкое свечение всей карты */
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+#bg-map {
+	width: 100%;
+	height: auto;
+	display: block; /* Убирает лишние отступы снизу */
+	filter: brightness(1.1) contrast(1.1); 
+	z-index: 1;
+}
+
+svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 2; /* Поднимаем над картинкой, чтобы клики работали */
+	pointer-events: none; /* Чтобы SVG не перекрывал клики, НО... */
+}
+
+.planet-zone {
+	pointer-events: all;
+	fill: transparent;
+	stroke: transparent;
+	cursor: pointer;
+}
+	/* ИНТЕРАКТИВ КАРТЫ */
+	.planet-zone:hover {
+		fill: rgba(0, 212, 255, 0.15);
+		stroke: #00d4ff;
+		stroke-width: 2;
+		stroke-dasharray: 8;
+		animation: rotate-stroke 15s linear infinite;
+		cursor: crosshair;
+	}
+
+
+
+/* 4. СЕТКА МАКЕТА (GRID) */
+.main-layout {
+	display: grid;
+	grid-template-columns: 350px minmax(500px, 1fr) 350px;
+	gap: 30px;
+	align-items: start;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.side-column {
+	display: flex;
+	flex-direction: column;
+	gap: 25px; /* Расстояние между блоками в колонке */
+}
+
+/* 5. БОКОВЫЕ ПАНЕЛИ */
+.side-panel {
+	position: relative;
+	background: rgba(0, 20, 30, 0.7);
+	/* Футуристичный вырез углов */
+	clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+	border-left: 4px solid #00d4ff;
+	padding: 25px;
+	backdrop-filter: blur(12px);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	color: #00d4ff;
+	border-right: 1px solid rgba(0, 212, 255, 0.2);
+	text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+	.side-panel:hover {
+		transform: scale(1.02); /* Легкое увеличение при наведении */
+		box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+	}
+
+	/* Декоративный уголок сверху справа */
+	.side-panel::before {
+		content: "SYS-DATA";
+		position: absolute;
+		top: 5px;
+		right: 15px;
+		font-size: 0.5rem;
+		opacity: 0.5;
+	}
+
+	/* Линия сканирования */
+	.side-panel::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(to bottom, transparent, rgba(0, 212, 255, 0.08) 50%, transparent);
+		animation: scan 8s linear infinite;
+		pointer-events: none;
+	}
+
+/* 6. ДАННЫЕ ВНУТРИ ПАНЕЛЕЙ */
+.data-line {
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.status-ok {
+	color: #00ff88;
+	text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+	font-weight: bold;
+}
+
+/* 7. АНИМАЦИИ */
+@keyframes scan {
+	0% {
+		transform: translateY(-100%);
+	}
+
+	100% {
+		transform: translateY(100%);
+	}
+}
+
+@keyframes rotate-stroke {
+	from {
+		stroke-dashoffset: 100;
+	}
+
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+
+
+
+/* Центрирование кнопки возврата */
+.nav-button {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	width: fit-content; /* Ширина по содержимому */
+}
