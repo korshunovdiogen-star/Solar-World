@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\planets",
+    "\\planets\\templates",
+    "\\planets\\templates\\includes",
+    "\\planets\\templates\\planets",
+    "\\solarWorld",
+    "\\static",
+    "\\static\\css"
+  ],
+  "SelectedNode": "\\planets\\models.py",
+  "PreviewInSolutionExplorer": false
+}

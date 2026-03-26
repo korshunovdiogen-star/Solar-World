@@ -1,0 +1,43 @@
+.space-container {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+    border: 2px solid #333;
+}
+
+#bg-map {
+    display: block;
+    max-width: 1000px; /* или любая удобная ширина */
+    height: auto;
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.planet-zone {
+    fill: transparent;
+    stroke: rgba(255, 255, 255, 0.4); /* Полупрозрачный контур для теста */
+    stroke-width: 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .planet-zone:hover {
+        stroke-width: 2;
+        fill: rgba(255, 255, 255, 0.1);
+    }
+
+/* Стили для информационной панели */
+#info-panel {
+    margin-top: 20px;
+    padding: 15px;
+    background: #1a1a1a;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+}

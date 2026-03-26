@@ -1,0 +1,115 @@
+body {
+    /* Путь к картинке относительно файла CSS */
+    background-image: url('../images/solar_system_bg.jpg');
+    /* Чтобы картинка не размножалась плиткой */
+    background-repeat: no-repeat;
+    /* Растягиваем картинку на весь экран */
+    background-size: cover;
+    /* Центрируем фон */
+    background-position: center;
+    transition: background-position 0.05s linear; /* быстрая реакция */
+    /* плавное перемещение */
+    background: none; /* или background-color, если нужен запасной цвет */
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+.parallax-bg {
+    position: fixed;
+    top: -5%; /* сдвигаем вверх на 5% */
+    left: -5%; /* сдвигаем влево на 5% */
+    width: 110%; /* ширина на 10% больше окна */
+    height: 110%; /* высота на 10% больше окна */
+    background-image: url('../images/solar_system_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    transition: transform 0.1s ease-out;
+}
+
+.hero-overlay {
+    position: relative;
+    z-index: 2; /* ТЕКСТ НА ВЕРХНЕМ СЛОЕ */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end; /* Прижимаем к правой стороне */
+    align-items: center; /* Центрируем по вертикали */
+    /* ТРЮК: Мягкое затемнение справа, чтобы буквы на планетах читались еще лучше */
+    background: linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%);
+}
+
+.hero-content {
+    margin-right: 10%; /* Отступ от края экрана */
+    text-align: right;
+    color: #fff;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-family: 'Goblin One';
+    /* Настройки размера */
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 1.1; 
+    margin: 0;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 2px 2px 0px #000, 0px 0px 20px rgba(0,0,0,0.8), 0px 10px 40px rgba(0,0,0,1);
+}
+
+.hero-subtitle {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1.2rem;
+    margin-top: 15px;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.space-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 15px 40px;
+    position: relative;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    /* Градиент в цвет яркого солнца */
+    background: linear-gradient(45deg, #ff8c00, #ffcc33);
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+    .space-btn span {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Эффект сияния при наведении */
+    .space-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
+        letter-spacing: 3px;
+    }
+
+    /* Бегущий блик (как на стекле шлема) */
+    .space-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-25deg);
+        transition: 0.8s;
+    }
+
+    .space-btn:hover::before {
+        left: 150%;
+    }

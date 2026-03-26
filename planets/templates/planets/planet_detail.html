@@ -1,0 +1,14 @@
+﻿<h1>Планета: {{ planet.planet_name }}</h1>
+<p>Тип: {{ planet.get_planet_type_display }}</p>
+
+<h3>Спутники ({{ satellites.count }}):</h3>
+<ul>
+    {% for sat in satellites %}
+    <li>
+        <a href="{% url 'satellite_detail' sat.pk %}">{{ sat.satellite_name }}</a>
+    </li>
+    {% empty %}
+    <li>Спутники не обнаружены.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'planet_list' %}">← К списку планет</a>

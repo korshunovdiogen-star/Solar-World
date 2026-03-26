@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <meta charset="UTF-8">
+    <!-- Подключение шрифта Goblin One из Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+</head>
+<body>
+    <div class="parallax-bg"></div>
+    <div class="space-hero">
+
+        <!-- Слой с текстом поверх картинки -->
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1 class="hero-title">Solar<br>World</h1>
+                <p class="hero-subtitle">Исследуйте космос,<br>не покидая Земли</p>
+                <a href="{% url 'planet_list' %}" class="space-btn hover-sound-btn" id="space-btn">
+                    <span>Перейти к навигационной карте</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- добавление звука принаведении на кнопку -->
+    <script>
+        // Передаём путь к звуку в глобальную переменную
+        window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
+    </script>
+    <script src="{% static 'js/button.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bg = document.querySelector('.parallax-bg');
+            if (!bg) return;
+
+            const maxShiftX = -30;   // максимальное смещение в пикселях по горизонтали
+            const maxShiftY = -20;   // по вертикали
+
+            function updateParallax(e) {
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                const winW = window.innerWidth;
+                const winH = window.innerHeight;
+
+                // относительное положение мыши (0..1)
+                let percentX = mouseX / winW;
+                let percentY = mouseY / winH;
+
+                // смещение от центра (-1..1)
+                let shiftX = (percentX - 0.5) * 2;
+                let shiftY = (percentY - 0.5) * 2;
+
+                // конечное смещение в пикселях
+                let moveX = shiftX * maxShiftX;
+                let moveY = shiftY * maxShiftY;
+
+                bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+
+            document.addEventListener('mousemove', updateParallax);
+            document.addEventListener('mouseleave', () => {
+                bg.style.transform = 'translate(0px, 0px)';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
