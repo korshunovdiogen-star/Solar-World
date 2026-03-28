@@ -18,7 +18,6 @@ def planet_detail(request, pk):
     first_line = planet.planet_text.splitlines()[0] if planet.planet_text else ''
     lines = planet.planet_text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
-    # Если в ForeignKey у Satellite нет related_name, пишем planet.satellite_set.all()
     satellites = planet.satellites.all().order_by('satellite_type', 'satellite_name') 
     return render(request, 'planets/planet_detail.html', {
         'planet': planet, #сам объект
@@ -30,5 +29,12 @@ def planet_detail(request, pk):
 # Страница конкретного спутника
 def satellite_detail(request, pk):
     satellite = get_object_or_404(Satellite, pk=pk)
-    return render(request, 'planets/satellite_detail.html', {'satellite': satellite})
+    first_line = satellite.satellite_text.splitlines()[0] if satellite.satellite_text else ''
+    lines = satellite.satellite_text.splitlines()
+    remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
+    return render(request, 'planets/satellite_detail.html', {
+        'satellite': satellite,
+        'first_line': first_line, # Первая строка описания (подзаголовок)
+        'remaining_text': remaining_text, # текст описания без первой строки
+        })
 

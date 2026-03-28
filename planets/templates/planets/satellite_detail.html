@@ -1,7 +1,60 @@
-﻿<h1>Спутник: {{ satellite.satellite_name }}</h1>
-<ul>
-    <li>Тип: {{ satellite.get_satellite_type_display }}</li>
-    <li>Радиус: {{ satellite.satellite_radius }}</li>
-    <li>Планета: {{ satellite.planet.planet_name }}</li>
-</ul>
-<a href="{% url 'planet_detail' satellite.planet.pk %}">← Назад к планете {{ satellite.planet.name }}</a>
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block title %}
+{{ satellite.satellite_name }} | Sol System
+{% endblock %}
+
+
+{% block  content %}
+<!-- Основной контент -->
+<main class="panel main-content">
+    <div class="text-block">
+        <h1>{{ satellite.satellite_name }} - спутник планеты {{ satellite.planet.planet_name }}</h1>
+        <div style="text-align: left;">
+            <h2>{{ first_line }}</h2>
+            <p>{{ remaining_text|safe|linebreaks  }}</p>
+        </div>
+    </div>
+</main>
+
+<!-- Инфобокс -->
+<div class="header-image">
+    <div class="image-wrapper">
+        <div class="image-container">
+            <img src="{{ satellite.image.url }}" alt="Картинка" />
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <p>Порядок от Солнца: {{ satellite.satellite_orger }}</p>
+                <p>Тип планеты: {{ satellite.get_satellite_type_display }}</p>
+                <p>Радиус: {{ satellite.satellite_radius }} км.</p>
+            </div>
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <h3>Хозяин спутника {{ satellite.satellite_name }}</h3>
+                <p>
+                    <a href="{% url 'planet_detail' pk=satellite.planet.pk %}">
+                        {{ satellite.planet.planet_name }}
+                    </a>
+                </p>
+</div>
+        </div>
+    </div>
+</div>
+<!-- добавление звука при наведении на кнопку -->
+<script>
+    // Передаём путь к звуку в глобальную переменную
+    window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
+</script>
+<script src="{% static 'js/button.js' %}"></script>
+{% endblock %}
