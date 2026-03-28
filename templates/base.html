@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %}</title>
+    <!-- подключение css -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block css_additional %} {% endblock %}
+</head>
+<body>
+    <!-- Меню идет первым и занимает верхнюю строку -->
+    <nav class="top-nav">
+        <a href="{% url 'main' %}" class="nav-item active sound-hover">Главная</a>
+        <a href="{% url 'planet_list' %}" class="nav-item sound-hover">Карта</a>
+        <a href="#" class="nav-item sound-hover">Поиск</a>
+        <a href="#" class="nav-item sound-hover">Тесты</a>
+        <!-- Можно добавлять сколько угодно кнопок -->
+    </nav>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

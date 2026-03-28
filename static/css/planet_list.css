@@ -1,7 +1,7 @@
 /* Подключаем шрифты */
 @import url('https://fonts.googleapis.com');
 
-/* 1. ОБЩИЕ НАСТРОЙКИ И ФОН */
+
 body {
 	margin: 0;
 	padding: 0;
@@ -15,19 +15,7 @@ body {
 }
 
 
-/* 2. ЗАГОЛОВОК */
-h1, .header-title {
-	grid-column: 1 / -1; /* Заголовок на всю ширину сверху */
-	font-family: 'Orbitron', sans-serif;
-	text-align: center;
-	text-transform: uppercase;
-	letter-spacing: 12px;
-	color: #00d4ff;
-	text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
-	margin: 30px 0;
-}
-
-/* 3. ЦЕНТРАЛЬНАЯ КАРТА */
+/* ЦЕНТРАЛЬНАЯ КАРТА */
 .space-container {
 	position: relative; /* Чтобы SVG прилип к картинке */
 	grid-column: 2; /* Явно ставим во вторую колонку */
@@ -79,7 +67,7 @@ svg {
 
 
 
-/* 4. СЕТКА МАКЕТА (GRID) */
+/* СЕТКА МАКЕТА (GRID) */
 .main-layout {
 	display: grid;
 	grid-template-columns: 350px minmax(500px, 1fr) 350px;
@@ -97,7 +85,7 @@ svg {
 	gap: 25px; /* Расстояние между блоками в колонке */
 }
 
-/* 5. БОКОВЫЕ ПАНЕЛИ */
+/* БОКОВЫЕ ПАНЕЛИ */
 .side-panel {
 	position: relative;
 	background: rgba(0, 20, 30, 0.7);
@@ -142,7 +130,7 @@ svg {
 		pointer-events: none;
 	}
 
-/* 6. ДАННЫЕ ВНУТРИ ПАНЕЛЕЙ */
+/* ДАННЫЕ ВНУТРИ ПАНЕЛЕЙ */
 .data-line {
     margin-bottom: 12px;
     border-bottom: 1px solid rgba(0, 212, 255, 0.1);
@@ -157,7 +145,7 @@ svg {
 	font-weight: bold;
 }
 
-/* 7. АНИМАЦИИ */
+/* АНИМАЦИИ */
 @keyframes scan {
 	0% {
 		transform: translateY(-100%);
@@ -168,17 +156,6 @@ svg {
 	}
 }
 
-@keyframes rotate-stroke {
-	from {
-		stroke-dashoffset: 100;
-	}
-
-	to {
-		stroke-dashoffset: 0;
-	}
-}
-
-
 
 
 /* Центрирование кнопки возврата */
@@ -188,4 +165,16 @@ svg {
 	margin-right: auto;
 	text-align: center;
 	width: fit-content; /* Ширина по содержимому */
+}
+
+/* ЗАГОЛОВОК */
+h1, .header-title {
+	grid-column: 1 / -1; /* Заголовок на всю ширину сверху */
+	font-family: 'Orbitron', sans-serif;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 12px;
+	color: #00d4ff;
+	text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+	margin: 30px 0;
 }

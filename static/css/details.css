@@ -1,0 +1,203 @@
+:root {
+    --neon-blue: #00d4ff;
+    --neon-blue-faded: rgba(0, 212, 255, 0.4);
+    --accent-color: #ffcc00;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+
+/* Общий стиль панелей (эффект стекла + уголки) */
+.panel {
+    border: 1px solid var(--neon-blue-faded);
+    padding: 30px;
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    position: relative;
+}
+
+    /* Декоративные хай-тек уголки */
+    .panel::before, .panel::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--neon-blue);
+    }
+
+    .panel::before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .panel::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+    }
+
+.panel-header {
+    font-family: var(--font-mono);
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--neon-blue-faded);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    letter-spacing: 3px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Центральный блок */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.text-block h1 {
+    font-family: var(--font-mono);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    margin: 0 0 15px 0;
+    letter-spacing: 10px;
+    text-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
+}
+/*основной текст */
+.text-block p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    max-width: 600px;
+    color: #D1F5D3;
+    opacity: 0.85;
+}
+/* выделенный текст */
+.custom-style {
+    /*font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: #39FF14;*/
+    color: #fff; /* Сам текст белый для читаемости */
+    text-shadow: 
+        0 0 5px #ff00ff,
+        0 0 10px rgba(255, 0, 255, 0.2), /* Здесь ваш выбранный цвет (например, розовый) */
+        0 0 20px #FF00FF;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+
+/* Инфобокс справа */
+.column-container {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    border: 1px solid var(--neon-blue-faded);
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    padding: 30px;
+    box-sizing: border-box; /* чтобы рамка и паддинги входили в ширину */
+}
+/* Декоративные уголки */
+    .column-container::before, .column-container::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--neon-blue);
+    }
+
+    .column-container::before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .column-container::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+    }
+    .column-container:hover {
+        transform: scale(1.02); /* Легкое увеличение при наведении */
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+
+
+.info-text {
+    font-family: 'Orbitron', sans-serif; /* можно выбрать шрифт в стиле sci-fi */
+    font-size: 16px; /* размер текста */
+    color: #00ffff; /* цвет текста */
+    line-height: 1.5; /* межстрочный интервал */
+    text-align: left; /* или центрировать, по желанию */
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+
+
+.header-image {
+    display: inline-block; /* чтобы контейнер не растягивался */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.image-wrapper {
+    display: inline-block; /* чтобы рамка подстраивалась по размеру картинки */
+}
+
+.image-container {
+    margin-top: 80px; /* верхний отступ */
+    display: inline-block; /* подгонка под изображение */
+    border: 1px solid var(--neon-blue-faded);
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    padding: 10px;
+    position: relative;
+}
+
+    /* Уголки, как у .column-container */
+    .image-container::before, .image-container::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--neon-blue);
+    }
+
+    .image-container::before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .image-container::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+    }
+    .image-container:hover {
+        transform: scale(1.02); /* Легкое увеличение при наведении */
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+
+/* Картинка */
+.header-image img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+h1 {
+    text-align: left;
+}

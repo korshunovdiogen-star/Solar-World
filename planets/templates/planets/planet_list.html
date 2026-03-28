@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" href="{% static 'css/planet_list.css' %}">
     <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     <meta charset="UTF-8">
     <title>Навигационная карта Солнечной Системы</title>
 </head>
@@ -31,7 +32,7 @@
                     <span style="color: #00ff88;">[ СИГНАЛ СТАБИЛЕН ]</span>
                 </div>
             </div>
-            {% include "includes/nav_button.html" with url_name="main" button_text="На главную" %}
+            <a href="{% url 'main' %}" class="nav-button sound-hover">На главную страницу</a>
         </div>
 
         <div class="space-container">
