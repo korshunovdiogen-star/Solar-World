@@ -70,7 +70,7 @@
 /*основной текст */
 .text-block p {
     font-size: 1.1rem;
-    line-height: 1.7;
+    line-height: 1.9;
     margin-bottom: 30px;
     max-width: 600px;
     color: #D1F5D3;
@@ -82,10 +82,7 @@
     font-size: 18px;
     color: #39FF14;*/
     color: #fff; /* Сам текст белый для читаемости */
-    text-shadow: 
-        0 0 5px #ff00ff,
-        0 0 10px rgba(255, 0, 255, 0.2), /* Здесь ваш выбранный цвет (например, розовый) */
-        0 0 20px #FF00FF;
+    text-shadow: 0 0 5px #00f3ff, 0 0 10px rgba(255, 0, 255, 0.2), 0 0 20px #00f3ff;
     font-weight: bold;
     letter-spacing: 0.5px;
 }
@@ -198,6 +195,5 @@
     height: auto;
 }
 
-h1 {
-    text-align: left;
-}
+
+
