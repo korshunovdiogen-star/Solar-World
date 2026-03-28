@@ -3,12 +3,14 @@
     "",
     "\\planets",
     "\\planets\\templates",
-    "\\planets\\templates\\includes",
     "\\planets\\templates\\planets",
     "\\solarWorld",
     "\\static",
-    "\\static\\css"
+    "\\static\\css",
+    "\\static\\images",
+    "\\static\\js",
+    "\\templates"
   ],
-  "SelectedNode": "\\planets\\models.py",
+  "SelectedNode": "\\planets\\templates\\planets\\planet_detail.html",
   "PreviewInSolutionExplorer": false
 }

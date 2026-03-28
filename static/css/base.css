@@ -1,0 +1,88 @@
+:root {
+    --dark-bg-center: #0a111a;
+    --dark-bg-edge: #020203;
+    --grid-color: rgba(0, 212, 255, 0.07);
+    --neon-blue: #00d4ff;
+    --neon-blue-faded: rgba(0, 212, 255, 0.3);
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+body {
+    margin: 0;
+    padding: 20px 40px 40px 40px; /* Уменьшил верхний отступ для меню */
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
+    color: #b0f2ff;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px), radial-gradient(circle at center, var(--dark-bg-center) 0%, var(--dark-bg-edge) 100%);
+    background-size: 60px 60px, 60px 60px, 100% 100%;
+    /* НОВАЯ СЕТКА: 1-я строка для меню (авто), 2-я для контента (остаток) */
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    grid-template-rows: auto 1fr;
+    grid-gap: 20px;
+    overflow-y: scroll;
+}
+    body::-webkit-scrollbar {
+        display: none; /* для Chrome, Safari, Opera, Edge (на Chromium) */
+    }
+
+
+
+/* Верхнее меню */
+.top-nav {
+    grid-column: 1 / -1; /* Растягиваем меню на всю ширину (обе колонки) */
+    display: flex;
+    gap: 15px; /* Расстояние между кнопками */
+    padding: 20px 0; /* Размер меню */
+    border-bottom: 3px solid var(--neon-blue-faded); /* Линия внизу меню */
+    margin-bottom: 10px; /* Отступ до содержания страницы */
+}
+
+.nav-item {
+    text-decoration: none;
+    color: var(--neon-blue);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, transparent 50%, rgba(0, 212, 255, 0.1) 100%);
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); /* Скошенные края в стиле sci-fi */
+}
+
+    .nav-item:hover {
+        background: rgba(0, 212, 255, 0.2);
+        border-color: var(--neon-blue);
+        text-shadow: 0 0 10px var(--neon-blue);
+        transform: translateY(-2px);
+    }
+
+    .nav-item.active {
+        background: var(--neon-blue);
+        color: #000;
+        font-weight: bold;
+    }
+    .nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Рисуем уголки с помощью градиентов */
+        background: linear-gradient(to right, var(--neon-blue) 2px, transparent 2px) 0 0, linear-gradient(to bottom, var(--neon-blue) 2px, transparent 2px) 0 0, linear-gradient(to left, var(--neon-blue) 2px, transparent 2px) 100% 100%, linear-gradient(to top, var(--neon-blue) 2px, transparent 2px) 100% 100%;
+        background-repeat: no-repeat;
+        background-size: 8px 8px; /* Размер уголков */
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .nav-item:hover::before {
+        opacity: 1;
+        background-size: 15px 15px; /* Уголки «раздвигаются» при наведении */
+    }

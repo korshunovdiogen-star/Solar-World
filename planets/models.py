@@ -16,7 +16,7 @@ class Planet(models.Model):
         verbose_name="Тип планеты"
     )
     planet_radius = models.FloatField(verbose_name="Радиус (км)")
-    planet_text = models.TextField(verbose_name="Текст планеты")
+    planet_text = models.TextField(blank=True, null=True, verbose_name="Текст планеты")
     image = models.ImageField(upload_to='planets/', blank=True, null=True, verbose_name='Изображение')
 
     def __str__(self):
@@ -42,7 +42,7 @@ class Satellite(models.Model):
         verbose_name="Тип спутника"
     )
     satellite_radius = models.FloatField(verbose_name="Радиус (км)")
-    satellite_text = models.TextField(verbose_name="Текст спутника")
+    satellite_text = models.TextField(blank=True, null=True, verbose_name="Текст спутника")
     image = models.ImageField(upload_to='satellites/', blank=True, null=True, verbose_name='Изображение')
 
     def __str__(self):

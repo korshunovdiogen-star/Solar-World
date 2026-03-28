@@ -1,14 +1,69 @@
-﻿<h1>Планета: {{ planet.planet_name }}</h1>
-<p>Тип: {{ planet.get_planet_type_display }}</p>
+﻿{% extends 'base.html' %}
+{% load static %}
 
-<h3>Спутники ({{ satellites.count }}):</h3>
-<ul>
-    {% for sat in satellites %}
-    <li>
-        <a href="{% url 'satellite_detail' sat.pk %}">{{ sat.satellite_name }}</a>
-    </li>
-    {% empty %}
-    <li>Спутники не обнаружены.</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'planet_list' %}">← К списку планет</a>
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block title %}
+{{ planet.planet_name }} | Sol System
+{% endblock %}
+
+
+{% block  content %}
+<!-- Основной контент -->
+<main class="panel main-content">
+    <div class="text-block">
+        <h1>Планета {{ planet.planet_name }}</h1>
+        <div style="text-align: left;">
+            <h2>{{ first_line }}</h2>
+            <p>{{ remaining_text|safe|linebreaks  }}</p>
+        </div>
+    </div>
+</main>
+
+<!-- Инфобокс -->
+<div class="header-image">
+    <div class="image-wrapper">
+        <div class="image-container">
+            <img src="{{ planet.image.url }}" alt="Картинка" />
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <p>Порядок от Солнца: {{ planet.planet_orger }}</p>
+                <p>Тип планеты: {{ planet.get_planet_type_display }}</p>
+                <p>Радиус: {{ planet.planet_radius }} км.</p>
+            </div>
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <h3>Спутники планеты {{ planet.planet_name }}</h3>
+                {% regroup satellites by get_satellite_type_display as type_list %}
+
+                {% for type in type_list %}
+                <h4>{{ type.grouper }}</h4> <!-- Выведет человекопонятное название, например "Искусственный" -->
+                <ul>
+                    {% for satellite in type.list %}
+                    <li>
+                        <a href="{% url 'satellite_detail' pk=satellite.pk %}">
+                            {{ satellite.satellite_name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- добавление звука при наведении на кнопку -->
+<script>
+        // Передаём путь к звуку в глобальную переменную
+        window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
+</script>
+<script src="{% static 'js/button.js' %}"></script>
+{% endblock %}
