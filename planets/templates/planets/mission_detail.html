@@ -1,0 +1,97 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block title %}
+{{ mission.name }} | Sol System
+{% endblock %}
+
+
+{% block  content %}
+<!-- Основной контент -->
+<main class="panel main-content">
+    <div class="text-block">
+        <h1>Миссия {{ mission.name }}</h1>
+        <div style="text-align: left;">
+            <h2>{{ first_line }}</h2>
+            <p>{{ remaining_text|safe|linebreaks  }}</p>
+        </div>
+    </div>
+</main>
+
+<!-- Инфобокс -->
+<div class="header-image">
+    <div class="image-wrapper">
+        <div class="image-container">
+            <img src="{{ mission.image.url }}" alt="Картинка" />
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <p>Кем провелась миссия:</p>
+                {% for agency in mission.space_agency.all %}
+                <ul>
+                    <li>
+                        <a href="{% url 'spaceAgency_detail' pk=agency.pk %}">
+                            {{ agency }}
+                        </a>
+                    </li>
+                </ul>
+                {% endfor %}
+                <p>Тип мисии: {{ mission.get_mission_type_display }}</p>
+                <p>Статус: {{ mission.get_status_display }}</p>
+                <p>Дата запуска: {{ mission.launch_date }} </p>
+                {% if mission.get_status_display == 'Активна' %}
+                <p>Длительность (дней): {{ duration }}</p>
+                {% elif mission.get_status_display == 'Завершена' %}
+                <p>Длительность (дней): {{ mission.duration_days }}</p>
+                {% endif %}
+
+                <p>
+                    Успешность:
+                    {% if mission.success %}
+                    <span style="color: #00ff00; font-weight: 900; text-shadow: 0 0 5px #00ff00, 0 0 15px rgba(0, 255, 0, 0.8), 0 0 2px #000;">✓</span>
+                    {% else %}
+                    <span style="color: #00ff00; font-weight: 900; text-shadow: 0 0 5px #00ff00, 0 0 15px rgba(0, 255, 0, 0.8), 0 0 2px #000;">✕</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                {% if mission.target_planets.all %}
+                <h2>Цели - планеты:</h2>
+                {% for planet in mission.target_planets.all %}
+                <ul>
+                    <li>
+                        <a href="{% url 'planet_detail' pk=planet.pk %}">
+                            {{ planet.name }}
+                        </a>
+                    </li>
+                </ul>
+                {% endfor %}
+                {% endif %}
+
+                {% if mission.target_satellites.all %}
+                <h2>Цели - спутники:</h2>
+                {% for satellite in mission.target_satellites.all %}
+                <ul>
+                    <li>
+                        <a href="{% url 'satellite_detail' pk=satellite.pk %}">
+                            {{ satellite.name }}
+                        </a>
+                    </li>
+                </ul>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
