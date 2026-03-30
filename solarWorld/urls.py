@@ -10,6 +10,8 @@ urlpatterns = [
     path('planets/', views.planet_list, name='planet_list'),
     path('planet/<int:pk>/', views.planet_detail, name='planet_detail'),
     path('satellite/<int:pk>/', views.satellite_detail, name='satellite_detail'),
+    path('mission/<int:pk>/', views.mission_detail, name='mission_detail'),
+    path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceAgency_detail'),
 ]
 
 if settings.DEBUG:

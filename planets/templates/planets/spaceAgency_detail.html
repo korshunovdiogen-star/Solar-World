@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block title %}
+{{ spaceAgency.name }} | Sol System
+{% endblock %}
+
+
+{% block  content %}
+<!-- Основной контент -->
+<main class="panel main-content">
+    <div class="text-block">
+        <h1>Агенство {{ spaceAgency.name }}</h1>
+        <div style="text-align: left;">
+            <h2>{{ first_line }}</h2>
+            <p>{{ remaining_text|safe|linebreaks  }}</p>
+        </div>
+    </div>
+</main>
+
+<!-- Инфобокс -->
+<div class="header-image">
+    <div class="image-wrapper">
+        <div class="image-container">
+            <img src="{{ spaceAgency.image.url }}" alt="Картинка" />
+        </div>
+    </div>
+    <div class="column-container">
+        <div class="status-rows">
+            <div class="info-text">
+                <p>Страна: {{ spaceAgency.country }}</p>
+                <p>Дата основания: {{ spaceAgency.established_date }}</p>
+                <p>Прошло {{ days_passed }} дней с основания.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
