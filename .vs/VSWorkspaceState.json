@@ -5,11 +5,8 @@
     "\\planets\\templates",
     "\\planets\\templates\\planets",
     "\\solarWorld",
-    "\\static\\css",
-    "\\static\\images",
-    "\\static\\js",
     "\\templates"
   ],
-  "SelectedNode": "\\planets\\templates\\planets\\spaceAgency_detail.html",
+  "SelectedNode": "\\solarWorld\\urls.py",
   "PreviewInSolutionExplorer": false
 }

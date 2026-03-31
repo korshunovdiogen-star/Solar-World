@@ -3,6 +3,12 @@ from django.utils import timezone
 from datetime import date
 from django.shortcuts import render, get_object_or_404
 from .models import Planet, Satellite, Mission, SpaceAgency
+from rest_framework import serializers
+from rest_framework import viewsets
+from solarWorld.serializers import (
+    PlanetSerializer, SatelliteSerializer,
+    MissionSerializer, SpaceAgencySerializer
+)
 
 
 # Главная страница
@@ -68,3 +74,26 @@ def spaceAgency_detail(request, pk):
         'remaining_text': remaining_text, # текст описания без первой строки
         'days_passed': days_passed.days #сколько дней прошло со дня основания
     })
+
+
+
+
+
+# API
+class PlanetViewSet(viewsets.ModelViewSet):
+    queryset = Planet.objects.all()
+    serializer_class = PlanetSerializer
+    # Для детальной страницы можно использовать тот же сериализатор,
+    # он уже включает все поля и спутники.
+
+class SatelliteViewSet(viewsets.ModelViewSet):
+    queryset = Satellite.objects.all()
+    serializer_class = SatelliteSerializer
+
+class MissionViewSet(viewsets.ModelViewSet):
+    queryset = Mission.objects.all()
+    serializer_class = MissionSerializer
+
+class SpaceAgencyViewSet(viewsets.ModelViewSet):
+    queryset = SpaceAgency.objects.all()
+    serializer_class = SpaceAgencySerializer
