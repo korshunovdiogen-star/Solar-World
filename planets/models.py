@@ -10,7 +10,7 @@ class Planet(models.Model):
         DWARF = 'DWA', 'Карликовая планета'
 
     name = models.TextField(max_length=20, verbose_name="Название планеты")
-    orger = models.IntegerField(verbose_name="Порядок от солнца")
+    order = models.IntegerField(verbose_name="Порядок от солнца")
     planet_type = models.CharField(
         max_length=3,
         choices=PlanetType.choices,
@@ -101,7 +101,7 @@ class Mission(models.Model):
     display_space_agencies.short_description = "Агентства"
 
     def __str__(self):
-        return self.mission_name
+        return self.name
 
 
 class SpaceAgency(models.Model):

@@ -6,7 +6,7 @@ from .models import Planet, Mission, SpaceAgency, Satellite
 
 
 class PlanetsAdmin(admin.ModelAdmin):
-    list_display = ['name', 'orger', 'planet_type', 'radius']
+    list_display = ['name', 'order', 'planet_type', 'radius']
 
 class SatelliteAdmin(admin.ModelAdmin):
     list_display = ['name', 'planet', 'satellite_type', 'radius']
