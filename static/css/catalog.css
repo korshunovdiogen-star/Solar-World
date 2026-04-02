@@ -1,0 +1,227 @@
+/* Стили для страницы каталога */
+.catalog-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+    .catalog-container h1 {
+        text-align: center;
+    }
+
+/* Панель фильтров */
+.filter-panel {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+    .filter-panel input,
+    .filter-panel select {
+        background: rgba(0, 20, 30, 0.6);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--neon-blue-faded);
+        padding: 0.75rem 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        color: #fff;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+        .filter-panel input:focus,
+        .filter-panel select:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        .filter-panel input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+/* Сетка результатов */
+.results-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+    width: 100%;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+    .results-grid.fetching {
+        opacity: 0.5;
+        filter: blur(1px);
+    }
+
+/* Ссылка-обёртка карточки */
+.catalog-card-link {
+    display: block;
+    text-decoration: none; /* убираем подчёркивание */
+    color: inherit;
+    animation: spaceFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* анимация появления при запросе */
+    opacity: 0; /* Начальное состояние перед анимацией */
+}
+@keyframes spaceFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        filter: blur(5px); /* Эффект проявления из туманности */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Карточка объекта */
+.catalog-card {
+    position: relative;
+    border: 1px solid var(--neon-blue-faded);
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    /* Уголки как у .column-container */
+    .catalog-card::before,
+    .catalog-card::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--neon-blue);
+    }
+
+    .catalog-card::before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .catalog-card::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+    }
+
+.catalog-card-link:hover .catalog-card {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    border-color: var(--neon-blue);
+}
+
+.catalog-card h3 {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.catalog-card p {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: #ccc;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+}
+
+.card-image {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 4px;
+    order: 2;
+}
+
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.card-content {
+    order: 1;
+    flex: 1;
+}
+    .card-content p {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical;
+        line-height: 1.4rem;
+        max-height: 2.8rem; /* 2 строки */
+    }
+/* Сообщение "ничего не найдено" */
+.no-results {
+    text-align: center;
+    font-family: var(--font-mono);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 2rem;
+    border: 1px dashed var(--neon-blue-faded);
+}
+
+
+
+/* Блок пагинации */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+    /* Базовый стиль кнопок */
+    .pagination button {
+        background: rgba(0, 20, 30, 0.6);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--neon-blue-faded);
+        color: #fff;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+        letter-spacing: 1px;
+    }
+
+        /* Эффект при наведении */
+        .pagination button:hover:not(:disabled) {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Активная страница */
+        .pagination button.active {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            cursor: default;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Отключённые кнопки (когда нет следующей/предыдущей страницы) */
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+

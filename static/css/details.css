@@ -1,42 +1,103 @@
 :root {
     --neon-blue: #00d4ff;
-    --neon-blue-faded: rgba(0, 212, 255, 0.4);
-    --accent-color: #ffcc00;
-    --font-mono: 'Courier New', Courier, monospace;
 }
-
-
-/* Общий стиль панелей (эффект стекла + уголки) */
-.panel {
-    border: 1px solid var(--neon-blue-faded);
-    padding: 30px;
-    background: rgba(0, 20, 30, 0.4);
-    backdrop-filter: blur(5px);
+/* ==========================================================================
+   1. ПЕРЕИСПОЛЬЗУЕМЫЕ КОМПОНЕНТЫ (Эффект стекла и уголки)
+   ========================================================================== */
+/* Базовый класс для всех Sci-Fi блоков (панели, инфобоксы, контейнеры фото) */
+/* Базовый класс для всех панелей с рамками */
+/* Состояние по умолчанию (видны всегда) */
+.sci-fi-panel {
+    /* Основная тонкая рамка */
+    border: 1px solid var(--neon-blue); /* Делаем полупрозрачной, но видимой */
+    background: rgba(0, 20, 30, 0.6);
+    backdrop-filter: blur(8px);
     position: relative;
+    padding: 25px;
+    transition: all 0.4s ease; /* Плавный переход для ховера */
 }
 
-    /* Декоративные хай-тек уголки */
-    .panel::before, .panel::after {
-        content: '';
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        border: 2px solid var(--neon-blue);
+/* Уголки (видны всегда) */
+.sci-fi-panel::before,
+.sci-fi-panel::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--neon-blue); /* Яркий цвет уголков */
+    opacity: 0.6; /* Делаем чуть тусклее в обычном состоянии */
+    transition: all 0.4s ease;
+}
+
+.sci-fi-panel::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.sci-fi-panel::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Эффект ПРИ НАВЕДЕНИИ (усиливаем то, что уже есть) */
+.sci-fi-panel:hover {
+    border-color: var(--neon-blue); /* Рамка становится ярче */
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+    .sci-fi-panel:hover::before,
+    .sci-fi-panel:hover::after {
+        opacity: 1; /* Уголки загораются на полную */
+        width: 25px; /* Уголки немного удлиняются (эффект "активации") */
+        height: 25px;
     }
 
-    .panel::before {
-        top: -1px;
-        left: -1px;
-        border-right: 0;
-        border-bottom: 0;
-    }
 
-    .panel::after {
-        bottom: -1px;
-        right: -1px;
-        border-left: 0;
-        border-top: 0;
-    }
+body {
+    overflow-x: hidden;
+    width: 100vw;
+}
+
+/* ==========================================================================
+   2. СТРУКТУРА СТРАНИЦЫ (Layout)
+   ========================================================================== */
+
+.detail-content {
+    display: flex;
+    flex-direction: row; /* Текст слева, фото справа */
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Центральный блок контента */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Боковая колонка (инфобокс) */
+.column-container {
+    width: 350px;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   3. ТЕКСТОВЫЕ БЛОКИ
+   ========================================================================== */
 
 .panel-header {
     font-family: var(--font-mono);
@@ -50,150 +111,63 @@
     opacity: 0.8;
 }
 
-/* Центральный блок */
-.main-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
+/* Согласование с base.css: используем Orbitron для заголовков */
 .text-block h1 {
-    font-family: var(--font-mono);
-    font-size: 2.8rem;
-    text-transform: uppercase;
+    font-family: var(--font-header); /* Из base.css */
+    font-size: 3rem;
     margin: 0 0 15px 0;
     letter-spacing: 10px;
-    text-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
+    /* Эффект из base.css (градиент + прозрачность) */
+    background: linear-gradient(to bottom, #fff 50%, #00f3ff 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6));
 }
-/*основной текст */
+
 .text-block p {
     font-size: 1.1rem;
     line-height: 1.9;
     margin-bottom: 30px;
     max-width: 600px;
-    color: #D1F5D3;
+    color: #D1F5D3; /* Твой специфический цвет */
     opacity: 0.85;
 }
-/* выделенный текст */
-.custom-style {
-    /*font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
-    color: #39FF14;*/
-    color: #fff; /* Сам текст белый для читаемости */
-    text-shadow: 0 0 5px #00f3ff, 0 0 10px rgba(255, 0, 255, 0.2), 0 0 20px #00f3ff;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
 
-
-/* Инфобокс справа */
-.column-container {
-    display: flex;
-    flex-direction: column;
-    width: 350px;
-    border: 1px solid var(--neon-blue-faded);
-    background: rgba(0, 20, 30, 0.4);
-    backdrop-filter: blur(5px);
-    padding: 30px;
-    box-sizing: border-box; /* чтобы рамка и паддинги входили в ширину */
-}
-/* Декоративные уголки */
-    .column-container::before, .column-container::after {
-        content: '';
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        border: 2px solid var(--neon-blue);
-    }
-
-    .column-container::before {
-        top: -1px;
-        left: -1px;
-        border-right: 0;
-        border-bottom: 0;
-    }
-
-    .column-container::after {
-        bottom: -1px;
-        right: -1px;
-        border-left: 0;
-        border-top: 0;
-    }
-    .column-container:hover {
-        transform: scale(1.02); /* Легкое увеличение при наведении */
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-    }
-
-
+/* Стилизованный инфо-текст в боковой панели */
 .info-text {
-    font-family: 'Orbitron', sans-serif; /* можно выбрать шрифт в стиле sci-fi */
-    font-size: 16px; /* размер текста */
-    color: #00ffff; /* цвет текста */
-    line-height: 1.5; /* межстрочный интервал */
-    text-align: left; /* или центрировать, по желанию */
+    font-family: var(--font-header);
+    font-size: 16px;
+    line-height: 1.5;
     background: linear-gradient(45deg, #00ffff, #ff00ff);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: bold;
 }
 
-
-
-.header-image {
-    display: inline-block; /* чтобы контейнер не растягивался */
-    margin-bottom: 20px;
-    text-align: center;
+.side-column {
+    flex: 0 0 450px; /* Фиксированная ширина для фото и инфобоксов */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.image-wrapper {
-    display: inline-block; /* чтобы рамка подстраивалась по размеру картинки */
-}
+/* ==========================================================================
+   4. ИЗОБРАЖЕНИЯ
+   ========================================================================== */
 
 .image-container {
-    margin-top: 80px; /* верхний отступ */
-    display: inline-block; /* подгонка под изображение */
-    border: 1px solid var(--neon-blue-faded);
-    background: rgba(0, 20, 30, 0.4);
-    backdrop-filter: blur(5px);
-    padding: 10px;
-    position: relative;
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-    /* Уголки, как у .column-container */
-    .image-container::before, .image-container::after {
-        content: '';
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        border: 2px solid var(--neon-blue);
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
     }
-
-    .image-container::before {
-        top: -1px;
-        left: -1px;
-        border-right: 0;
-        border-bottom: 0;
-    }
-
-    .image-container::after {
-        bottom: -1px;
-        right: -1px;
-        border-left: 0;
-        border-top: 0;
-    }
-    .image-container:hover {
-        transform: scale(1.02); /* Легкое увеличение при наведении */
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-    }
-
-/* Картинка */
-.header-image img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-}
-
-
-

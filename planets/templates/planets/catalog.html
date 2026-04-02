@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Каталог | Solar World{% endblock %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="catalog-container">
+    <div class="text-block" style="text-align: center; margin-bottom: 2rem;">
+        <h1>Каталог</h1>
+        <p>Выберите категорию и начните исследование</p>
+    </div>
+
+    <!-- Панель фильтров -->
+    <div class="filter-panel">
+        <input type="text" id="search-input" placeholder="Поиск по названию...">
+        <select id="category-select">
+            <option value="all">Все категории</option>
+            <option value="planet">Планеты</option>
+            <option value="satellite">Спутники</option>
+            <option value="mission">Миссии</option>
+            <option value="agency">Агентства</option>
+        </select>
+    </div>
+
+    <!-- Контейнер результатов -->
+    <div id="results-container" class="results-grid"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const categorySelect = document.getElementById('category-select');
+        const resultsContainer = document.getElementById('results-container');
+        let currentPage = 1;
+        let totalPages = 1;
+
+        function fetchCatalog() {
+            const q = searchInput.value.trim();
+            const category = categorySelect.value;
+            const url = `/api/catalog/?q=${encodeURIComponent(q)}&category=${category}&page=${currentPage}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    totalPages = data.total_pages;
+                    renderResults(data.results);
+                    renderPagination();
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки:', error);
+                    resultsContainer.innerHTML = '<div class="no-results">Не удалось загрузить данные</div>';
+                });
+        }
+
+        function renderResults(items) {
+            resultsContainer.innerHTML = '';
+            if (items.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
+                return;
+            }
+
+            items.forEach(item => {
+                let detailUrl = '';
+                if (item.model_type === 'planet') detailUrl = `/planet/${item.id}/`;
+                else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
+                else if (item.model_type === 'mission') detailUrl = `/mission/${item.id}/`;
+                else if (item.model_type === 'agency') detailUrl = `/spaceAgency/${item.id}/`;
+
+                const imageUrl = item.image ? item.image : '/static/images/default.jpg';
+
+                const link = document.createElement('a');
+                link.href = detailUrl;
+                link.className = 'catalog-card-link';
+
+                const card = document.createElement('div');
+                card.className = 'catalog-card';
+                card.innerHTML = `
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.first_line || item.model_type}</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="${imageUrl}" alt="${item.name}">
+                    </div>
+                `;
+
+                link.appendChild(card);
+                resultsContainer.appendChild(link);
+            });
+        }
+
+        function renderPagination() {
+            let paginationDiv = document.getElementById('pagination-controls');
+            if (!paginationDiv) {
+                paginationDiv = document.createElement('div');
+                paginationDiv.id = 'pagination-controls';
+                paginationDiv.className = 'pagination';
+                document.querySelector('.catalog-container').appendChild(paginationDiv);
+            }
+            paginationDiv.innerHTML = '';
+
+            // Кнопка "Предыдущая"
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.textContent = '← Назад';
+                prevBtn.addEventListener('click', () => {
+                    currentPage--;
+                    fetchCatalog();
+                });
+                paginationDiv.appendChild(prevBtn);
+            }
+
+            // Номера страниц (можно ограничить количество, например, 5)
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                if (i === currentPage) {
+                    pageBtn.disabled = true;
+                    pageBtn.classList.add('active');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    fetchCatalog();
+                });
+                paginationDiv.appendChild(pageBtn);
+            }
+
+            // Кнопка "Следующая"
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = 'Вперёд →';
+                nextBtn.addEventListener('click', () => {
+                    currentPage++;
+                    fetchCatalog();
+                });
+                paginationDiv.appendChild(nextBtn);
+            }
+        }
+
+        // Слушатели событий
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            fetchCatalog();
+        });
+        categorySelect.addEventListener('change', () => {
+            currentPage = 1;
+            fetchCatalog();
+        });
+
+        // Начальная загрузка
+        fetchCatalog();
+    });
+</script>
+{% endblock %}

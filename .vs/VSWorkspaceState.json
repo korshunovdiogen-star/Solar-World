@@ -5,8 +5,10 @@
     "\\planets\\templates",
     "\\planets\\templates\\planets",
     "\\solarWorld",
+    "\\static",
+    "\\static\\css",
     "\\templates"
   ],
-  "SelectedNode": "\\solarWorld\\urls.py",
+  "SelectedNode": "\\planets\\templates\\planets\\spaceAgency_detail.html",
   "PreviewInSolutionExplorer": false
 }
