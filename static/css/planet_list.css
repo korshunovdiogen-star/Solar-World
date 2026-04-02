@@ -65,6 +65,28 @@ svg {
 		cursor: crosshair;
 	}
 
+/* Всплывающая подсказка (тултип) */
+.custom-tooltip {
+	position: fixed;
+	background: rgba(0, 20, 30, 0.85);
+	backdrop-filter: blur(6px);
+	border: 1px solid #00d4ff;
+	color: #00d4ff;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 0.85rem;
+	padding: 4px 10px;
+	border-radius: 4px;
+	pointer-events: none;
+	z-index: 1000;
+	white-space: nowrap;
+	box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+	transition: opacity 0.1s;
+	opacity: 0;
+}
+
+	.custom-tooltip.visible {
+		opacity: 1;
+	}
 
 
 /* СЕТКА МАКЕТА (GRID) */

@@ -1,12 +1,37 @@
-document.querySelectorAll('.planet-zone').forEach(zone => {
-    zone.addEventListener('click', function () {
-        const name = this.id.charAt(0).toUpperCase() + this.id.slice(1);
-        const description = this.getAttribute('data-info');
+document.addEventListener('DOMContentLoaded', function () {
+    let tooltip = document.querySelector('.custom-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.className = 'custom-tooltip';
+        document.body.appendChild(tooltip);
+    }
 
-        document.getElementById('planet-title').innerText = name;
-        document.getElementById('planet-desc').innerText = description;
+    function getPlanetName(id) {
+        return id.charAt(0).toUpperCase() + id.slice(1);
+    }
 
-        // Добавим эффект "активности"
-        console.log("Клик по планете:", name);
+    const planets = document.querySelectorAll('.planet-zone');
+    if (planets.length === 0) {
+        console.warn('Элементы .planet-zone не найдены');
+        return;
+    }
+
+    planets.forEach(zone => {
+        zone.addEventListener('mouseenter', function (e) {
+            const name = getPlanetName(this.id);
+            tooltip.textContent = name;
+            tooltip.classList.add('visible');
+            tooltip.style.left = (e.clientX + 15) + 'px';
+            tooltip.style.top = (e.clientY + 15) + 'px';
+        });
+
+        zone.addEventListener('mousemove', function (e) {
+            tooltip.style.left = (e.clientX + 15) + 'px';
+            tooltip.style.top = (e.clientY + 15) + 'px';
+        });
+
+        zone.addEventListener('mouseleave', function () {
+            tooltip.classList.remove('visible');
+        });
     });
 });
