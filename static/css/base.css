@@ -32,11 +32,21 @@ body {
     grid-gap: 20px;
     /* Скрытие скроллбара для всех браузеров */
     scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
 }
 
     body::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
+        width: 0;
+        background: transparent;
+    }
+
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE и Edge */
+}
+
+    html::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
     }
 
 /* ==========================================================================
@@ -97,6 +107,27 @@ body {
     .nav-item:hover::before {
         opacity: 1;
         background-size: 15px 15px;
+    }
+
+/* Контейнер для позиционирования под меню */
+.back-container {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-start; /* Кнопка будет слева */
+    margin-top: -10px; /* Прижимаем чуть ближе к линии меню */
+}
+
+/* Специфические стили для кнопки назад */
+.back-button {
+    font-size: 0.9rem; /* Чуть меньше основных пунктов */
+    padding: 5px 15px;
+    border-color: rgba(0, 212, 255, 0.2);
+    opacity: 0.8;
+}
+
+    .back-button:hover {
+        opacity: 1;
+        transform: translateX(-5px); /* Эффект смещения влево при наведении */
     }
 
 /* ==========================================================================

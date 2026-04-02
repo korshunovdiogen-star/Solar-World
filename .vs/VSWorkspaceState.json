@@ -7,8 +7,9 @@
     "\\solarWorld",
     "\\static",
     "\\static\\css",
+    "\\static\\js",
     "\\templates"
   ],
-  "SelectedNode": "\\planets\\templates\\planets\\spaceAgency_detail.html",
+  "SelectedNode": "\\static\\css\\main.css",
   "PreviewInSolutionExplorer": false
 }

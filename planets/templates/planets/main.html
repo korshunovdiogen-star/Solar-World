@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <!-- Подключение шрифта Goblin One из Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <title>Solar World</title>
 </head>
 <body>
     <div class="parallax-bg"></div>
@@ -16,12 +17,23 @@
         <div class="hero-overlay">
             <div class="hero-content">
                 <h1 class="hero-title">Solar<br>World</h1>
-                <p class="hero-subtitle">Исследуйте космос,<br>не покидая Земли</p>
-                <a href="{% url 'planet_list' %}" class="space-btn sound-hover">
-                    <span>Перейти к навигационной карте</span>
-                </a>
+                <div class="hero-subtitle-container">
+                    <p class="hero-subtitle line-1">Исследуйте космос,</p>
+                    <p class="hero-subtitle line-2">не покидая Земли</p>
+                </div>
+                <div class="hero-buttons-column">
+                    <!-- Добавлен класс primary для пульсации и заливки -->
+                    <a href="{% url 'planet_list' %}" class="space-btn primary sound-hover">
+                        <span>Открыть карту</span>
+                    </a>
+
+                    <!-- Добавлен класс secondary для контурного стиля -->
+                    <a href="{% url 'catalog' %}" class="space-btn secondary sound-hover">
+                        <span>База знаний</span>
+                    </a>
+                </div>
+                </div>
             </div>
-        </div>
     </div>
 
     <!-- добавление звука принаведении на кнопку -->

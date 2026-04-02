@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\django\\DjangoProjects\\solarWorld\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\spaceAgency_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:planets\\templates\\planets\\spaceAgency_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\mission_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:planets\\templates\\planets\\mission_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\planet_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:planets\\templates\\planets\\planet_detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -31,32 +39,58 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "planet_detail.html",
-              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\planet_detail.html",
-              "RelativeDocumentMoniker": "planets\\templates\\planets\\planet_detail.html",
-              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\planet_detail.html",
-              "RelativeToolTip": "planets\\templates\\planets\\planet_detail.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGIAAAAAAAAAAAAAAA==",
+              "Title": "spaceAgency_detail.html",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\spaceAgency_detail.html",
+              "RelativeDocumentMoniker": "planets\\templates\\planets\\spaceAgency_detail.html",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\spaceAgency_detail.html",
+              "RelativeToolTip": "planets\\templates\\planets\\spaceAgency_detail.html",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAACwAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-01T13:13:35.327Z",
+              "WhenOpened": "2026-04-02T06:22:02.837Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "mission_detail.html",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\mission_detail.html",
+              "RelativeDocumentMoniker": "planets\\templates\\planets\\mission_detail.html",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\mission_detail.html",
+              "RelativeToolTip": "planets\\templates\\planets\\mission_detail.html",
+              "ViewState": "AgIAADsAAAAAAAAAAAAAAGIAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-02T06:20:54.974Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "planet_detail.html",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\planet_detail.html",
+              "RelativeDocumentMoniker": "planets\\templates\\planets\\planet_detail.html",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\planet_detail.html",
+              "RelativeToolTip": "planets\\templates\\planets\\planet_detail.html",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-02T06:05:54.446Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "details.css",
               "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\static\\css\\details.css",
               "RelativeDocumentMoniker": "static\\css\\details.css",
               "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\static\\css\\details.css",
               "RelativeToolTip": "static\\css\\details.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABoAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2026-04-01T13:12:18.249Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "base.css",
               "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\static\\css\\base.css",
               "RelativeDocumentMoniker": "static\\css\\base.css",
@@ -64,8 +98,7 @@
               "RelativeToolTip": "static\\css\\base.css",
               "ViewState": "AgIAAHIAAAAAAAAAAAAAAIQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-01T13:05:15.824Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-01T13:05:15.824Z"
             }
           ]
         }
