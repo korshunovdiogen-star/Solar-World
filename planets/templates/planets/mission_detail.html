@@ -5,93 +5,95 @@
 <link rel="stylesheet" href="{% static 'css/details.css' %}">
 {% endblock %}
 
-{% block title %}
-{{ mission.name }} | Sol System
-{% endblock %}
+{% block title %}{{ mission.name }} | Sol System{% endblock %}
 
+{% block content %}
+<div class="detail-content">
+    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
+    <main class="main-content">
+        <article class="sci-fi-panel" style="padding: 35px; width: 100%; box-sizing: border-box;">
+            <div class="text-block">
+                <h1>Миссия {{ mission.name }}</h1>
+                <div style="text-align: left;">
+                    <h2 class="panel-header" style="margin-top: 20px;">{{ first_line }}</h2>
+                    <p style="margin-top: 15px;">{{ remaining_text|safe|linebreaks }}</p>
+                </div>
+            </div>
+        </article>
+    </main>
 
-{% block  content %}
-<!-- Основной контент -->
-<main class="panel main-content">
-    <div class="text-block">
-        <h1>Миссия {{ mission.name }}</h1>
-        <div style="text-align: left;">
-            <h2>{{ first_line }}</h2>
-            <p>{{ remaining_text|safe|linebreaks  }}</p>
+    <!-- ПРАВАЯ КОЛОНКА: Фото и данные -->
+    <aside class="side-column">
+
+        <!-- Блок изображения в рамке -->
+        <div class="image-container sci-fi-panel">
+            <img src="{{ mission.image.url }}" alt="{{ mission.name }}" />
         </div>
-    </div>
-</main>
 
-<!-- Инфобокс -->
-<div class="header-image">
-    <div class="image-wrapper">
-        <div class="image-container">
-            <img src="{{ mission.image.url }}" alt="Картинка" />
-        </div>
-    </div>
-    <div class="column-container">
-        <div class="status-rows">
+        <!-- Основные характеристики миссии -->
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Данные миссии</div>
             <div class="info-text">
-                <p>Кем провелась миссия:</p>
-                {% for agency in mission.space_agency.all %}
-                <ul>
-                    <li>
-                        <a href="{% url 'spaceAgency_detail' pk=agency.pk %}">
-                            {{ agency }}
-                        </a>
-                    </li>
-                </ul>
-                {% endfor %}
-                <p>Тип мисии: {{ mission.get_mission_type_display }}</p>
-                <p>Статус: {{ mission.get_status_display }}</p>
-                <p>Дата запуска: {{ mission.launch_date }} </p>
+                <p>
+                    Агентство(а):
+                    {% for agency in mission.space_agency.all %}
+                    <a href="{% url 'spaceAgency_detail' pk=agency.pk %}" style="color: var(--neon-blue); text-decoration: none;">
+                        {{ agency.name }}
+                    </a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p>Тип миссии: <span class="custom-style">{{ mission.get_mission_type_display }}</span></p>
+                <p>Статус: <span class="custom-style">{{ mission.get_status_display }}</span></p>
+                <p>Дата запуска: <span class="custom-style">{{ mission.launch_date }}</span></p>
                 {% if mission.get_status_display == 'Активна' %}
-                <p>Длительность (дней): {{ duration }}</p>
+                <p>Длительность (дней): <span class="custom-style">{{ duration }}</span></p>
                 {% elif mission.get_status_display == 'Завершена' %}
-                <p>Длительность (дней): {{ mission.duration_days }}</p>
+                <p>Длительность (дней): <span class="custom-style">{{ mission.duration_days }}</span></p>
                 {% endif %}
-
                 <p>
                     Успешность:
                     {% if mission.success %}
-                    <span style="color: #00ff00; font-weight: 900; text-shadow: 0 0 5px #00ff00, 0 0 15px rgba(0, 255, 0, 0.8), 0 0 2px #000;">✓</span>
+                    <span style="color: #00ff00; font-weight: 900; text-shadow: 0 0 5px #00ff00, 0 0 15px rgba(0, 255, 0, 0.8);">✓</span>
                     {% else %}
-                    <span style="color: #00ff00; font-weight: 900; text-shadow: 0 0 5px #00ff00, 0 0 15px rgba(0, 255, 0, 0.8), 0 0 2px #000;">✕</span>
+                    <span style="color: #ff4444; font-weight: 900; text-shadow: 0 0 5px #ff4444, 0 0 15px rgba(255, 0, 0, 0.8);">✕</span>
                     {% endif %}
                 </p>
             </div>
         </div>
-    </div>
-    <div class="column-container">
-        <div class="status-rows">
+
+        <!-- Цели миссии (планеты и/или спутники) -->
+        {% if mission.target_planets.all or mission.target_satellites.all %}
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Цели</div>
             <div class="info-text">
                 {% if mission.target_planets.all %}
-                <h2>Цели - планеты:</h2>
-                {% for planet in mission.target_planets.all %}
-                <ul>
+                <p><strong>Планеты:</strong></p>
+                <ul style="list-style: square; padding-left: 18px; margin-bottom: 10px;">
+                    {% for planet in mission.target_planets.all %}
                     <li>
-                        <a href="{% url 'planet_detail' pk=planet.pk %}">
+                        <a href="{% url 'planet_detail' pk=planet.pk %}" style="color: #fff; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='#fff'">
                             {{ planet.name }}
                         </a>
                     </li>
+                    {% endfor %}
                 </ul>
-                {% endfor %}
                 {% endif %}
-
                 {% if mission.target_satellites.all %}
-                <h2>Цели - спутники:</h2>
-                {% for satellite in mission.target_satellites.all %}
-                <ul>
+                <p><strong>Спутники:</strong></p>
+                <ul style="list-style: square; padding-left: 18px;">
+                    {% for satellite in mission.target_satellites.all %}
                     <li>
-                        <a href="{% url 'satellite_detail' pk=satellite.pk %}">
+                        <a href="{% url 'satellite_detail' pk=satellite.pk %}" style="color: #fff; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='#fff'">
                             {{ satellite.name }}
                         </a>
                     </li>
+                    {% endfor %}
                 </ul>
-                {% endfor %}
                 {% endif %}
             </div>
         </div>
-    </div>
+        {% endif %}
+
+    </aside>
 </div>
 {% endblock %}

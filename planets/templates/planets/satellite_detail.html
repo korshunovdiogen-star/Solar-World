@@ -5,49 +5,72 @@
 <link rel="stylesheet" href="{% static 'css/details.css' %}">
 {% endblock %}
 
-{% block title %}
-{{ satellite.name }} | Sol System
-{% endblock %}
+{% block title %}{{ satellite.name }} | Sol System{% endblock %}
 
+{% block content %}
+<div class="detail-content">
+    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
+    <main class="main-content">
+        <article class="sci-fi-panel" style="padding: 35px; width: 100%; box-sizing: border-box;">
+            <div class="text-block">
+                <h1>{{ satellite.name }}</h1>
+                <div style="text-align: left;">
+                    <h2 class="panel-header" style="margin-top: 20px;">{{ first_line }}</h2>
+                    <p style="margin-top: 15px;">{{ remaining_text|safe|linebreaks }}</p>
+                </div>
+            </div>
+        </article>
+    </main>
 
-{% block  content %}
-<!-- Основной контент -->
-<main class="panel main-content">
-    <div class="text-block">
-        <h1>{{ satellite.name }} - спутник планеты {{ satellite.planet.name }}</h1>
-        <div style="text-align: left;">
-            <h2>{{ first_line }}</h2>
-            <p>{{ remaining_text|safe|linebreaks  }}</p>
+    <!-- ПРАВАЯ КОЛОНКА: Фото и данные (фиксированная ширина) -->
+    <aside class="side-column">
+
+        <!-- Блок изображения в рамке -->
+        <div class="image-container sci-fi-panel">
+            <img src="{{ satellite.image.url }}" alt="{{ satellite.name }}" />
         </div>
-    </div>
-</main>
 
-<!-- Инфобокс -->
-<div class="header-image">
-    <div class="image-wrapper">
-        <div class="image-container">
-            <img src="{{ satellite.image.url }}" alt="Картинка" />
-        </div>
-    </div>
-    <div class="column-container">
-        <div class="status-rows">
+        <!-- Характеристики спутника -->
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Характеристики</div>
             <div class="info-text">
-                <p>Тип: {{ satellite.get_satellite_type_display }}</p>
-                <p>Радиус: {{ satellite.radius }} км.</p>
+                <p>Тип: <span class="custom-style">{{ satellite.get_satellite_type_display }}</span></p>
+                <p>Радиус: <span class="custom-style">{{ satellite.radius }} км.</span></p>
             </div>
         </div>
-    </div>
-    <div class="column-container">
-        <div class="status-rows">
+
+        <!-- Хозяин (планета, вокруг которой вращается спутник) -->
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Хозяин</div>
             <div class="info-text">
-                <h3>Хозяин спутника {{ satellite.name }}</h3>
                 <p>
-                    <a href="{% url 'planet_detail' pk=satellite.planet.pk %}">
-                        {{ satellite.planet.name }}
-                    </a>
+                    <span class="custom-style">
+                        <a href="{% url 'planet_detail' pk=satellite.planet.pk %}" style="color: var(--neon-blue); text-decoration: none;">
+                            {{ satellite.planet.name }}
+                        </a>
+                    </span>
                 </p>
-</div>
+            </div>
         </div>
-    </div>
+
+        <!-- Миссии, связанные со спутником (если есть) -->
+        {% if satellite.mission_set.exists %}
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Исследовательские миссии</div>
+            <div class="info-text">
+                <ul style="list-style: square; padding-left: 18px;">
+                    {% for mission in satellite.mission_set.all %}
+                    <li style="margin-bottom: 5px;">
+                        <a href="{% url 'mission_detail' pk=mission.pk %}" style="color: #fff; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='#fff'">
+                            {{ mission.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+    </aside>
 </div>
 {% endblock %}

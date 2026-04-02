@@ -9,6 +9,8 @@ from solarWorld.serializers import (
     PlanetSerializer, SatelliteSerializer,
     MissionSerializer, SpaceAgencySerializer
 )
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 
 # Главная страница
@@ -78,13 +80,49 @@ def spaceAgency_detail(request, pk):
 
 
 
+def catalog_page(request):
+    return render(request, 'planets/catalog.html')
+
+def catalog_api(request):
+    q = request.GET.get('q', '').strip()
+    category = request.GET.get('category', 'all')
+    page = int(request.GET.get('page', 1)) # номер страницы
+    per_page = 12  # количество объектов на странице
+
+    results = []
+    # Собираем объекты в зависимости от категории
+    if category in ('all', 'planet'):
+        planets = Planet.objects.filter(name__icontains=q)
+        results += PlanetSerializer(planets, many=True).data
+    if category in ('all', 'satellite'):
+        satellites = Satellite.objects.filter(name__icontains=q)
+        results += SatelliteSerializer(satellites, many=True).data
+    if category in ('all', 'mission'):
+        missions = Mission.objects.filter(name__icontains=q)
+        results += MissionSerializer(missions, many=True).data
+    if category in ('all', 'agency'):
+        agencies = SpaceAgency.objects.filter(name__icontains=q)
+        results += SpaceAgencySerializer(agencies, many=True).data
+
+    paginator = Paginator(results, per_page)
+    page_obj = paginator.get_page(page)
+
+    return JsonResponse({
+        'results': page_obj.object_list,
+        'total_pages': paginator.num_pages,
+        'current_page': page,
+    })
+
+
+
+
+
+
 
 # API
 class PlanetViewSet(viewsets.ModelViewSet):
     queryset = Planet.objects.all()
     serializer_class = PlanetSerializer
-    # Для детальной страницы можно использовать тот же сериализатор,
-    # он уже включает все поля и спутники.
 
 class SatelliteViewSet(viewsets.ModelViewSet):
     queryset = Satellite.objects.all()

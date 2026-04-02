@@ -21,6 +21,8 @@ urlpatterns = [
     path('mission/<int:pk>/', views.mission_detail, name='mission_detail'),
     path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceAgency_detail'),
     path('api/', include(router.urls)),
+    path('catalog/', views.catalog_page, name='catalog'),
+    path('api/catalog/', views.catalog_api, name='catalog_api'),
 ]
 
 if settings.DEBUG:

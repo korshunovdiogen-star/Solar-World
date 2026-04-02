@@ -7,14 +7,16 @@ class PlanetSerializer(serializers.ModelSerializer):
     # Дополнительные поля для API
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
-    # Вложенный список спутников (опционально)
+    planet_type = serializers.SerializerMethodField()
     satellites = serializers.StringRelatedField(many=True, read_only=True)
+    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    detail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Planet
         fields = [
-            'id', 'name', 'radius', 'type', 'description',
-            'image', 'interesting_fact', 'text',
+            'id', 'name', 'radius', 'planet_type',
+            'image', 'text', 'model_type', 'detail_url',
             'first_line', 'remaining_text', 'satellites'
         ]
 
@@ -29,18 +31,30 @@ class PlanetSerializer(serializers.ModelSerializer):
             return "\n".join(lines[1:])
         return ""
 
+    def get_planet_type(self, obj):
+        return 'planet'
+
+    def get_model_type(self, obj):
+        return 'planet' 
+
+    def get_detail_url(self, obj):
+        from django.urls import reverse
+        return reverse('planet_detail', args=[obj.id]) 
+
+
 class SatelliteSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
-    # Можно добавить название планеты для удобства
-    planet_name = serializers.CharField(source='planet.name', read_only=True)
+    satellite_type = serializers.SerializerMethodField()
+    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    detail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Satellite
         fields = [
-            'id', 'name', 'radius', 'type', 'description',
-            'image', 'text', 'planet', 'planet_name',
-            'first_line', 'remaining_text'
+            'id', 'name', 'radius', 'satellite_type',
+            'image', 'text', 'planet', 'detail_url',
+            'first_line', 'remaining_text', 'model_type', 
         ]
 
     def get_first_line(self, obj):
@@ -54,17 +68,31 @@ class SatelliteSerializer(serializers.ModelSerializer):
             return "\n".join(lines[1:])
         return ""
 
+    def get_satellite_type(self, obj):
+        return 'satellite'
+
+    def get_model_type(self, obj):
+        return 'satellite' 
+
+    def get_detail_url(self, obj):
+        from django.urls import reverse
+        return reverse('satellite_detail', args=[obj.id]) 
+
+
 class MissionSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()  # дней со дня запуска
+    mission_type = serializers.SerializerMethodField()
+    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    detail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Mission
         fields = [
-            'id', 'name', 'agency', 'mission_type', 'launch_date',
-            'status', 'target', 'description', 'text',
-            'first_line', 'remaining_text', 'duration'
+            'id', 'name', 'mission_type', 'launch_date', 'image', 'detail_url',
+            'status', 'target_planets', 'target_satellites', 'text',
+            'first_line', 'remaining_text', 'duration', 'model_type',
         ]
 
     def get_first_line(self, obj):
@@ -83,16 +111,29 @@ class MissionSerializer(serializers.ModelSerializer):
             return (timezone.now().date() - obj.launch_date).days
         return None
 
+    def get_mission_type(self, obj):
+        return 'mission'
+
+    def get_model_type(self, obj):
+        return 'mission' 
+
+    def get_detail_url(self, obj):
+        from django.urls import reverse
+        return reverse('mission_detail', args=[obj.id]) 
+
+
 class SpaceAgencySerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
     days_passed = serializers.SerializerMethodField()
+    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    detail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SpaceAgency
         fields = [
-            'id', 'name', 'country', 'established_date', 'description',
-            'text', 'first_line', 'remaining_text', 'days_passed'
+            'id', 'name', 'country', 'established_date', 'image', 'detail_url',
+            'text', 'first_line', 'remaining_text', 'days_passed', 'model_type',
         ]
 
     def get_first_line(self, obj):
@@ -111,44 +152,12 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
             return (date.today() - obj.established_date).days
         return None
 
+    def get_model_type(self, obj):
+        return 'spaceAgency' 
+
+    def get_detail_url(self, obj):
+        from django.urls import reverse
+        return reverse('spaceAgency_detail', args=[obj.id]) 
 
 
 
-
-
-
-
-# class SpaceAgencySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SpaceAgency
-#         fields = '__all__'
-
-# class SatelliteSerializer(serializers.ModelSerializer):
-#     # Добавляем человекочитаемое название типа (get_..._display)
-#     satellite_type_display = serializers.CharField(source='get_satellite_type_display', read_only=True)
-
-#     class Meta:
-#         model = Satellite
-#         fields = '__all__'
-
-# class PlanetSerializer(serializers.ModelSerializer):
-#     planet_type_display = serializers.CharField(source='get_planet_type_display', read_only=True)
-#     # Позволяет видеть список спутников внутри JSON-а планеты
-#     satellites = SatelliteSerializer(many=True, read_only=True)
-
-#     class Meta:
-#         model = Planet
-#         fields = [
-#             'id', 'name', 'orger', 'planet_type', 'planet_type_display', 
-#             'radius', 'text', 'image', 'satellites'
-#         ]
-
-# class MissionSerializer(serializers.ModelSerializer):
-#     mission_type_display = serializers.CharField(source='get_mission_type_display', read_only=True)
-#     status_display = serializers.CharField(source='get_status_display', read_only=True)
-    
-#     # Для ManyToMany полей можно выводить только ID (по умолчанию) 
-#     # или сделать их вложенными, если нужно подробнее
-#     class Meta:
-#         model = Mission
-#         fields = '__all__'
