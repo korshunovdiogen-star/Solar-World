@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block title %}Каталог | Solar World{% endblock %}
 
 {% block css_additional %}
@@ -16,7 +15,7 @@
         <p>Выберите категорию и начните исследование</p>
     </div>
 
-    <!-- Панель фильтров -->
+    <!-- Панель фильтрации: поиск по названию + выбор категории -->
     <div class="filter-panel">
         <input type="text" id="search-input" placeholder="Поиск по названию...">
         <select id="category-select">
@@ -28,22 +27,158 @@
         </select>
     </div>
 
-    <!-- Контейнер результатов -->
+    <!-- Панель сортировки: разные наборы кнопок в зависимости от категории -->
+    <div class="sort-panel">
+        <span>Сортировать:</span>
+        <!-- Для планет и спутников -->
+        <div id="sort-buttons-planet-satellite" class="sort-buttons-group" style="display: none;">
+            <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
+            <button class="sort-btn" data-sort="radius">Радиус</button>
+            <button class="sort-btn" data-sort="type">Тип</button>
+        </div>
+        <!-- Для миссий -->
+        <div id="sort-buttons-mission" class="sort-buttons-group" style="display: none;">
+            <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
+            <button class="sort-btn" data-sort="mission_type">Тип миссии</button>
+            <button class="sort-btn" data-sort="agency">Агентство</button>
+        </div>
+        <!-- Для агентств -->
+        <div id="sort-buttons-agency" class="sort-buttons-group" style="display: none;">
+            <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
+        </div>
+        <!-- Для режима "все категории" -->
+        <div id="sort-buttons-all" class="sort-buttons-group" style="display: none;">
+            <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
+        </div>
+    </div>
+
+    <!-- Контейнер, куда будут подгружаться карточки объектов -->
     <div id="results-container" class="results-grid"></div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Элементы управления фильтрацией
         const searchInput = document.getElementById('search-input');
         const categorySelect = document.getElementById('category-select');
         const resultsContainer = document.getElementById('results-container');
+
+        // Группы кнопок сортировки
+        const planetSatelliteGroup = document.getElementById('sort-buttons-planet-satellite');
+        const missionGroup = document.getElementById('sort-buttons-mission');
+        const agencyGroup = document.getElementById('sort-buttons-agency');
+        const allGroup = document.getElementById('sort-buttons-all');
+
+        // Состояние пагинации и сортировки
         let currentPage = 1;
         let totalPages = 1;
+        let currentSort = 'name';      // текущее поле сортировки
+        let sortOrder = 'asc';          // направление: 'asc' (возрастание) или 'desc' (убывание)
 
+        /**
+         * Возвращает строку параметра ordering для API в зависимости от текущих currentSort и sortOrder.
+         */
+        function getOrdering() {
+            if (currentSort === 'name') {
+                return sortOrder === 'asc' ? 'name_asc' : 'name_desc';
+            } else if (currentSort === 'radius') {
+                return sortOrder === 'asc' ? 'radius_asc' : 'radius_desc';
+            } else if (currentSort === 'type') {
+                return sortOrder === 'asc' ? 'type_asc' : 'type_desc';
+            } else if (currentSort === 'mission_type') {
+                return sortOrder === 'asc' ? 'mission_type_asc' : 'mission_type_desc';
+            } else if (currentSort === 'agency') {
+                return sortOrder === 'asc' ? 'agency_asc' : 'agency_desc';
+            }
+            return 'name_asc'; // значение по умолчанию
+        }
+
+        /**
+         * Обновляет внешний вид кнопок в активной группе: подсвечивает активную сортировку,
+         * а для кнопки "Название" показывает стрелку направления.
+         */
+        function updateActiveButtons() {
+            const visibleGroup = document.querySelector('.sort-buttons-group[style*="display: flex"]');
+            if (!visibleGroup) return;
+
+            const btns = visibleGroup.querySelectorAll('.sort-btn');
+            btns.forEach(btn => {
+                const sortField = btn.getAttribute('data-sort');
+                if (sortField === currentSort) {
+                    btn.classList.add('active');
+                    if (sortField === 'name') {
+                        const dirSpan = btn.querySelector('.sort-direction');
+                        if (dirSpan) dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    if (sortField === 'name') {
+                        const dirSpan = btn.querySelector('.sort-direction');
+                        if (dirSpan) dirSpan.textContent = '↑';
+                    }
+                }
+            });
+        }
+
+        /**
+         * Показывает только ту группу кнопок сортировки, которая соответствует выбранной категории,
+         * и скрывает остальные.
+         */
+        function showSortGroup(category) {
+            planetSatelliteGroup.style.display = 'none';
+            missionGroup.style.display = 'none';
+            agencyGroup.style.display = 'none';
+            allGroup.style.display = 'none';
+
+            if (category === 'planet' || category === 'satellite') {
+                planetSatelliteGroup.style.display = 'flex';
+            } else if (category === 'mission') {
+                missionGroup.style.display = 'flex';
+            } else if (category === 'agency') {
+                agencyGroup.style.display = 'flex';
+            } else {
+                allGroup.style.display = 'flex';
+            }
+        }
+
+        /**
+         * Сбрасывает сортировку к значениям по умолчанию при смене категории.
+         */
+        function resetSortingForCategory(category) {
+            // Вне зависимости от категории начинаем с сортировки по названию по возрастанию
+            currentSort = 'name';
+            sortOrder = 'asc';
+            updateActiveButtons();
+        }
+
+        // Обработчик клика по кнопкам сортировки (делегирование)
+        document.querySelector('.sort-panel').addEventListener('click', (e) => {
+            const btn = e.target.closest('.sort-btn');
+            if (!btn) return;
+
+            const sortField = btn.getAttribute('data-sort');
+            if (sortField === currentSort) {
+                // Если нажали на ту же кнопку — переключаем направление
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Иначе меняем поле и ставим возрастание
+                currentSort = sortField;
+                sortOrder = 'asc';
+            }
+            updateActiveButtons();
+            currentPage = 1;          // при изменении сортировки возвращаемся на первую страницу
+            fetchCatalog();           // перезагружаем результаты
+        });
+
+        /**
+         * Запрашивает данные с сервера через API и обновляет контейнер результатов.
+         * Учитывает поисковый запрос, категорию, пагинацию и сортировку.
+         */
         function fetchCatalog() {
             const q = searchInput.value.trim();
             const category = categorySelect.value;
-            const url = `/api/catalog/?q=${encodeURIComponent(q)}&category=${category}&page=${currentPage}`;
+            const ordering = getOrdering();
+            const url = `/api/catalog/?q=${encodeURIComponent(q)}&category=${category}&page=${currentPage}&ordering=${ordering}`;
 
             fetch(url)
                 .then(response => response.json())
@@ -58,19 +193,23 @@
                 });
         }
 
+        /**
+         * Отрисовывает карточки объектов, полученных от API.
+         * Каждая карточка оборачивается в ссылку, ведущую на детальную страницу объекта.
+         */
         function renderResults(items) {
             resultsContainer.innerHTML = '';
             if (items.length === 0) {
                 resultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
                 return;
             }
-
             items.forEach(item => {
+                // Формируем URL детальной страницы в зависимости от типа объекта
                 let detailUrl = '';
                 if (item.model_type === 'planet') detailUrl = `/planet/${item.id}/`;
                 else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
                 else if (item.model_type === 'mission') detailUrl = `/mission/${item.id}/`;
-                else if (item.model_type === 'agency') detailUrl = `/spaceAgency/${item.id}/`;
+                else if (item.model_type === 'spaceAgency') detailUrl = `/spaceAgency/${item.id}/`;
 
                 const imageUrl = item.image ? item.image : '/static/images/default.jpg';
 
@@ -89,12 +228,14 @@
                         <img src="${imageUrl}" alt="${item.name}">
                     </div>
                 `;
-
                 link.appendChild(card);
                 resultsContainer.appendChild(link);
             });
         }
 
+        /**
+         * Создаёт или обновляет панель пагинации с кнопками страниц.
+         */
         function renderPagination() {
             let paginationDiv = document.getElementById('pagination-controls');
             if (!paginationDiv) {
@@ -105,7 +246,6 @@
             }
             paginationDiv.innerHTML = '';
 
-            // Кнопка "Предыдущая"
             if (currentPage > 1) {
                 const prevBtn = document.createElement('button');
                 prevBtn.textContent = '← Назад';
@@ -116,7 +256,6 @@
                 paginationDiv.appendChild(prevBtn);
             }
 
-            // Номера страниц (можно ограничить количество, например, 5)
             const startPage = Math.max(1, currentPage - 2);
             const endPage = Math.min(totalPages, currentPage + 2);
             for (let i = startPage; i <= endPage; i++) {
@@ -133,7 +272,6 @@
                 paginationDiv.appendChild(pageBtn);
             }
 
-            // Кнопка "Следующая"
             if (currentPage < totalPages) {
                 const nextBtn = document.createElement('button');
                 nextBtn.textContent = 'Вперёд →';
@@ -145,17 +283,24 @@
             }
         }
 
-        // Слушатели событий
-        searchInput.addEventListener('input', () => {
-            currentPage = 1;
-            fetchCatalog();
-        });
+        // Слушатель изменения категории: переключаем набор кнопок и сбрасываем сортировку
         categorySelect.addEventListener('change', () => {
+            const newCategory = categorySelect.value;
+            showSortGroup(newCategory);
+            resetSortingForCategory(newCategory);
             currentPage = 1;
             fetchCatalog();
         });
 
-        // Начальная загрузка
+        // Слушатель ввода текста в поле поиска
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            fetchCatalog();
+        });
+
+        // Инициализация: показать правильные кнопки сортировки и загрузить первую страницу
+        showSortGroup(categorySelect.value);
+        resetSortingForCategory(categorySelect.value);
         fetchCatalog();
     });
 </script>

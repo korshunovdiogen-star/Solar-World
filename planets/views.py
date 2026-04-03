@@ -86,23 +86,81 @@ def catalog_page(request):
 def catalog_api(request):
     q = request.GET.get('q', '').strip()
     category = request.GET.get('category', 'all')
-    page = int(request.GET.get('page', 1)) # номер страницы
-    per_page = 12  # количество объектов на странице
+    ordering = request.GET.get('ordering', 'name_asc')
+    page = int(request.GET.get('page', 1))
+    per_page = 12
 
     results = []
-    # Собираем объекты в зависимости от категории
+
+    # Функция для применения сортировки к QuerySet
+    def apply_ordering(queryset, model_type):
+        if model_type == 'planet':
+            if ordering == 'name_asc':
+                return queryset.order_by('name')
+            elif ordering == 'name_desc':
+                return queryset.order_by('-name')
+            elif ordering == 'radius_asc':
+                return queryset.order_by('radius')
+            elif ordering == 'radius_desc':
+                return queryset.order_by('-radius')
+            elif ordering == 'type_asc':
+                return queryset.order_by('planet_type')
+            else:
+                return queryset
+        elif model_type == 'satellite':
+            if ordering == 'name_asc':
+                return queryset.order_by('name')
+            elif ordering == 'name_desc':
+                return queryset.order_by('-name')
+            elif ordering == 'radius_asc':
+                return queryset.order_by('radius')
+            elif ordering == 'radius_desc':
+                return queryset.order_by('-radius')
+            elif ordering == 'type_asc':
+                return queryset.order_by('satellite_type')
+            else:
+                return queryset
+        elif model_type == 'mission':
+            if ordering == 'name_asc':
+                return queryset.order_by('name')
+            elif ordering == 'name_desc':
+                return queryset.order_by('-name')
+            elif ordering == 'mission_type_asc':
+                return queryset.order_by('mission_type')
+            elif ordering == 'agency_asc':
+                return queryset.order_by('space_agency__name')  # предполагается ForeignKey
+            else:
+                return queryset
+        elif model_type == 'agency':
+            if ordering == 'name_asc':
+                return queryset.order_by('name')
+            elif ordering == 'name_desc':
+                return queryset.order_by('-name')
+            else:
+                return queryset
+        return queryset
+
     if category in ('all', 'planet'):
         planets = Planet.objects.filter(name__icontains=q)
+        planets = apply_ordering(planets, 'planet')
         results += PlanetSerializer(planets, many=True).data
     if category in ('all', 'satellite'):
         satellites = Satellite.objects.filter(name__icontains=q)
+        satellites = apply_ordering(satellites, 'satellite')
         results += SatelliteSerializer(satellites, many=True).data
     if category in ('all', 'mission'):
         missions = Mission.objects.filter(name__icontains=q)
+        missions = apply_ordering(missions, 'mission')
         results += MissionSerializer(missions, many=True).data
     if category in ('all', 'agency'):
         agencies = SpaceAgency.objects.filter(name__icontains=q)
+        agencies = apply_ordering(agencies, 'agency')
         results += SpaceAgencySerializer(agencies, many=True).data
+
+    # Если выбрана одна категория и не all, то сортировка уже применена выше.
+    # Для 'all' сортировка по имени (можно добавить общую сортировку после объединения, но это сложнее).
+    if category == 'all' and ordering in ('name_asc', 'name_desc'):
+        results.sort(key=lambda x: x['name'], reverse=(ordering == 'name_desc'))
 
     paginator = Paginator(results, per_page)
     page_obj = paginator.get_page(page)
@@ -110,9 +168,8 @@ def catalog_api(request):
     return JsonResponse({
         'results': page_obj.object_list,
         'total_pages': paginator.num_pages,
-        'current_page': page,
+        'current_page': page_obj.number,
     })
-
 
 
 
