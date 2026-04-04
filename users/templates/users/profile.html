@@ -1,0 +1,76 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мой профиль | Solar World{% endblock %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1 class="profile-heading">Профиль пользователя {{ user.username }}</h1>
+
+    
+    <div class="profile-container">
+        <!-- Аккордеон: Избранное -->
+        <div class="accordion">
+            <div class="accordion-header">
+                <h2>Избранное <span class="count">{{ favorites|length }}</span></h2>
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-content">
+                {% if favorites %}
+                <ul class="scrollable-list">
+                    {% for fav in favorites %}
+                    <li>
+                        <a href="{% url fav.content_type.model|add:'_detail' pk=fav.object_id %}">
+                            {{ fav.content_object.name }}
+                        </a>
+                        <a href="{% url 'remove_favorite' content_type=fav.content_type.model object_id=fav.object_id %}" class="remove-fav">🗑️</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>У вас пока нет избранного.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Аккордеон: История просмотров -->
+        <div class="accordion">
+            <div class="accordion-header">
+                <h2>История просмотров <span class="count">{{ history|length }}</span></h2>
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-content">
+                {% if history %}
+                <ul class="scrollable-list">
+                    {% for item in history %}
+                    <li>
+                        <a href="{% url item.content_type.model|add:'_detail' pk=item.object_id %}">
+                            {{ item.content_object.name }}
+                        </a>
+                        <span class="date">{{ item.viewed_at|date:"d.m.Y H:i" }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>Вы ещё не просматривали статьи.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordions = document.querySelectorAll('.accordion');
+        accordions.forEach(accordion => {
+            const header = accordion.querySelector('.accordion-header');
+            header.addEventListener('click', () => {
+                accordion.classList.toggle('active');
+            });
+        });
+    });
+</script>
+{% endblock %}

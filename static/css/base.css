@@ -53,13 +53,38 @@ html {
    3. НАВИГАЦИЯ (Top Menu)
    ========================================================================== */
 .top-nav {
-    grid-column: 1 / -1;
     display: flex;
+    justify-content: space-between; /* Размещает .nav-links слева, .nav-profile справа */
+    align-items: center;
     gap: 15px;
     padding: 20px 0;
     border-bottom: 3px solid var(--neon-blue-faded);
     margin-bottom: 10px;
 }
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.nav-profile {
+    display: flex;
+    gap: 10px;
+}
+
+/* Стиль для иконки профиля — можно добавить рамку, отступы */
+.profile-icon {
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 30px;
+    padding: 6px 16px;
+    transition: all 0.3s;
+}
+
+    .profile-icon:hover {
+        background: rgba(0, 212, 255, 0.3);
+        transform: translateY(-2px);
+    }
 
 .nav-item {
     position: relative;
@@ -67,7 +92,6 @@ html {
     color: var(--neon-blue);
     font-family: var(--font-mono);
     font-size: 1.1rem;
-    text-transform: uppercase;
     padding: 8px 20px;
     border: 1px solid rgba(0, 212, 255, 0.3);
     background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, transparent 50%, rgba(0, 212, 255, 0.1) 100%);
@@ -112,9 +136,9 @@ html {
 /* Контейнер для позиционирования под меню */
 .back-container {
     grid-column: 1 / -1;
-    display: flex;
     justify-content: flex-start; /* Кнопка будет слева */
     margin-top: -10px; /* Прижимаем чуть ближе к линии меню */
+    text-align: left;
 }
 
 /* Специфические стили для кнопки назад */
@@ -123,6 +147,9 @@ html {
     padding: 5px 15px;
     border-color: rgba(0, 212, 255, 0.2);
     opacity: 0.8;
+    display: inline-block;
+    width: auto;
+    white-space: nowrap;
 }
 
     .back-button:hover {

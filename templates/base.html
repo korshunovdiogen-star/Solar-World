@@ -2,22 +2,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="icon" href="/static/images/favicon.png" type="image/x-icon" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %}</title>
     <!-- подключение css -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button_favorite.css' %}">
     {% block css_additional %} {% endblock %}
 </head>
 <body>
     <!-- Меню идет первым и занимает верхнюю строку -->
     <nav class="top-nav">
-        <a href="{% url 'main' %}" class="nav-item sound-hover">Главная</a>
-        <a href="{% url 'planet_list' %}" class="nav-item sound-hover">Карта</a>
-        <a href="{% url 'catalog' %}" class="nav-item sound-hover">Каталог</a>
-        <a href="#" class="nav-item sound-hover">Тесты</a>
-        <!-- Можно добавлять сколько угодно кнопок -->
+        <div class="nav-links">
+
+            <a href="{% url 'main' %}" class="nav-item sound-hover"><i class="fa-brands fa-empire"></i> ГЛАВНАЯ</a>
+            <a href="{% url 'planet_list' %}" class="nav-item sound-hover"><i class="fas fa-map"></i> КАРТА</a>
+            <a href="{% url 'catalog' %}" class="nav-item sound-hover"><i class="fas fa-search"></i> ПОИСК</a>
+            <a href="#" class="nav-item sound-hover"><i class="fa-solid fa-check-double"></i> ТЕСТЫ</a>
+        </div>
+        <div class="nav-profile">
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item sound-hover profile-icon">
+                <i class="fas fa-user-astronaut"></i> {{ user.username|truncatechars:10 }}
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="nav-item sound-hover">
+                <i class="fas fa-sign-in-alt"></i> Вход
+            </a>
+            {% endif %}
+        </div>
     </nav>
 
     <!-- Кнопка "Назад" под меню -->
@@ -34,6 +49,9 @@
         window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
     </script>
     <script src="{% static 'js/button.js' %}"></script>
+
+
+    <script src="{% static 'js/button_favorite.js' %}"></script>
 
 
     {% block content %}
