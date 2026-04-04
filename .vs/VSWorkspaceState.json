@@ -4,12 +4,13 @@
     "\\planets",
     "\\planets\\templates",
     "\\planets\\templates\\planets",
-    "\\solarWorld",
     "\\static",
-    "\\static\\css",
-    "\\static\\js",
-    "\\templates"
+    "\\templates",
+    "\\templates\\includes",
+    "\\users",
+    "\\users\\templates",
+    "\\users\\templates\\users"
   ],
-  "SelectedNode": "\\planets\\views.py",
+  "SelectedNode": "\\users\\views.py",
   "PreviewInSolutionExplorer": false
 }

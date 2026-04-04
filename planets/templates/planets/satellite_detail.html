@@ -9,11 +9,14 @@
 
 {% block content %}
 <div class="detail-content">
+    {% include 'includes/button_favorite.html' with content_type='satellite' object_id=satellite.id is_favorite=is_favorite %}
     <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
     <main class="main-content">
-        <article class="sci-fi-panel" style="padding: 35px; width: 100%; box-sizing: border-box;">
+        <article class="sci-fi-panel" style="position: relative;">
             <div class="text-block">
-                <h1>{{ satellite.name }}</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>{{ satellite.name }}</h1>
+                </div>
                 <div style="text-align: left;">
                     <h2 class="panel-header" style="margin-top: 20px;">{{ first_line }}</h2>
                     <p style="margin-top: 15px;">{{ remaining_text|safe|linebreaks }}</p>

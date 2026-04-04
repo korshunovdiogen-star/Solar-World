@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from planets.views import PlanetViewSet, SatelliteViewSet, MissionViewSet, SpaceAgencyViewSet
 from django.contrib import admin
 from planets import views
+from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -19,10 +20,14 @@ urlpatterns = [
     path('planet/<int:pk>/', views.planet_detail, name='planet_detail'),
     path('satellite/<int:pk>/', views.satellite_detail, name='satellite_detail'),
     path('mission/<int:pk>/', views.mission_detail, name='mission_detail'),
-    path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceAgency_detail'),
+    path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceagency_detail'),
     path('api/', include(router.urls)),
     path('catalog/', views.catalog_page, name='catalog'),
     path('api/catalog/', views.catalog_api, name='catalog_api'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('register/', user_views.register, name='register'),
+    path('users/', include('users.urls')),
+    path('profile/', user_views.profile, name='profile'),
 ]
 
 if settings.DEBUG:

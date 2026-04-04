@@ -11,6 +11,8 @@ from solarWorld.serializers import (
 )
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.contrib.contenttypes.models import ContentType
+from users.models import History, Favorite
 
 
 # Главная страница
@@ -29,11 +31,25 @@ def planet_detail(request, pk):
     lines = planet.text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
     satellites = planet.satellites.all().order_by('satellite_type', 'name') 
+    is_favorite = False
+
+    if request.user.is_authenticated:
+        content_type = ContentType.objects.get_for_model(Planet)
+        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=planet.id).exists()
+        History.objects.update_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=planet.id,
+            defaults={'viewed_at': timezone.now()}
+        )
+
     return render(request, 'planets/planet_detail.html', {
         'planet': planet, #сам объект
         'satellites': satellites,# список объектов спутников 
         'first_line': first_line, # Первая строка описания (подзаголовок)
         'remaining_text': remaining_text, # текст описания без первой строки
+        'is_favorite': is_favorite,
+        'content_type': 'planet', # используется в кнопке избранного
     })
 
 # Страница конкретного спутника
@@ -42,10 +58,24 @@ def satellite_detail(request, pk):
     first_line = satellite.text.splitlines()[0] if satellite.text else ''
     lines = satellite.text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
+    is_favorite = False
+
+    if request.user.is_authenticated:
+        content_type = ContentType.objects.get_for_model(Satellite)
+        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=satellite.id).exists()
+        History.objects.update_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=satellite.id,
+            defaults={'viewed_at': timezone.now()}
+        )
+
     return render(request, 'planets/satellite_detail.html', {
         'satellite': satellite,
         'first_line': first_line, # Первая строка описания (подзаголовок)
         'remaining_text': remaining_text, # текст описания без первой строки
+        'is_favorite': is_favorite,
+        'content_type': 'satellite', # используется в кнопке избранного
         })
 
 
@@ -55,12 +85,26 @@ def mission_detail(request, pk):
     lines = mission.text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
     duration = (timezone.now().date() - mission.launch_date).days # кол-во дней со здня запуска
+    is_favorite = False
+
+    if request.user.is_authenticated:
+        content_type = ContentType.objects.get_for_model(Mission)
+        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=mission.id).exists()
+        History.objects.update_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=mission.id,
+            defaults={'viewed_at': timezone.now()}
+        )
+
 
     return render(request, 'planets/mission_detail.html', {
         'mission': mission, #сам объект 
         'first_line': first_line, # Первая строка описания (подзаголовок)
         'remaining_text': remaining_text, # текст описания без первой строки
         'duration': duration,
+        'is_favorite': is_favorite,
+        'content_type': 'mission', # используется в кнопке избранного
     })
 
 def spaceAgency_detail(request, pk):
@@ -69,13 +113,30 @@ def spaceAgency_detail(request, pk):
     lines = spaceAgency.text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
     days_passed=date.today()-spaceAgency.established_date
+    is_favorite = False
+
+    if request.user.is_authenticated:
+        content_type = ContentType.objects.get_for_model(SpaceAgency)
+        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=spaceAgency.id).exists()
+        History.objects.update_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=spaceAgency.id,
+            defaults={'viewed_at': timezone.now()}
+        )
 
     return render(request, 'planets/spaceAgency_detail.html', {
         'spaceAgency': spaceAgency, #сам объект 
         'first_line': first_line, # Первая строка описания (подзаголовок)
         'remaining_text': remaining_text, # текст описания без первой строки
-        'days_passed': days_passed.days #сколько дней прошло со дня основания
-    })
+        'days_passed': days_passed.days, #сколько дней прошло со дня основания
+        'is_favorite': is_favorite,
+        'content_type': 'spaceAgency', # используется в кнопке избранного
+        })
+
+
+
+
 
 
 
@@ -141,24 +202,35 @@ def catalog_api(request):
         return queryset
 
     if category in ('all', 'planet'):
-        planets = Planet.objects.filter(name__icontains=q)
-        planets = apply_ordering(planets, 'planet')
-        results += PlanetSerializer(planets, many=True).data
+        try:
+            planets = Planet.objects.filter(name__icontains=q)
+            planets = apply_ordering(planets, 'planet')
+            results += PlanetSerializer(planets, many=True).data
+        except Exception as e:
+            print(f"Ошибка в планетах: {e}")
     if category in ('all', 'satellite'):
-        satellites = Satellite.objects.filter(name__icontains=q)
-        satellites = apply_ordering(satellites, 'satellite')
-        results += SatelliteSerializer(satellites, many=True).data
+        try:
+            satellites = Satellite.objects.filter(name__icontains=q)
+            satellites = apply_ordering(satellites, 'satellite')
+            results += SatelliteSerializer(satellites, many=True).data
+        except Exception as e:
+            print(f"Ошибка в спутниках: {e}")
     if category in ('all', 'mission'):
-        missions = Mission.objects.filter(name__icontains=q)
-        missions = apply_ordering(missions, 'mission')
-        results += MissionSerializer(missions, many=True).data
+        try:
+            missions = Mission.objects.filter(name__icontains=q)
+            missions = apply_ordering(missions, 'mission')
+            results += MissionSerializer(missions, many=True).data
+        except Exception as e:
+            print(f"Ошибка в планетах: {e}")
     if category in ('all', 'agency'):
-        agencies = SpaceAgency.objects.filter(name__icontains=q)
-        agencies = apply_ordering(agencies, 'agency')
-        results += SpaceAgencySerializer(agencies, many=True).data
+        try:
+            agencies = SpaceAgency.objects.filter(name__icontains=q)
+            agencies = apply_ordering(agencies, 'agency')
+            results += SpaceAgencySerializer(agencies, many=True).data
+        except Exception as e:
+            print(f"Ошибка в планетах: {e}")
 
-    # Если выбрана одна категория и не all, то сортировка уже применена выше.
-    # Для 'all' сортировка по имени (можно добавить общую сортировку после объединения, но это сложнее).
+    
     if category == 'all' and ordering in ('name_asc', 'name_desc'):
         results.sort(key=lambda x: x['name'], reverse=(ordering == 'name_desc'))
 

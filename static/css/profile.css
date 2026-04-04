@@ -1,0 +1,156 @@
+/* Сброс вертикального выравнивания для страницы профиля */
+body {
+    display: block !important;
+    justify-content: normal !important;
+    align-items: normal !important;
+    min-height: auto !important;
+}
+
+/* Контейнер профиля — две колонки */
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    align-items: start;
+}
+
+/* Адаптив: на узких экранах одна колонка */
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Аккордеон (остаётся без изменений) */
+.accordion {
+    width: 100%;
+    margin-bottom: 0;
+    border: 1px solid var(--neon-blue-faded);
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.2);
+    transition: background 0.2s ease;
+}
+
+    .accordion-header:hover {
+        background: rgba(0, 212, 255, 0.1);
+    }
+
+    .accordion-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-family: var(--font-mono);
+        color: var(--neon-blue);
+    }
+
+    .accordion-header .count {
+        font-size: 0.9rem;
+        background: rgba(0, 212, 255, 0.3);
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-left: 10px;
+    }
+
+.accordion-icon {
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+    color: var(--neon-blue);
+}
+
+.accordion.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    padding: 0 20px;
+}
+
+.accordion.active .accordion-content {
+    max-height: 350px;
+    padding: 10px 20px 20px;
+    overflow-y: auto;
+}
+
+.scrollable-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin: 0;
+    list-style: none;
+}
+
+    .scrollable-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .scrollable-list a {
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+        .scrollable-list a:hover {
+            color: var(--neon-blue);
+        }
+
+.remove-fav {
+    color: #ff7777;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.date {
+    font-size: 0.7rem;
+    color: #aaa;
+    font-family: monospace;
+}
+
+/* Скроллбары */
+.scrollable-list::-webkit-scrollbar,
+.accordion-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.scrollable-list::-webkit-scrollbar-track,
+.accordion-content::-webkit-scrollbar-track {
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 5px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb,
+.accordion-content::-webkit-scrollbar-thumb {
+    background: var(--neon-blue);
+    border-radius: 5px;
+}
+
+.profile-heading {
+    text-align: center;
+    text-transform: none;
+}
+
+.back-container {
+    margin-top: 20px;
+}

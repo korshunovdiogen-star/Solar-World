@@ -4,7 +4,6 @@ from django.utils import timezone
 from datetime import date
 
 class PlanetSerializer(serializers.ModelSerializer):
-    # Дополнительные поля для API
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
     planet_type = serializers.SerializerMethodField()
@@ -153,11 +152,11 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
         return None
 
     def get_model_type(self, obj):
-        return 'spaceAgency' 
+        return 'spaceagency' 
 
     def get_detail_url(self, obj):
         from django.urls import reverse
-        return reverse('spaceAgency_detail', args=[obj.id]) 
+        return reverse('spaceagency_detail', args=[obj.id]) 
 
 
 
