@@ -6,7 +6,6 @@
     <link rel="icon" href="/static/images/favicon.png" type="image/x-icon" />
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <meta charset="UTF-8">
-    <!-- Подключение шрифта Goblin One из Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <title>Solar World</title>
 </head>
@@ -23,12 +22,9 @@
                     <p class="hero-subtitle line-2">не покидая Земли</p>
                 </div>
                 <div class="hero-buttons-column">
-                    <!-- Добавлен класс primary для пульсации и заливки -->
                     <a href="{% url 'planet_list' %}" class="space-btn primary sound-hover">
                         <span>Открыть карту</span>
                     </a>
-
-                    <!-- Добавлен класс secondary для контурного стиля -->
                     <a href="{% url 'catalog' %}" class="space-btn secondary sound-hover">
                         <span>База знаний</span>
                     </a>
@@ -39,7 +35,6 @@
 
     <!-- добавление звука принаведении на кнопку -->
     <script>
-        // Передаём путь к звуку в глобальную переменную
         window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
     </script>
     <script src="{% static 'js/button.js' %}"></script>

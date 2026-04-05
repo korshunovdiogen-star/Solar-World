@@ -27,57 +27,48 @@
         </select>
     </div>
 
-    <!-- Панель сортировки: разные наборы кнопок в зависимости от категории -->
+    <!-- Панель сортировки: разные наборы кнопок для разных категорий -->
     <div class="sort-panel">
         <span>Сортировать:</span>
-        <!-- Для планет и спутников -->
         <div id="sort-buttons-planet-satellite" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
             <button class="sort-btn" data-sort="radius">Радиус <span class="sort-direction">↑</span></button>
             <button class="sort-btn" data-sort="type">Тип</button>
         </div>
-        <!-- Для миссий -->
         <div id="sort-buttons-mission" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
             <button class="sort-btn" data-sort="mission_type">Тип миссии</button>
             <button class="sort-btn" data-sort="agency">Агентство</button>
         </div>
-        <!-- Для агентств -->
         <div id="sort-buttons-agency" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
         </div>
-        <!-- Для режима "все категории" -->
         <div id="sort-buttons-all" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
         </div>
     </div>
 
-    <!-- Контейнер, куда будут подгружаться карточки объектов -->
+    <!-- Результаты будут подгружены сюда -->
     <div id="results-container" class="results-grid"></div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Элементы управления фильтрацией
         const searchInput = document.getElementById('search-input');
         const categorySelect = document.getElementById('category-select');
         const resultsContainer = document.getElementById('results-container');
 
-        // Группы кнопок сортировки
         const planetSatelliteGroup = document.getElementById('sort-buttons-planet-satellite');
         const missionGroup = document.getElementById('sort-buttons-mission');
         const agencyGroup = document.getElementById('sort-buttons-agency');
         const allGroup = document.getElementById('sort-buttons-all');
 
-        // Состояние пагинации и сортировки
         let currentPage = 1;
         let totalPages = 1;
-        let currentSort = 'name';      // текущее поле сортировки
-        let sortOrder = 'asc';          // направление: 'asc' (возрастание) или 'desc' (убывание)
+        let currentSort = 'name';
+        let sortOrder = 'asc';
 
-        /**
-         * Возвращает строку параметра ordering для API в зависимости от текущих currentSort и sortOrder.
-         */
+        // Формирует параметр ordering для API: "поле_направление"
         function getOrdering() {
             if (currentSort === 'name') {
                 return sortOrder === 'asc' ? 'name_asc' : 'name_desc';
@@ -90,23 +81,19 @@
             } else if (currentSort === 'agency') {
                 return sortOrder === 'asc' ? 'agency_asc' : 'agency_desc';
             }
-            return 'name_asc'; // значение по умолчанию
+            return 'name_asc';
         }
 
-        /**
-         * Обновляет внешний вид кнопок в активной группе: подсвечивает активную сортировку,
-         * а для кнопки "Название" показывает стрелку направления.
-         */
+        // Обновляет внешний вид кнопок сортировки: активная кнопка, стрелка направления
         function updateActiveButtons() {
             const visibleGroup = document.querySelector('.sort-buttons-group[style*="display: flex"]');
             if (!visibleGroup) return;
-
             const btns = visibleGroup.querySelectorAll('.sort-btn');
             btns.forEach(btn => {
                 const sortField = btn.getAttribute('data-sort');
                 if (sortField === currentSort) {
                     btn.classList.add('active');
-                    if (sortField === 'name' || sortField === 'radius')  {
+                    if (sortField === 'name' || sortField === 'radius') {
                         const dirSpan = btn.querySelector('.sort-direction');
                         if (dirSpan) dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
                     }
@@ -120,10 +107,7 @@
             });
         }
 
-        /**
-         * Показывает только ту группу кнопок сортировки, которая соответствует выбранной категории,
-         * и скрывает остальные.
-         */
+        // Показывает кнопки сортировки, соответствующие выбранной категории
         function showSortGroup(category) {
             planetSatelliteGroup.style.display = 'none';
             missionGroup.style.display = 'none';
@@ -141,39 +125,30 @@
             }
         }
 
-        /**
-         * Сбрасывает сортировку к значениям по умолчанию при смене категории.
-         */
-        function resetSortingForCategory(category) {
-            // Вне зависимости от категории начинаем с сортировки по названию по возрастанию
+        // При смене категории сортировка сбрасывается на "по имени" (чтобы не было несоответствий)
+        function resetSortingForCategory() {
             currentSort = 'name';
             sortOrder = 'asc';
             updateActiveButtons();
         }
 
-        // Обработчик клика по кнопкам сортировки (делегирование)
+        // Клик по кнопке сортировки: меняет поле или направление
         document.querySelector('.sort-panel').addEventListener('click', (e) => {
             const btn = e.target.closest('.sort-btn');
             if (!btn) return;
-
             const sortField = btn.getAttribute('data-sort');
             if (sortField === currentSort) {
-                // Если нажали на ту же кнопку — переключаем направление
                 sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
             } else {
-                // Иначе меняем поле и ставим возрастание
                 currentSort = sortField;
                 sortOrder = 'asc';
             }
             updateActiveButtons();
-            currentPage = 1;          // при изменении сортировки возвращаемся на первую страницу
-            fetchCatalog();           // перезагружаем результаты
+            currentPage = 1;
+            fetchCatalog();
         });
 
-        /**
-         * Запрашивает данные с сервера через API и обновляет контейнер результатов.
-         * Учитывает поисковый запрос, категорию, пагинацию и сортировку.
-         */
+        // Запрос данных с API
         function fetchCatalog() {
             const q = searchInput.value.trim();
             const category = categorySelect.value;
@@ -193,10 +168,7 @@
                 });
         }
 
-        /**
-         * Отрисовывает карточки объектов, полученных от API.
-         * Каждая карточка оборачивается в ссылку, ведущую на детальную страницу объекта.
-         */
+        // Отрисовка карточек
         function renderResults(items) {
             resultsContainer.innerHTML = '';
             if (items.length === 0) {
@@ -213,7 +185,7 @@
 
                 const imageUrl = item.image ? item.image : '/static/images/default.jpg';
 
-                // Формируем дополнительную информацию
+                // Дополнительная информация зависит от типа объекта
                 let extraInfo = '';
                 if (item.model_type === 'planet') {
                     extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
@@ -235,23 +207,21 @@
                 const card = document.createElement('div');
                 card.className = 'catalog-card';
                 card.innerHTML = `
-            <div class="card-content">
-                <h3>${item.name}</h3>
-                <p>${item.first_line || item.model_type}</p>
-                ${extraInfo}
-            </div>
-            <div class="card-image">
-                <img src="${imageUrl}" alt="${item.name}">
-            </div>
-        `;
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.first_line || item.model_type}</p>
+                        ${extraInfo}
+                    </div>
+                    <div class="card-image">
+                        <img src="${imageUrl}" alt="${item.name}">
+                    </div>
+                `;
                 link.appendChild(card);
                 resultsContainer.appendChild(link);
             });
         }
 
-        /**
-         * Создаёт или обновляет панель пагинации с кнопками страниц.
-         */
+        // Пагинация (кнопки "Назад", "Вперёд", номера страниц)
         function renderPagination() {
             let paginationDiv = document.getElementById('pagination-controls');
             if (!paginationDiv) {
@@ -299,24 +269,22 @@
             }
         }
 
-        // Слушатель изменения категории: переключаем набор кнопок и сбрасываем сортировку
+        // Обработчики событий
         categorySelect.addEventListener('change', () => {
-            const newCategory = categorySelect.value;
-            showSortGroup(newCategory);
-            resetSortingForCategory(newCategory);
+            showSortGroup(categorySelect.value);
+            resetSortingForCategory();
             currentPage = 1;
             fetchCatalog();
         });
 
-        // Слушатель ввода текста в поле поиска
         searchInput.addEventListener('input', () => {
             currentPage = 1;
             fetchCatalog();
         });
 
-        // Инициализация: показать правильные кнопки сортировки и загрузить первую страницу
+        // Инициализация
         showSortGroup(categorySelect.value);
-        resetSortingForCategory(categorySelect.value);
+        resetSortingForCategory();
         fetchCatalog();
     });
 </script>
