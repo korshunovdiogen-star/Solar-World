@@ -8,9 +8,13 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="profile-heading">Профиль пользователя {{ user.username }}</h1>
-
-    
+<div class="profile-header">
+    <h1>Профиль пользователя {{ user.username }}</h1>
+    <form id="logout-form" method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">Выйти из аккаунта</button>
+    </form>
+</div>
     <div class="profile-container">
         <!-- Аккордеон: Избранное -->
         <div class="accordion">

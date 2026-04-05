@@ -1,4 +1,4 @@
-/* Сброс вертикального выравнивания для страницы профиля */
+/* ==================== ОБЩИЕ СБРОСЫ ДЛЯ СТРАНИЦЫ ПРОФИЛЯ ==================== */
 body {
     display: block !important;
     justify-content: normal !important;
@@ -6,7 +6,7 @@ body {
     min-height: auto !important;
 }
 
-/* Контейнер профиля — две колонки */
+/* ==================== КОНТЕЙНЕР ПРОФИЛЯ (ДВЕ КОЛОНКИ) ==================== */
 .profile-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -25,7 +25,61 @@ body {
     }
 }
 
-/* Аккордеон (остаётся без изменений) */
+/* ==================== ВЕРХНЯЯ ПАНЕЛЬ (ЗАГОЛОВОК + КНОПКА ВЫХОДА) ==================== */
+.profile-header {
+    grid-column: span 2; /* занимает обе колонки */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--neon-blue-faded);
+    padding-bottom: 15px;
+}
+
+    .profile-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        text-align: center; /* центрирование по горизонтали */
+        text-transform: none; /* отмена капса (если был унаследован) */
+        flex: 1;
+    }
+
+/* Кнопка выхода */
+.logout-btn {
+    background: rgba(0, 20, 30, 0.4);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--neon-blue-faded);
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 8px 20px;
+    transition: all 0.2s ease;
+}
+
+    .logout-btn:hover {
+        background: rgba(0, 212, 255, 0.2);
+        border-color: var(--neon-blue);
+        color: var(--neon-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+
+/* Адаптив для мобильных: заголовок и кнопка в столбик */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .logout-btn {
+        align-self: flex-end;
+    }
+}
+
+/* ==================== АККОРДЕОНЫ (ИЗБРАННОЕ, ИСТОРИЯ) ==================== */
 .accordion {
     width: 100%;
     margin-bottom: 0;
@@ -90,6 +144,7 @@ body {
     overflow-y: auto;
 }
 
+/* ==================== СПИСКИ В АККОРДЕОНАХ ==================== */
 .scrollable-list {
     max-height: 300px;
     overflow-y: auto;
@@ -128,7 +183,7 @@ body {
     font-family: monospace;
 }
 
-/* Скроллбары */
+/* ==================== СТИЛИЗАЦИЯ СКРОЛЛБАРОВ ==================== */
 .scrollable-list::-webkit-scrollbar,
 .accordion-content::-webkit-scrollbar {
     width: 5px;
@@ -146,11 +201,7 @@ body {
     border-radius: 5px;
 }
 
-.profile-heading {
-    text-align: center;
-    text-transform: none;
-}
-
+/* ==================== ДОПОЛНИТЕЛЬНЫЕ ЭЛЕМЕНТЫ ==================== */
 .back-container {
     margin-top: 20px;
 }
