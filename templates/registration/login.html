@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Вход | Solar World{% endblock %}
 
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="login-container">
-    <h2>Вход в систему</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
-    </form>
-    <p>Ещё нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+<div class="auth-container">
+    <div class="auth-panel">
+        <h2>Вход в аккаунт</h2>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="auth-btn">Войти</button>
+        </form>
+        <p class="auth-link">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+    </div>
 </div>
 {% endblock %}

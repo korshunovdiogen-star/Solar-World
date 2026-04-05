@@ -73,18 +73,50 @@ html {
     gap: 10px;
 }
 
-/* Стиль для иконки профиля — можно добавить рамку, отступы */
 .profile-icon {
+    /* Меняем на flex, чтобы иконка и текст были в ряд и центрировались */
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* Расстояние между человечком и именем */
+
     background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3); /* Тонкая рамка в стиле Sci-Fi */
     border-radius: 30px;
-    padding: 6px 16px;
+    padding: 6px 18px; /* Увеличил боковые отступы для красоты */
     transition: all 0.3s;
+    /* ГЛАВНОЕ: Убираем фиксированную ширину */
+    width: auto;
+    max-width: none;
+    flex-shrink: 0;
+    text-decoration: none; /* Убираем подчеркивание, если это ссылка */
+    color: var(--neon-blue);
 }
 
     .profile-icon:hover {
-        background: rgba(0, 212, 255, 0.3);
+        background: rgba(0, 212, 255, 0.2);
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         transform: translateY(-2px);
     }
+
+    /* Стили для самого текста имени внутри кнопки */
+    .profile-icon span {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        white-space: nowrap; /* Чтобы имя не разрывалось на две строки */
+    }
+
+/* Адаптив: на маленьких экранах всё-таки ограничиваем, чтобы не вылезло за край */
+@media (max-width: 1024px) {
+    .profile-icon {
+        max-width: 200px;
+    }
+
+        .profile-icon span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+}
 
 .nav-item {
     position: relative;

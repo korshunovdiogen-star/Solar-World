@@ -33,7 +33,7 @@
         <!-- Для планет и спутников -->
         <div id="sort-buttons-planet-satellite" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
-            <button class="sort-btn" data-sort="radius">Радиус</button>
+            <button class="sort-btn" data-sort="radius">Радиус <span class="sort-direction">↑</span></button>
             <button class="sort-btn" data-sort="type">Тип</button>
         </div>
         <!-- Для миссий -->
@@ -106,7 +106,7 @@
                 const sortField = btn.getAttribute('data-sort');
                 if (sortField === currentSort) {
                     btn.classList.add('active');
-                    if (sortField === 'name') {
+                    if (sortField === 'name' || sortField === 'radius')  {
                         const dirSpan = btn.querySelector('.sort-direction');
                         if (dirSpan) dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
                     }
@@ -203,8 +203,8 @@
                 resultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
                 return;
             }
+
             items.forEach(item => {
-                // Формируем URL детальной страницы в зависимости от типа объекта
                 let detailUrl = '';
                 if (item.model_type === 'planet') detailUrl = `/planet/${item.id}/`;
                 else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
@@ -213,6 +213,21 @@
 
                 const imageUrl = item.image ? item.image : '/static/images/default.jpg';
 
+                // Формируем дополнительную информацию
+                let extraInfo = '';
+                if (item.model_type === 'planet') {
+                    extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+                } else if (item.model_type === 'satellite') {
+                    extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+                } else if (item.model_type === 'mission') {
+                    const agencies = item.agency_names && item.agency_names.length
+                        ? item.agency_names.join(', ')
+                        : '—';
+                    extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${agencies}</div>`;
+                } else if (item.model_type === 'spaceagency') {
+                    extraInfo = `<div class="card-meta">${item.country || '—'}</div>`;
+                }
+
                 const link = document.createElement('a');
                 link.href = detailUrl;
                 link.className = 'catalog-card-link';
@@ -220,14 +235,15 @@
                 const card = document.createElement('div');
                 card.className = 'catalog-card';
                 card.innerHTML = `
-                    <div class="card-content">
-                        <h3>${item.name}</h3>
-                        <p>${item.first_line || item.model_type}</p>
-                    </div>
-                    <div class="card-image">
-                        <img src="${imageUrl}" alt="${item.name}">
-                    </div>
-                `;
+            <div class="card-content">
+                <h3>${item.name}</h3>
+                <p>${item.first_line || item.model_type}</p>
+                ${extraInfo}
+            </div>
+            <div class="card-image">
+                <img src="${imageUrl}" alt="${item.name}">
+            </div>
+        `;
                 link.appendChild(card);
                 resultsContainer.appendChild(link);
             });

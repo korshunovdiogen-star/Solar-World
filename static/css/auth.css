@@ -1,0 +1,159 @@
+/* ==================== auth.css ==================== */
+/* Контейнер для центрирования формы */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+/* Основная панель (как sci-fi панель) */
+.auth-panel {
+    max-width: 450px;
+    width: 100%;
+    border: 1px solid var(--neon-blue-faded);
+    background: rgba(0, 20, 30, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 30px 35px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+    /* Уголки как у sci-fi панелей */
+    .auth-panel::before,
+    .auth-panel::after {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border: 2px solid var(--neon-blue);
+    }
+
+    .auth-panel::before {
+        top: -1px;
+        left: -1px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .auth-panel::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: 0;
+        border-top: 0;
+    }
+
+    .auth-panel h2 {
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        color: var(--neon-blue);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+
+/* Стилизация полей формы */
+.auth-form input {
+    width: 100%;
+    background: rgba(0, 20, 30, 0.6);
+    border: 1px solid var(--neon-blue-faded);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+    .auth-form input:focus {
+        outline: none;
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+    }
+
+.auth-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: #ccc;
+    letter-spacing: 1px;
+}
+
+/* Кнопка отправки */
+.auth-btn {
+    width: 100%;
+    background: rgba(0, 20, 30, 0.7);
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--neon-blue);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+    .auth-btn:hover {
+        background: rgba(0, 212, 255, 0.2);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+/* Ссылки под формой */
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+    .auth-link a {
+        color: var(--neon-blue);
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .auth-link a:hover {
+            text-shadow: 0 0 5px var(--neon-blue);
+            text-decoration: underline;
+        }
+
+/* Стили для списка ошибок (например, неверный пароль) */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+    color: #ff8888;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.auth-form button[type="submit"] {
+    width: 100%;
+    background: rgba(0, 20, 30, 0.7);
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--neon-blue);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+    .auth-form button[type="submit"]:hover {
+        background: rgba(0, 212, 255, 0.2);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+        transform: translateY(-2px);
+    }
