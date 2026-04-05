@@ -1,5 +1,8 @@
-/* ==================== auth.css ==================== */
-/* Контейнер для центрирования формы */
+/* ============================================================
+   АУТЕНТИФИКАЦИЯ (LOGIN / REGISTER)
+   ============================================================ */
+
+/* Контейнер для центрирования формы по вертикали и горизонтали */
 .auth-container {
     display: flex;
     justify-content: center;
@@ -8,7 +11,7 @@
     padding: 20px;
 }
 
-/* Основная панель (как sci-fi панель) */
+/* Основная панель (sci-fi стиль) */
 .auth-panel {
     max-width: 450px;
     width: 100%;
@@ -21,7 +24,7 @@
     transition: all 0.3s ease;
 }
 
-    /* Уголки как у sci-fi панелей */
+    /* Уголки в стиле sci-fi */
     .auth-panel::before,
     .auth-panel::after {
         content: '';
@@ -45,6 +48,7 @@
         border-top: 0;
     }
 
+    /* Заголовок панели */
     .auth-panel h2 {
         text-align: center;
         font-family: var(--font-mono);
@@ -55,7 +59,9 @@
         letter-spacing: 3px;
     }
 
-/* Стилизация полей формы */
+/* ============================================================
+   ПОЛЯ ФОРМЫ
+   ============================================================ */
 .auth-form input {
     width: 100%;
     background: rgba(0, 20, 30, 0.6);
@@ -85,8 +91,11 @@
     letter-spacing: 1px;
 }
 
-/* Кнопка отправки */
-.auth-btn {
+/* ============================================================
+   КНОПКА ОТПРАВКИ (единый стиль)
+   ============================================================ */
+.auth-btn,
+.auth-form button[type="submit"] {
     width: 100%;
     background: rgba(0, 20, 30, 0.7);
     border: 1px solid var(--neon-blue);
@@ -101,13 +110,16 @@
     margin-top: 10px;
 }
 
-    .auth-btn:hover {
+    .auth-btn:hover,
+    .auth-form button[type="submit"]:hover {
         background: rgba(0, 212, 255, 0.2);
         box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
         transform: translateY(-2px);
     }
 
-/* Ссылки под формой */
+/* ============================================================
+   ССЫЛКИ ПОД ФОРМОЙ
+   ============================================================ */
 .auth-link {
     text-align: center;
     margin-top: 20px;
@@ -126,7 +138,9 @@
             text-decoration: underline;
         }
 
-/* Стили для списка ошибок (например, неверный пароль) */
+/* ============================================================
+   ОШИБКИ ВАЛИДАЦИИ
+   ============================================================ */
 .errorlist {
     list-style: none;
     padding: 0;
@@ -136,24 +150,3 @@
     font-size: 0.8rem;
     text-align: center;
 }
-
-.auth-form button[type="submit"] {
-    width: 100%;
-    background: rgba(0, 20, 30, 0.7);
-    border: 1px solid var(--neon-blue);
-    border-radius: 4px;
-    padding: 10px;
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--neon-blue);
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 10px;
-}
-
-    .auth-form button[type="submit"]:hover {
-        background: rgba(0, 212, 255, 0.2);
-        box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
-        transform: translateY(-2px);
-    }

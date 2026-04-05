@@ -1,80 +1,93 @@
+/* ============================================================
+   1. ОСНОВНЫЕ СТИЛИ BODY (с параллакс-фоном)
+   ============================================================ */
 body {
-    /* Путь к картинке относительно файла CSS */
+    /* Путь к картинке (относительно CSS) */
     background-image: url('../images/solar_system_bg.webp');
-    /* Чтобы картинка не размножалась плиткой */
     background-repeat: no-repeat;
-    /* Растягиваем картинку на весь экран */
     background-size: cover;
-    /* Центрируем фон */
     background-position: center;
-    transition: background-position 0.05s linear; /* быстрая реакция */
-    /* плавное перемещение */
-    background: none; /* или background-color, если нужен запасной цвет */
+    transition: background-position 0.05s linear; /* быстрая реакция на движение мыши */
+    /* Фон по умолчанию (если картинка не загрузилась) */
+    background: none; /* ⚠️ ПРИМЕЧАНИЕ: эта строка переопределяет background-image! */
     margin: 0;
     position: relative;
     z-index: 1;
 }
+
+/* ============================================================
+   2. ПАРАЛЛАКС-СЛОЙ (отдельный элемент для эффекта движения)
+   ============================================================ */
 .parallax-bg {
     position: fixed;
-    top: -5%; /* сдвигаем вверх на 5% */
-    left: -5%; /* сдвигаем влево на 5% */
+    top: -5%; /* смещение вверх на 5% */
+    left: -5%; /* смещение влево на 5% */
     width: 110%; /* ширина на 10% больше окна */
     height: 110%; /* высота на 10% больше окна */
     background-image: url('../images/solar_system_bg.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: -1;
+    z-index: -1; /* уходит под основной контент */
     transition: transform 0.1s ease-out;
 }
 
-
-
+/* ============================================================
+   3. КОЛОНКА КНОПОК (правый край)
+   ============================================================ */
 .hero-buttons-column {
     display: flex;
-    flex-direction: column; /* Выстраиваем в столбик */
-    align-items: flex-end; /* Прижимаем кнопки к правому краю */
-    gap: 15px; /* Расстояние между кнопками */
+    flex-direction: column; /* вертикальное расположение */
+    align-items: flex-end; /* прижаты к правому краю */
+    gap: 15px;
     margin-top: 30px;
 }
 
+/* ============================================================
+   4. ОВЕРЛЕЙ (текст поверх картинки)
+   ============================================================ */
 .hero-overlay {
     position: relative;
-    z-index: 2; /* ТЕКСТ НА ВЕРХНЕМ СЛОЕ */
+    z-index: 2; /* поверх фона */
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: flex-end; /* Прижимаем к правой стороне */
-    align-items: center; /* Центрируем по вертикали */
-    /* Мягкое затемнение справа, чтобы буквы на планетах читались еще лучше */
+    justify-content: flex-end; /* прижимаем содержимое к правому краю */
+    align-items: center; /* вертикальное центрирование */
+    /* Градиентное затемнение справа для лучшей читаемости текста */
     background: linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%);
 }
 
+/* ============================================================
+   5. ОСНОВНОЙ КОНТЕЙНЕР ТЕКСТА
+   ============================================================ */
 .hero-content {
-    margin-right: 10%; /* Отступ от края экрана */
+    margin-right: 10%; /* отступ от правого края */
     text-align: right;
     color: #fff;
     max-width: 600px;
 }
 
+/* Заголовок (стиль Goblin One) */
 .hero-title {
-    font-family: 'Goblin One';
-    /* Настройки размера */
-    font-size: clamp(2.5rem, 7vw, 5rem);
-    line-height: 1.1; 
+    font-family: 'Goblin One', cursive;
+    font-size: clamp(2.5rem, 7vw, 5rem); /* адаптивный размер */
+    line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
     color: #ffffff;
     text-shadow: 2px 2px 0px #000, 0px 0px 20px rgba(0,0,0,0.8), 0px 10px 40px rgba(0,0,0,1);
 }
 
+/* Контейнер для подзаголовков (две строки) */
 .hero-subtitle-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Прижимаем обе строки к правому краю */
+    align-items: flex-end; /* прижимаем к правому краю */
     margin-top: 15px;
 }
 
+/* Стиль подзаголовков (печатающийся текст) */
 .hero-subtitle {
     font-family: 'Courier New', Courier, monospace;
     font-size: 1.1rem;
@@ -85,23 +98,23 @@ body {
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
-    width: 0; /* Изначально текст скрыт */
-    border-right: 3px solid transparent; /* Скрытый курсор */
+    width: 0; /* изначально скрыт */
+    border-right: 3px solid transparent; /* курсор (прозрачный) */
 }
 
-/* --- ПЕРВАЯ СТРОКА --- */
+/* Анимация печати для первой строки */
 .line-1 {
-    /* Печатается 2 секунды, курсор мигает */
-    animation: typing 2s steps(20, end) forwards, blink-caret .75s step-end 3; /* Мигнет 3 раза и исчезнет */
+    animation: typing 2s steps(20, end) forwards, blink-caret .75s step-end 3;
 }
 
-/* --- ВТОРАЯ СТРОКА --- */
+/* Анимация печати для второй строки (с задержкой) */
 .line-2 {
-    /* Начинает через 2.2с (когда первая закончила), печатается 2с */
     animation: typing 2s steps(20, end) 2.2s forwards, blink-caret .75s step-end infinite 2.2s;
 }
 
-/* Общая анимация печати */
+/* ============================================================
+   6. АНИМАЦИИ ТЕКСТА (печать и курсор)
+   ============================================================ */
 @keyframes typing {
     from {
         width: 0;
@@ -112,7 +125,6 @@ body {
     }
 }
 
-/* Анимация курсора */
 @keyframes blink-caret {
     from, to {
         border-color: transparent;
@@ -123,7 +135,9 @@ body {
     }
 }
 
-
+/* ============================================================
+   7. ГЛАВНАЯ КНОПКА (универсальная)
+   ============================================================ */
 .space-btn {
     display: inline-block;
     margin-top: 30px;
@@ -135,22 +149,21 @@ body {
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 0.9rem;
-    /* Градиент в цвет яркого солнца */
     background: linear-gradient(45deg, #ff8c00, #ffcc33);
     border-radius: 50px;
     box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
     transition: all 0.4s ease;
     overflow: hidden;
 }
-    /* ГЛАВНАЯ КНОПКА (Пункт 2: Акцент) */
+
+    /* Основная кнопка (с пульсацией) */
     .space-btn.primary {
         background: linear-gradient(45deg, #ff8c00, #ffcc33);
         box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
-        /* Пункт 1: Применяем пульсацию */
         animation: pulse-orange 2s infinite;
     }
 
-    /* ВТОРОСТЕПЕННАЯ КНОПКА (Пункт 2: Контурный стиль) */
+    /* Второстепенная кнопка (контурный стиль) */
     .space-btn.secondary {
         background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
@@ -165,22 +178,24 @@ body {
             color: #fff;
             box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
         }
+
     .space-btn span {
         position: relative;
         z-index: 2;
     }
 
-    /* Эффект сияния при наведении */
+    /* Эффекты при наведении */
     .space-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
         letter-spacing: 3px;
     }
+
     .space-btn.primary:hover {
         box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
     }
 
-    /* Бегущий блик (как на стекле шлема) */
+    /* Бегущий блик (эффект стекла) */
     .space-btn::before {
         content: '';
         position: absolute;
@@ -197,7 +212,9 @@ body {
         left: 150%;
     }
 
-
+/* ============================================================
+   8. АНИМАЦИЯ ПУЛЬСАЦИИ (оранжевое свечение)
+   ============================================================ */
 @keyframes pulse-orange {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7);
