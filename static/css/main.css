@@ -70,7 +70,7 @@ body {
 
 /* Заголовок (стиль Goblin One) */
 .hero-title {
-    font-family: 'Goblin One', cursive;
+    font-family: 'Goblin One';
     font-size: clamp(2.5rem, 7vw, 5rem); /* адаптивный размер */
     line-height: 1.1;
     margin: 0;
