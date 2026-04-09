@@ -1,15 +1,17 @@
 {
   "ExpandedNodes": [
     "",
+    "\\planets",
+    "\\planets\\templates",
+    "\\planets\\templates\\planets",
     "\\solarWorld",
     "\\static",
     "\\static\\css",
     "\\templates",
     "\\templates\\registration",
-    "\\users",
     "\\users\\templates",
     "\\users\\templates\\users"
   ],
-  "SelectedNode": "\\solarWorld\\settings.py",
+  "SelectedNode": "\\requirements.txt",
   "PreviewInSolutionExplorer": false
 }

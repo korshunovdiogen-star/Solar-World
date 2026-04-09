@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block title %}{{ company.name }} | Sol System{% endblock %}
+
+{% block content %}
+<div class="detail-content">
+    {% include 'includes/button_favorite.html' with content_type='company' object_id=company.id is_favorite=is_favorite %}
+    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
+    <main class="main-content">
+        <article class="sci-fi-panel" style="position: relative;">
+            <div class="text-block">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>Компания {{ company.name }}</h1>
+                </div>
+                <div style="text-align: left;">
+                    <h2 class="panel-header" style="margin-top: 20px;">{{ first_line }}</h2>
+                    <p style="margin-top: 15px;">{{ remaining_text|safe|linebreaks }}</p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- ПРАВАЯ КОЛОНКА: Фото и данные -->
+    <aside class="side-column">
+
+        <!-- Блок изображения в рамке -->
+        <div class="image-container sci-fi-panel">
+            <img src="{{ company.image.url }}" alt="{{ company.name }}" />
+        </div>
+
+        <!-- Блок 1: Основные сведения -->
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Основные сведения</div>
+            <div class="info-text">
+                <p>Страна: <span class="custom-style">{{ company.country|default:"не указано" }}</span></p>
+                {% if company.established_date %}
+                <p>Дата основания: <span class="custom-style">{{ company.established_date }}</span></p>
+                <p>Прошло дней с основания: <span class="custom-style">{{ days_passed }}</span></p>
+                {% endif %}
+                {% if company.headquarters %}
+                <p>Штаб-квартира: <span class="custom-style">{{ company.headquarters }}</span></p>
+                {% endif %}
+                {% if company.founders %}
+                <p>Основатель(и): <span class="custom-style">{{ company.founders }}</span></p>
+                {% endif %}
+                {% if company.CEO %}
+                <p>Генеральный директор: <span class="custom-style">{{ company.CEO }}</span></p>
+                {% endif %}
+                <p>
+                    Сотрудников:
+                    {% if company.employees %}
+                    <span class="custom-style">{{ company.employees }}</span>
+                    {% else %}
+                    <span class="custom-style">информация не раскрывается</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Блок 2: Финансы -->
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Финансы</div>
+            <div class="info-text">
+                <p>
+                    Прибыль (2025):
+                    {% if company.revenue_2025 %}
+                    <span class="custom-style">{{ company.revenue_2025 }} млн USD</span>
+                    {% else %}
+                    <span class="custom-style">информация не раскрывается</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Блок 3: Участие в миссиях (если есть) -->
+        {% if company.missions.all %}
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Участие в миссиях</div>
+            <div class="info-text">
+                <ul style="list-style: square; padding-left: 18px;">
+                    {% for mission in company.missions.all %}
+                    <li style="margin-bottom: 5px;">
+                        <a href="{% url 'mission_detail' pk=mission.pk %}" style="color: #fff; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='#fff'">
+                            {{ mission.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+    </aside>
+</div>
+{% endblock %}

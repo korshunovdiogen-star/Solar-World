@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from planets.views import PlanetViewSet, SatelliteViewSet, MissionViewSet, SpaceAgencyViewSet
+from planets.views import PlanetViewSet, SatelliteViewSet, MissionViewSet, SpaceAgencyViewSet, CompanyViewSet, company_detail
 from django.contrib import admin
 from planets import views
 from users import views as user_views
@@ -13,6 +13,7 @@ router.register(r'planets', PlanetViewSet)
 router.register(r'satellites', SatelliteViewSet)
 router.register(r'missions', MissionViewSet)
 router.register(r'agencies', SpaceAgencyViewSet)
+router.register(r'companies', CompanyViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
@@ -21,6 +22,7 @@ urlpatterns = [
     path('satellite/<int:pk>/', views.satellite_detail, name='satellite_detail'),
     path('mission/<int:pk>/', views.mission_detail, name='mission_detail'),
     path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceagency_detail'),
+    path('company/<int:pk>/', company_detail, name='company_detail'),
     path('api/', include(router.urls)),
     path('catalog/', views.catalog_page, name='catalog'),
     path('api/catalog/', views.catalog_api, name='catalog_api'),

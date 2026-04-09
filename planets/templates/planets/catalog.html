@@ -24,6 +24,7 @@
             <option value="satellite">Спутники</option>
             <option value="mission">Миссии</option>
             <option value="agency">Агентства</option>
+            <option value="company">Компании</option>
         </select>
     </div>
 
@@ -43,6 +44,11 @@
         <div id="sort-buttons-agency" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
         </div>
+        <div id="sort-buttons-company" class="sort-buttons-group" style="display: none;">
+            <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
+            <button class="sort-btn" data-sort="revenue_2025">Прибыль <span class="sort-direction">↑</span></button>
+            <button class="sort-btn" data-sort="country">Страна <span class="sort-direction">↑</span></button>
+        </div>
         <div id="sort-buttons-all" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
         </div>
@@ -61,6 +67,7 @@
         const planetSatelliteGroup = document.getElementById('sort-buttons-planet-satellite');
         const missionGroup = document.getElementById('sort-buttons-mission');
         const agencyGroup = document.getElementById('sort-buttons-agency');
+        const companyGroup = document.getElementById('sort-buttons-company');
         const allGroup = document.getElementById('sort-buttons-all');
 
         let currentPage = 1;
@@ -80,6 +87,10 @@
                 return sortOrder === 'asc' ? 'mission_type_asc' : 'mission_type_desc';
             } else if (currentSort === 'agency') {
                 return sortOrder === 'asc' ? 'agency_asc' : 'agency_desc';
+            } else if (currentSort === 'revenue_2025') {
+                return sortOrder === 'asc' ? 'revenue_asc' : 'revenue_desc';
+            } else if (currentSort === 'country') {
+                return sortOrder === 'asc' ? 'country_asc' : 'country_desc';
             }
             return 'name_asc';
         }
@@ -93,7 +104,7 @@
                 const sortField = btn.getAttribute('data-sort');
                 if (sortField === currentSort) {
                     btn.classList.add('active');
-                    if (sortField === 'name' || sortField === 'radius') {
+                    if (sortField === 'name' || sortField === 'radius' || sortField === 'revenue_2025' || sortField === 'country') {
                         const dirSpan = btn.querySelector('.sort-direction');
                         if (dirSpan) dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
                     }
@@ -112,6 +123,7 @@
             planetSatelliteGroup.style.display = 'none';
             missionGroup.style.display = 'none';
             agencyGroup.style.display = 'none';
+            companyGroup.style.display = 'none';
             allGroup.style.display = 'none';
 
             if (category === 'planet' || category === 'satellite') {
@@ -120,6 +132,8 @@
                 missionGroup.style.display = 'flex';
             } else if (category === 'agency') {
                 agencyGroup.style.display = 'flex';
+            } else if (category === 'company') {
+                companyGroup.style.display = 'flex';
             } else {
                 allGroup.style.display = 'flex';
             }
@@ -182,6 +196,7 @@
                 else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
                 else if (item.model_type === 'mission') detailUrl = `/mission/${item.id}/`;
                 else if (item.model_type === 'spaceagency') detailUrl = `/spaceAgency/${item.id}/`;
+                else if (item.model_type === 'company') detailUrl = `/company/${item.id}/`;
 
                 const imageUrl = item.image ? item.image : '/static/images/default.jpg';
 
@@ -198,7 +213,18 @@
                     extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${agencies}</div>`;
                 } else if (item.model_type === 'spaceagency') {
                     extraInfo = `<div class="card-meta">${item.country || '—'}</div>`;
+                } else if (item.model_type === 'company') {
+                    let revenueText = item.revenue_2025 ? `${item.revenue_2025} млн USD` : '—';
+                    extraInfo = `<div class="card-meta">${item.country || '—'} • Прибыль: ${revenueText}</div>`;
                 }
+
+                let categoryName = '';
+                if (item.model_type === 'planet') categoryName = 'Планета';
+                else if (item.model_type === 'satellite') categoryName = 'Спутник';
+                else if (item.model_type === 'mission') categoryName = 'Миссия';
+                else if (item.model_type === 'spaceagency') categoryName = 'Агентство';
+                else if (item.model_type === 'company') categoryName = 'Компания';
+                else categoryName = item.model_type;
 
                 const link = document.createElement('a');
                 link.href = detailUrl;
@@ -207,6 +233,7 @@
                 const card = document.createElement('div');
                 card.className = 'catalog-card';
                 card.innerHTML = `
+                    <div class="card-category">${categoryName}</div>
                     <div class="card-content">
                         <h3>${item.name}</h3>
                         <p>${item.first_line || item.model_type}</p>

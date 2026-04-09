@@ -53,14 +53,14 @@
    ============================================================ */
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
     gap: 1.5rem;
     width: 100%;
-    min-height: 600px; /* стабильная высота при загрузке */
+    min-height: 400px;
     transition: min-height 0.2s ease;
+    justify-content: center;
 }
 
-    /* Эффект загрузки (необязательно, используется в JS) */
     .results-grid.fetching {
         opacity: 0.5;
         filter: blur(1px);
@@ -73,7 +73,6 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    /* Анимация появления карточки */
     animation: spaceFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     opacity: 0;
 }
@@ -106,6 +105,7 @@
     align-items: center;
     gap: 1rem;
     transition: transform 0.2s, box-shadow 0.2s;
+    height: 150px; /* фиксированная высота карточки */
 }
 
     /* Уголки (sci-fi стиль) */
@@ -147,6 +147,9 @@
     color: var(--neon-blue);
     text-transform: uppercase;
     letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Описание (первая строка текста) */
@@ -167,7 +170,7 @@
     height: 80px;
     overflow: hidden;
     border-radius: 4px;
-    order: 2; /* перемещаем изображение вправо */
+    order: 2;
 }
 
     .card-image img {
@@ -183,6 +186,9 @@
 .card-content {
     order: 1;
     flex: 1;
+    overflow: hidden; /* предотвращает вылезание содержимого */
+    display: flex;
+    flex-direction: column;
 }
 
     .card-content p {
@@ -191,7 +197,7 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         line-height: 1.4rem;
-        max-height: 2.8rem; /* ограничение до 2 строк */
+        max-height: 2.8rem;
     }
 
 /* ============================================================
@@ -205,19 +211,47 @@
     letter-spacing: 0.5px;
     border-top: 1px dashed rgba(0, 212, 255, 0.3);
     padding-top: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.card-category {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: #aaa;
+    background: rgba(0, 20, 30, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--neon-blue-faded);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 2;
+}
 /* ============================================================
    СООБЩЕНИЕ "НИЧЕГО НЕ НАЙДЕНО"
    ============================================================ */
+.results-grid:has(.no-results) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh; /* или любое значение, например 500px */
+}
+
 .no-results {
     text-align: center;
     font-family: var(--font-mono);
     color: rgba(255, 255, 255, 0.7);
     padding: 2rem;
     border: 1px dashed var(--neon-blue-faded);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
-
 /* ============================================================
    ПАГИНАЦИЯ (кнопки страниц)
    ============================================================ */
@@ -342,4 +376,23 @@
 .sort-direction {
     font-size: 0.7rem;
     margin-left: 0.2rem;
+}
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+   ============================================================ */
+@media (max-width: 768px) {
+    .catalog-card {
+        height: auto; /* на мобильных высота автоматическая */
+        min-height: 340px;
+    }
+
+        .catalog-card h3 {
+            white-space: normal; /* заголовок может переноситься */
+            overflow: visible;
+        }
+
+    .card-meta {
+        white-space: normal; /* мета-информация может переноситься */
+    }
 }

@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.utils import timezone
 from datetime import date
 from django.shortcuts import render, get_object_or_404
-from .models import Planet, Satellite, Mission, SpaceAgency
+from .models import Planet, Satellite, Mission, SpaceAgency, Company
 from rest_framework import serializers
 from rest_framework import viewsets
 from solarWorld.serializers import (
     PlanetSerializer, SatelliteSerializer,
-    MissionSerializer, SpaceAgencySerializer
+    MissionSerializer, SpaceAgencySerializer,
+    CompanySerializer
 )
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -134,6 +135,19 @@ def spaceAgency_detail(request, pk):
         'content_type': 'spaceAgency', # используется в кнопке избранного
         })
 
+def company_detail(request, pk):
+    company = get_object_or_404(Company, pk=pk)
+    first_line = company.text.splitlines()[0] if company.text else ''
+    lines = company.text.splitlines()
+    remaining_text = "\n".join(lines[1:])
+    days_passed=date.today()-company.established_date
+    return render(request, 'planets/company_detail.html', {
+        'company': company,
+        'first_line': first_line,
+        'remaining_text': remaining_text,
+        'days_passed': days_passed.days, #сколько дней прошло со дня основания
+        'content_type': 'company',
+    })
 
 
 
@@ -199,6 +213,21 @@ def catalog_api(request):
                 return queryset.order_by('-name')
             else:
                 return queryset
+        elif model_type == 'company':
+            if ordering == 'name_asc':
+                return queryset.order_by('name')
+            elif ordering == 'name_desc':
+                return queryset.order_by('-name')
+            elif ordering == 'revenue_asc':
+                return queryset.order_by('-revenue_2025')
+            elif ordering == 'revenue_desc':
+                return queryset.order_by('revenue_2025')
+            elif ordering == 'country_asc':
+                return queryset.order_by('country')
+            elif ordering == 'country_desc':
+                return queryset.order_by('-country')
+            else:
+                return queryset
         return queryset
 
     if category in ('all', 'planet'):
@@ -221,14 +250,21 @@ def catalog_api(request):
             missions = apply_ordering(missions, 'mission')
             results += MissionSerializer(missions, many=True).data
         except Exception as e:
-            print(f"Ошибка в планетах: {e}")
+            print(f"Ошибка в миссиях: {e}")
     if category in ('all', 'agency'):
         try:
             agencies = SpaceAgency.objects.filter(name__icontains=q)
             agencies = apply_ordering(agencies, 'agency')
             results += SpaceAgencySerializer(agencies, many=True).data
         except Exception as e:
-            print(f"Ошибка в планетах: {e}")
+            print(f"Ошибка в агентствах: {e}")
+    if category in ('all', 'company'):
+        try:
+            companies = Company.objects.filter(name__icontains=q)
+            companies = apply_ordering(companies, 'company')
+            results += CompanySerializer(companies, many=True).data
+        except Exception as e:
+            print(f"Ошибка в компаниях: {e}")
 
     
     if category == 'all' and ordering in ('name_asc', 'name_desc'):
@@ -242,6 +278,7 @@ def catalog_api(request):
         'total_pages': paginator.num_pages,
         'current_page': page_obj.number,
     })
+
 
 
 
@@ -264,3 +301,7 @@ class MissionViewSet(viewsets.ModelViewSet):
 class SpaceAgencyViewSet(viewsets.ModelViewSet):
     queryset = SpaceAgency.objects.all()
     serializer_class = SpaceAgencySerializer
+
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
