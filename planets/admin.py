@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from .forms import MissionAdminForm
-from .models import Planet, Mission, SpaceAgency, Satellite
+from .models import Planet, Mission, SpaceAgency, Satellite, Company
 
 
 
@@ -41,6 +41,11 @@ class MissionAdmin(admin.ModelAdmin):
 class SpaceAgencyAdmin(admin.ModelAdmin):
     list_display = ['name', 'country', 'established_date']
 
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'established_date', 'employees', 'CEO')
+    search_fields = ('name', 'country')
+    list_filter = ('country',)
 
 admin.site.register(Planet, PlanetsAdmin)
 admin.site.register(Satellite, SatelliteAdmin)

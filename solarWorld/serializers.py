@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from planets.models import Planet, Satellite, Mission, SpaceAgency
+from planets.models import Planet, Satellite, Mission, SpaceAgency, Company
 from django.utils import timezone
 from datetime import date
 
@@ -168,4 +168,34 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
         return reverse('spaceagency_detail', args=[obj.id]) 
 
 
+class CompanySerializer(serializers.ModelSerializer):
+    first_line = serializers.SerializerMethodField()
+    remaining_text = serializers.SerializerMethodField()
+    model_type = serializers.SerializerMethodField()
+    detail_url = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Company
+        fields = [
+            'id', 'name', 'country', 'established_date', 'founders', 'image', 'text',
+            'headquarters', 'employees', 'CEO', 'revenue_2025',
+            'first_line', 'remaining_text', 'model_type', 'detail_url'
+        ]
+
+    def get_first_line(self, obj):
+        if obj.text:
+            return obj.text.splitlines()[0]
+        return ""
+
+    def get_remaining_text(self, obj):
+        if obj.text:
+            lines = obj.text.splitlines()
+            return "\n".join(lines[1:])
+        return ""
+
+    def get_model_type(self, obj):
+        return 'company'
+
+    def get_detail_url(self, obj):
+        from django.urls import reverse
+        return reverse('company_detail', args=[obj.id])

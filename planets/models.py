@@ -114,3 +114,24 @@ class SpaceAgency(models.Model):
     def __str__(self):
         return self.name
 
+class Company(models.Model):
+    name = models.CharField(max_length=200, verbose_name="Название компании")
+    country = models.CharField(max_length=100, verbose_name="Страна")
+    established_date = models.DateField(verbose_name="Дата основания")
+    founders = models.CharField(max_length=255, verbose_name="Основатель(и)", blank=True, null=True)
+    image = models.ImageField(upload_to='space_agencies/', blank=True, null=True, verbose_name='Изображение компании')
+    text = models.TextField(verbose_name="Описание компании", blank=True, null=True)
+
+    headquarters = models.CharField(max_length=255, verbose_name="Штаб-квартира", blank=True, null=True)
+    employees = models.IntegerField(verbose_name="Количество сотрудников", blank=True, null=True)
+    CEO = models.CharField(max_length=255, verbose_name="Генеральный директор", blank=True, null=True)
+
+    # --- Финансы ---
+    revenue_2025 = models.DecimalField(
+        max_digits=15, decimal_places=2, verbose_name="Прибыль (2025, млн USD)",
+        blank=True, null=True, help_text="В миллионах долларов США"
+    )
+
+
+    def __str__(self):
+        return self.name
