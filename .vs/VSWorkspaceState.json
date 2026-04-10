@@ -8,10 +8,8 @@
     "\\static",
     "\\static\\css",
     "\\templates",
-    "\\templates\\registration",
-    "\\users\\templates",
-    "\\users\\templates\\users"
+    "\\templates\\registration"
   ],
-  "SelectedNode": "\\requirements.txt",
+  "SelectedNode": "\\README.txt",
   "PreviewInSolutionExplorer": false
 }
