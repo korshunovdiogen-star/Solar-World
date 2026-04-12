@@ -7,6 +7,9 @@
     "postAttachCommand": {
         "server": "python manage.py runserver 0.0.0.0:8000"
     },
+    "containerEnv": {
+        "SECRET_KEY": "django-insecure-8&*^#@!$%^&*()_+~`1234567890"
+    },
     "customizations": {
         "vscode": {
             "extensions": [
