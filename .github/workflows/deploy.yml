@@ -1,0 +1,19 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Trigger full deploy on PythonAnywhere
+      uses: umuttopalak/pythonanywhere-deploy-action@v1.1.2
+      with:
+        host: 'www.pythonanywhere.com'
+        username: ${{ secrets.PA_USERNAME }}
+        api_token: ${{ secrets.PA_API_TOKEN }}
+        domain_name: ${{ secrets.PA_DOMAIN }}
