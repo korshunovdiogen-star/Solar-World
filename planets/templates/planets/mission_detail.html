@@ -30,7 +30,11 @@
 
         <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
+            {% if mission.image %}
             <img src="{{ mission.image.url }}" alt="{{ mission.name }}" />
+            {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="Нет изображения" />
+            {% endif %}
         </div>
 
         <!-- Основные характеристики миссии -->

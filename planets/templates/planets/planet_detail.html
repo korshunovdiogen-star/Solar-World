@@ -30,7 +30,11 @@
 
         <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
+            {% if planet.image %}
             <img src="{{ planet.image.url }}" alt="{{ planet.name }}" />
+            {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="Нет изображения" />
+            {% endif %}
         </div>
 
         <!-- Характеристики -->

@@ -30,7 +30,11 @@
 
         <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
+            {% if spaceAgency.image %}
             <img src="{{ spaceAgency.image.url }}" alt="{{ spaceAgency.name }}" />
+            {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="Нет изображения" />
+            {% endif %}
         </div>
 
         <!-- Данные агентства -->
