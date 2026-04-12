@@ -55,3 +55,6 @@ tzdata==2025.3
 urllib3==2.6.3
 virtualenv==21.2.0
 zstandard==0.25.0
+pytest==7.4.4
+pytest-django==4.7.0
+coverage==7.4.4

@@ -3,13 +3,13 @@
     "",
     "\\planets",
     "\\planets\\templates",
-    "\\planets\\templates\\planets",
+    "\\planets\\tests",
     "\\solarWorld",
     "\\static",
     "\\static\\css",
     "\\templates",
     "\\templates\\registration"
   ],
-  "SelectedNode": "\\README.txt",
+  "SelectedNode": "\\planets\\tests\\test_models.py",
   "PreviewInSolutionExplorer": false
 }

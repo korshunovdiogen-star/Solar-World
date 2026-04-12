@@ -30,7 +30,11 @@
 
         <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
+            {% if company.image %}
             <img src="{{ company.image.url }}" alt="{{ company.name }}" />
+            {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="Нет изображения" />
+            {% endif %}
         </div>
 
         <!-- Блок 1: Основные сведения -->
