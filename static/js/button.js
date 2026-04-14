@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const hoverSound = new Audio(window.soundUrl);
-    hoverSound.volume = 0.2;
+    hoverSound.volume = 0.1;
 
     // Все элементы с классом 'sound-hover'
     document.querySelectorAll('.sound-hover').forEach(btn => {

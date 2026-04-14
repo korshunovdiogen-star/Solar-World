@@ -20,7 +20,6 @@
             <a href="{% url 'main' %}" class="nav-item sound-hover"><i class="fa-brands fa-empire"></i> ГЛАВНАЯ</a>
             <a href="{% url 'planet_list' %}" class="nav-item sound-hover"><i class="fas fa-map"></i> КАРТА</a>
             <a href="{% url 'catalog' %}" class="nav-item sound-hover"><i class="fas fa-search"></i> ПОИСК</a>
-            <a href="#" class="nav-item sound-hover"><i class="fa-solid fa-check-double"></i> ТЕСТЫ</a>
         </div>
         <div class="nav-profile">
             {% if user.is_authenticated %}
