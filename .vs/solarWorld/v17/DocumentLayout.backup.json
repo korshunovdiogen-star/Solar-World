@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\django\\DjangoProjects\\solarWorld\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\README.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\devcontainer.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.devcontainer\\devcontainer.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\static\\css\\catalog.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:static\\css\\catalog.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.devcontainer\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\catalog.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:planets\\templates\\planets\\catalog.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.devcontainer\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,39 +31,41 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "README.txt",
-              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\README.txt",
-              "RelativeDocumentMoniker": "README.txt",
-              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\README.txt",
-              "RelativeToolTip": "README.txt",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAADYAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
-              "WhenOpened": "2026-04-10T05:02:37.739Z",
+              "Title": "devcontainer.json",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\devcontainer.json",
+              "RelativeDocumentMoniker": ".devcontainer\\devcontainer.json",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\devcontainer.json",
+              "RelativeToolTip": ".devcontainer\\devcontainer.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-12T12:38:14.786Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "catalog.css",
-              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\static\\css\\catalog.css",
-              "RelativeDocumentMoniker": "static\\css\\catalog.css",
-              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\static\\css\\catalog.css",
-              "RelativeToolTip": "static\\css\\catalog.css",
-              "ViewState": "AgIAAKIAAAAAAAAAAAAYwLUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T10:37:11.879Z"
+              "Title": "docker-compose.yml",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\docker-compose.yml",
+              "RelativeDocumentMoniker": ".devcontainer\\docker-compose.yml",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\docker-compose.yml",
+              "RelativeToolTip": ".devcontainer\\docker-compose.yml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
+              "WhenOpened": "2026-04-12T12:38:07.137Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "catalog.html",
-              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\catalog.html",
-              "RelativeDocumentMoniker": "planets\\templates\\planets\\catalog.html",
-              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\planets\\templates\\planets\\catalog.html",
-              "RelativeToolTip": "planets\\templates\\planets\\catalog.html",
-              "ViewState": "AgIAANUAAAAAAAAAAAAAAOsAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-08T10:20:37.444Z"
+              "Title": "Dockerfile",
+              "DocumentMoniker": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\Dockerfile",
+              "RelativeDocumentMoniker": ".devcontainer\\Dockerfile",
+              "ToolTip": "C:\\django\\DjangoProjects\\solarWorld\\.devcontainer\\Dockerfile",
+              "RelativeToolTip": ".devcontainer\\Dockerfile",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-04-12T12:37:57.32Z",
+              "EditorCaption": ""
             }
           ]
         }
