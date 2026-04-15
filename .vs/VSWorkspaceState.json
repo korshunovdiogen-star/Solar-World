@@ -4,14 +4,10 @@
     "\\planets",
     "\\planets\\templates",
     "\\planets\\templates\\planets",
-    "\\planets\\tests",
     "\\solarWorld",
     "\\static",
-    "\\static\\js",
-    "\\templates",
-    "\\users",
-    "\\users\\tests"
+    "\\static\\css"
   ],
-  "SelectedNode": "\\solarWorld\\settings.py",
+  "SelectedNode": "\\static\\css\\main.css",
   "PreviewInSolutionExplorer": false
 }

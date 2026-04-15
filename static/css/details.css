@@ -181,40 +181,36 @@ body {
         object-fit: contain;
     }
 
-
 @media (max-width: 768px) {
     .detail-content {
         flex-direction: column;
-        gap: 20px;
         padding: 15px;
-        margin: 20px auto;
+        gap: 20px;
     }
 
     .main-content {
         width: 100%;
     }
 
-    .text-block h1 {
-        font-size: 2rem;
-        letter-spacing: 5px;
-    }
-
     .text-block p {
+        max-width: 100%;
         font-size: 1rem;
         line-height: 1.6;
-        max-width: 100%;
+    }
+
+    .text-block h1 {
+        font-size: 2rem;
+        letter-spacing: 4px;
     }
 
     .side-column {
-        flex: 0 0 auto;
         width: 100%;
         margin-top: 0;
-        padding: 0;
     }
 
     .column-container {
         width: 100%;
-        padding: 20px;
+        padding: 15px;
     }
 
     .image-container {
