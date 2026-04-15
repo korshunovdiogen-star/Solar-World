@@ -205,3 +205,57 @@ body {
 .back-container {
     margin-top: 20px;
 }
+
+/* ==================== АДАПТАЦИЯ СТРАНИЦЫ ПРОФИЛЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ==================== */
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 15px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+        .profile-header h1 {
+            font-size: 1.8rem;
+            text-align: left;
+            flex: auto;
+        }
+
+    .logout-btn {
+        align-self: flex-end;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+
+    .accordion-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .accordion-header .count {
+        font-size: 0.75rem;
+        padding: 2px 6px;
+    }
+
+    .scrollable-list li {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .remove-fav {
+        font-size: 0.9rem;
+    }
+
+    .date {
+        font-size: 0.65rem;
+    }
+
+    .back-container {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+}

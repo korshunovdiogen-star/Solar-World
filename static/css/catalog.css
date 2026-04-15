@@ -1,7 +1,3 @@
-/* ============================================================
-   СТРАНИЦА КАТАЛОГА
-   ============================================================ */
-
 /* Контейнер каталога (центрирование и ограничение ширины) */
 .catalog-container {
     max-width: 1200px;
@@ -394,5 +390,99 @@
 
     .card-meta {
         white-space: normal; /* мета-информация может переноситься */
+    }
+}
+
+@media (max-width: 768px) {
+    /* Контейнер каталога */
+    .catalog-container {
+        padding: 15px;
+    }
+
+    /* Панель фильтров – вертикальное расположение */
+    .filter-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+        .filter-panel input,
+        .filter-panel select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+    /* Сетка карточек – одна колонка */
+    .results-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Карточка – уже есть height: auto, но добавим отступы */
+    .catalog-card {
+        padding: 1rem;
+        min-height: auto;
+    }
+
+        .catalog-card h3 {
+            font-size: 1.1rem;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .catalog-card p {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+    /* Изображение в карточке – уменьшаем размер */
+    .card-image {
+        flex: 0 0 60px;
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Панель сортировки – переносим на новую строку, выравниваем по левому краю */
+    .sort-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+
+        .sort-panel span {
+            text-align: left;
+        }
+
+    .sort-buttons-group {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .sort-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    /* Пагинация – уменьшаем отступы и кнопки */
+    .pagination {
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+
+        .pagination button {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+    /* Сообщение "ничего не найдено" */
+    .results-grid:has(.no-results) {
+        min-height: 40vh;
+    }
+
+    .no-results {
+        padding: 1.5rem;
+        font-size: 0.9rem;
+        max-width: 90%;
     }
 }

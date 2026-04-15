@@ -1,15 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.devcontainer",
-    "\\.github",
-    "\\.github\\workflows",
     "\\planets",
     "\\planets\\templates",
     "\\planets\\templates\\planets",
     "\\planets\\tests",
+    "\\solarWorld",
+    "\\static",
+    "\\static\\js",
+    "\\templates",
     "\\users",
     "\\users\\tests"
   ],
+  "SelectedNode": "\\solarWorld\\settings.py",
   "PreviewInSolutionExplorer": false
 }
