@@ -69,4 +69,13 @@
     .favorite-btn {
         margin-top: 0;
     }
+
+        .favorite-btn .star-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+    .sci-fi-panel {
+        padding: 15px;
+    }
 }

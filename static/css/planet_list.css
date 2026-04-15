@@ -219,3 +219,106 @@ h1, .header-title {
 	text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
 	margin: 30px 0;
 }
+
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   ============================================================ */
+@media (max-width: 1024px) {
+	.main-layout {
+		grid-template-columns: 1fr;
+		gap: 20px;
+		padding: 15px;
+	}
+
+	.side-column {
+		order: 2;
+	}
+
+	.space-container {
+		order: 1;
+		grid-column: auto;
+		min-height: 300px;
+	}
+
+	.side-panel {
+		font-size: 0.85rem;
+		padding: 20px;
+	}
+
+		.side-panel::before {
+			font-size: 0.4rem;
+		}
+}
+
+@media (max-width: 768px) {
+	.main-layout {
+		padding: 10px;
+	}
+
+	.space-container {
+		min-height: 250px;
+		border-radius: 2px;
+	}
+
+	.custom-tooltip {
+		font-size: 0.7rem;
+		padding: 3px 8px;
+		white-space: normal;
+		max-width: 150px;
+		text-align: center;
+	}
+
+	.side-panel {
+		font-size: 0.75rem;
+		padding: 15px;
+		clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+		border-left-width: 3px;
+	}
+
+	.data-line {
+		padding: 5px 0;
+		font-size: 0.7rem;
+	}
+
+	h1, .header-title {
+		font-size: 1.5rem;
+		letter-spacing: 6px;
+		margin: 20px 0;
+	}
+}
+
+@media (max-width: 480px) {
+	.space-container {
+		min-height: 200px;
+	}
+
+	.side-panel {
+		padding: 12px;
+		font-size: 0.7rem;
+	}
+
+		.side-panel::before {
+			content: "DATA";
+			font-size: 0.35rem;
+			top: 3px;
+			right: 8px;
+		}
+
+	.data-line {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+	}
+
+	h1, .header-title {
+		font-size: 1.2rem;
+		letter-spacing: 4px;
+	}
+
+	.custom-tooltip {
+		font-size: 0.65rem;
+		padding: 2px 6px;
+		max-width: 120px;
+	}
+}

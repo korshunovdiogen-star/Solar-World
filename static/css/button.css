@@ -89,3 +89,40 @@ h1, .header-title {
     margin-top: 40px;
     padding-bottom: 50px;
 }
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    .nav-button {
+        padding: 8px 20px;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        clip-path: polygon(8% 0, 100% 0, 100% 70%, 92% 100%, 0 100%, 0 30%);
+    }
+
+        .nav-button:hover {
+            letter-spacing: 3px;
+        }
+
+        .nav-button::after {
+            width: 30%;
+            bottom: -8px;
+        }
+
+    .back-link-container {
+        margin-top: 20px;
+        padding-bottom: 30px;
+    }
+
+    a[href*="index"] {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+    }
+
+    h1, .header-title {
+        font-size: 1.8rem;
+        letter-spacing: 6px;
+        margin-bottom: 15px;
+    }
+}

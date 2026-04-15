@@ -209,14 +209,49 @@ h1 {
     text-align: left
 }
 
-/* Настройка для небольших экранов */
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   ============================================================ */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 32px;
-        letter-spacing: 4px;
+    .top-nav {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
     }
 
-    body {
-        padding: 10px;
+    .nav-links {
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .nav-profile {
+        justify-content: center;
+    }
+
+    .nav-item {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+    }
+
+    .profile-icon {
+        padding: 4px 12px;
+        gap: 6px;
+    }
+
+        .profile-icon span {
+            font-size: 0.8rem;
+        }
+
+    .back-container {
+        text-align: center;
+        margin-top: 0;
+    }
+
+    .back-button {
+        font-size: 0.8rem;
+        padding: 4px 12px;
     }
 }

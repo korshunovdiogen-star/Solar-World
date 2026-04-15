@@ -150,3 +150,49 @@
     font-size: 0.8rem;
     text-align: center;
 }
+
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    .auth-container {
+        min-height: 70vh;
+        padding: 15px;
+    }
+
+    .auth-panel {
+        padding: 20px 20px;
+        max-width: 90%;
+    }
+
+        .auth-panel h2 {
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+    .auth-form input {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    .auth-form label {
+        font-size: 0.75rem;
+    }
+
+    .auth-btn,
+    .auth-form button[type="submit"] {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .auth-link {
+        font-size: 0.75rem;
+        margin-top: 15px;
+    }
+
+    .errorlist {
+        font-size: 0.7rem;
+    }
+}
