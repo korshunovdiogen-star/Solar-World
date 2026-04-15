@@ -222,82 +222,84 @@ h1, .header-title {
 
 
 /* ============================================================
-   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   АДАПТАЦИЯ СТРАНИЦЫ КАРТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
    ============================================================ */
 @media (max-width: 768px) {
-	.main-layout {
-		display: block;
-		padding: 0;
-	}
-
-	.space-container {
-		width: 100%;
-		margin: 0;
-		border: none;
-		border-radius: 0;
-	}
-
-	.custom-tooltip {
-		font-size: 0.7rem;
-		padding: 3px 8px;
-		white-space: normal;
-		max-width: 150px;
-		text-align: center;
-	}
-
+	/* Скрываем боковые колонки и все информационные панели */
+	.side-column,
 	.side-panel,
-	.column-container:not(.image-container):not(.back-container) {
+	.column-container,
+	.info-panel,
+	.data-panel,
+	.panel-header,
+	.data-line,
+	.status-ok {
 		display: none !important;
 	}
 
-	.data-line {
-		padding: 5px 0;
-		font-size: 0.7rem;
+	/* Контейнер карты на всю ширину */
+	.space-container {
+		width: 100%;
+		min-height: 500px;
+		margin: 0;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
 	}
 
-	h1, .header-title {
-		font-size: 1.5rem;
-		letter-spacing: 6px;
-		margin: 20px 0;
+	/* Фоновое изображение карты */
+	#bg-map {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
+
+	/* SVG-слой карты */
+	svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Интерактивные зоны планет – делаем их более заметными для пальца */
+	.planet-zone {
+		stroke-width: 1;
+		stroke: rgba(0, 212, 255, 0.3);
+		fill: transparent;
+	}
+
+		.planet-zone:hover {
+			stroke-width: 3;
+			fill: rgba(0, 212, 255, 0.2);
+		}
+
+	/* Кнопка "Назад" центрируем и увеличиваем */
 	.back-container {
 		display: flex;
 		justify-content: center;
-		margin: 10px 0;
-	}
-}
-
-@media (max-width: 480px) {
-	.space-container {
-		min-height: 200px;
+		margin: 20px 0;
+		text-align: center;
 	}
 
-	.side-panel {
-		padding: 12px;
-		font-size: 0.7rem;
-	}
-
-		.side-panel::before {
-			content: "DATA";
-			font-size: 0.35rem;
-			top: 3px;
-			right: 8px;
-		}
-
-	.data-line {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 4px;
-	}
-
-	h1, .header-title {
-		font-size: 1.2rem;
+	/* Если есть заголовок h1 на странице карты */
+	.main-layout h1,
+	.header-title,
+	h1 {
+		font-size: 1.8rem;
 		letter-spacing: 4px;
+		margin: 15px 0;
+		text-align: center;
 	}
 
-	.custom-tooltip {
-		font-size: 0.65rem;
-		padding: 2px 6px;
-		max-width: 120px;
+	/* Основной контейнер макета – убираем сетку */
+	.main-layout {
+		display: block;
+		padding: 10px;
+		margin: 0;
+	}
+
+	/* Убираем лишние отступы у body на этой странице (если нужно) */
+	body {
+		padding: 10px;
 	}
 }
