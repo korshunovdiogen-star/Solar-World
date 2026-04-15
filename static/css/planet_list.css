@@ -224,41 +224,17 @@ h1, .header-title {
 /* ============================================================
    АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
    ============================================================ */
-@media (max-width: 1024px) {
-	.main-layout {
-		grid-template-columns: 1fr;
-		gap: 20px;
-		padding: 15px;
-	}
-
-	.side-column {
-		order: 2;
-	}
-
-	.space-container {
-		order: 1;
-		grid-column: auto;
-		min-height: 300px;
-	}
-
-	.side-panel {
-		font-size: 0.85rem;
-		padding: 20px;
-	}
-
-		.side-panel::before {
-			font-size: 0.4rem;
-		}
-}
-
 @media (max-width: 768px) {
 	.main-layout {
-		padding: 10px;
+		display: block;
+		padding: 0;
 	}
 
 	.space-container {
-		min-height: 250px;
-		border-radius: 2px;
+		width: 100%;
+		margin: 0;
+		border: none;
+		border-radius: 0;
 	}
 
 	.custom-tooltip {
@@ -269,11 +245,9 @@ h1, .header-title {
 		text-align: center;
 	}
 
-	.side-panel {
-		font-size: 0.75rem;
-		padding: 15px;
-		clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-		border-left-width: 3px;
+	.side-panel,
+	.column-container:not(.image-container):not(.back-container) {
+		display: none !important;
 	}
 
 	.data-line {
@@ -285,6 +259,11 @@ h1, .header-title {
 		font-size: 1.5rem;
 		letter-spacing: 6px;
 		margin: 20px 0;
+	}
+	.back-container {
+		display: flex;
+		justify-content: center;
+		margin: 10px 0;
 	}
 }
 

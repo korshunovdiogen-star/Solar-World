@@ -106,17 +106,7 @@ html {
         white-space: nowrap; /* Чтобы имя не разрывалось на две строки */
     }
 
-/* Адаптив: на маленьких экранах всё-таки ограничиваем, чтобы не вылезло за край */
-@media (max-width: 1024px) {
-    .profile-icon {
-        max-width: 200px;
-    }
 
-        .profile-icon span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-}
 
 .nav-item {
     position: relative;
@@ -215,34 +205,35 @@ h1 {
    ============================================================ */
 @media (max-width: 768px) {
     .top-nav {
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 0;
     }
 
     .nav-links {
         justify-content: center;
-        gap: 10px;
-        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .nav-profile {
-        justify-content: center;
+        margin-left: 0;
     }
 
     .nav-item {
-        font-size: 0.9rem;
-        padding: 6px 12px;
+        font-size: 0.8rem;
+        padding: 5px 10px;
         clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
     }
 
     .profile-icon {
-        padding: 4px 12px;
-        gap: 6px;
+        padding: 4px 10px;
+        gap: 5px;
     }
 
         .profile-icon span {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
     .back-container {
