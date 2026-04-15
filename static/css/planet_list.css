@@ -226,7 +226,6 @@ h1, .header-title {
    ============================================================ */
 @media (max-width: 768px) {
 	/* Скрываем боковые колонки и все информационные панели */
-	.side-column,
 	.side-panel,
 	.column-container,
 	.info-panel,
