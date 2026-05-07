@@ -2,12 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\planets",
-    "\\planets\\templates",
-    "\\planets\\templates\\planets",
+    "\\planets\\tests",
     "\\solarWorld",
-    "\\static",
-    "\\static\\css"
+    "\\users",
+    "\\users\\tests"
   ],
-  "SelectedNode": "\\static\\css\\main.css",
+  "SelectedNode": "\\planets\\views.py",
   "PreviewInSolutionExplorer": false
 }
