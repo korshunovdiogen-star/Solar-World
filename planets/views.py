@@ -92,13 +92,15 @@ def satellite_detail(request, pk):
             defaults={'viewed_at': timezone.now()}
         )
 
-    return render(request, 'planets/satellite_detail.html', {
+    context={   
         'satellite': satellite,
         'first_line': first_line,
         'remaining_text': remaining_text, 
         'is_favorite': is_favorite,
-        'content_type': 'satellite', 
-        })
+        'content_type': 'satellite',
+        }
+    cache.set(cache_key, context, timeout=60 * 15)
+    return render(request, 'planets/satellite_detail.html', context)
 
 
 @cache_page(60 * 15)
@@ -126,15 +128,16 @@ def mission_detail(request, pk):
             defaults={'viewed_at': timezone.now()}
         )
 
-
-    return render(request, 'planets/mission_detail.html', {
+    context={
         'mission': mission, 
         'first_line': first_line,
         'remaining_text': remaining_text, 
         'duration': duration,
         'is_favorite': is_favorite,
         'content_type': 'mission', 
-    })
+    }
+    cache.set(cache_key, context, timeout=60 * 15)
+    return render(request, 'planets/mission_detail.html', context)
 
 
 @cache_page(60 * 15)
@@ -162,14 +165,16 @@ def spaceAgency_detail(request, pk):
             defaults={'viewed_at': timezone.now()}
         )
 
-    return render(request, 'planets/spaceAgency_detail.html', {
+    context={
         'spaceAgency': spaceAgency, 
         'first_line': first_line, 
         'remaining_text': remaining_text,
         'days_passed': days_passed.days,
         'is_favorite': is_favorite,
         'content_type': 'spaceAgency',
-        })
+        }
+    cache.set(cache_key, context, timeout=60 * 15)
+    return render(request, 'planets/spaceAgency_detail.html', context)
 
 
 @cache_page(60 * 15)
@@ -185,13 +190,16 @@ def company_detail(request, pk):
     lines = company.text.splitlines()
     remaining_text = "\n".join(lines[1:])
     days_passed=date.today()-company.established_date
-    return render(request, 'planets/company_detail.html', {
+
+    context={
         'company': company,
         'first_line': first_line,
         'remaining_text': remaining_text,
         'days_passed': days_passed.days, #сколько дней прошло со дня основания
         'content_type': 'company',
-    })
+    }
+    cache.set(cache_key, context, timeout=60 * 15)
+    return render(request, 'planets/company_detail.html', context)
 
 
 
