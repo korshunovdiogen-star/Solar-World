@@ -26,7 +26,7 @@ def test_catalog_api():
     )
 
     client = Client()
-    url = reverse('catalog_api')   # убедитесь, что в urls.py есть name='catalog_api'
+    url = reverse('catalog_api')
 
     # 1. Без параметров – все объекты
     response = client.get(url)

@@ -6,16 +6,15 @@ from datetime import date
 class PlanetSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
-    planet_type = serializers.SerializerMethodField()
     satellites = serializers.StringRelatedField(many=True, read_only=True)
-    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_planet_type_display', read_only=True)
 
     class Meta:
         model = Planet
         fields = [
-            'id', 'name', 'radius', 'planet_type',
+            'id', 'name', 'radius',
             'image', 'text', 'model_type', 'detail_url',
             'first_line', 'remaining_text', 'satellites', 'type_display'
         ]
@@ -31,9 +30,6 @@ class PlanetSerializer(serializers.ModelSerializer):
             return "\n".join(lines[1:])
         return ""
 
-    def get_planet_type(self, obj):
-        return 'planet'
-
     def get_model_type(self, obj):
         return 'planet' 
 
@@ -45,15 +41,14 @@ class PlanetSerializer(serializers.ModelSerializer):
 class SatelliteSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
-    satellite_type = serializers.SerializerMethodField()
-    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_satellite_type_display', read_only=True)
 
     class Meta:
         model = Satellite
         fields = [
-            'id', 'name', 'radius', 'satellite_type',
+            'id', 'name', 'radius',
             'image', 'text', 'planet', 'detail_url',
             'first_line', 'remaining_text', 'model_type', 'type_display'
         ]
@@ -69,9 +64,6 @@ class SatelliteSerializer(serializers.ModelSerializer):
             return "\n".join(lines[1:])
         return ""
 
-    def get_satellite_type(self, obj):
-        return 'satellite'
-
     def get_model_type(self, obj):
         return 'satellite' 
 
@@ -83,9 +75,8 @@ class SatelliteSerializer(serializers.ModelSerializer):
 class MissionSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
-    duration = serializers.SerializerMethodField()  # дней со дня запуска
-    mission_type = serializers.SerializerMethodField()
-    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    duration = serializers.SerializerMethodField()
+    model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_mission_type_display', read_only=True)
     agency_names = serializers.SerializerMethodField()
@@ -93,7 +84,7 @@ class MissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mission
         fields = [
-            'id', 'name', 'mission_type', 'launch_date', 'image', 'detail_url',
+            'id', 'name', 'launch_date', 'image', 'detail_url',
             'status', 'target_planets', 'target_satellites', 'text', 'agency_names',
             'first_line', 'remaining_text', 'duration', 'model_type', 'type_display'
         ]
@@ -114,9 +105,6 @@ class MissionSerializer(serializers.ModelSerializer):
             return (timezone.now().date() - obj.launch_date).days
         return None
 
-    def get_mission_type(self, obj):
-        return 'mission'
-
     def get_model_type(self, obj):
         return 'mission' 
 
@@ -133,7 +121,7 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()
     remaining_text = serializers.SerializerMethodField()
     days_passed = serializers.SerializerMethodField()
-    model_type = serializers.SerializerMethodField() # принадлежность к планетам/спутникам (для ссылкы в каталоге)
+    model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
     country = serializers.CharField(read_only=True)
 
@@ -157,7 +145,7 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
 
     def get_days_passed(self, obj):
         if obj.established_date:
-            return (date.today() - obj.established_date).days
+            return (timezone.now().date() - obj.established_date).days
         return None
 
     def get_model_type(self, obj):

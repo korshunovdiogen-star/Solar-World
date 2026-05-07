@@ -16,11 +16,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['LorAdmin.pythonanywhere.com']
+# ALLOWED_HOSTS = ['LorAdmin.pythonanywhere.com']
 
 
 # Application definition
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'rest_framework',
     'planets',
     'users',
@@ -41,11 +42,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+INTERNAL_IPS = ['127.0.0.1']
 
 ROOT_URLCONF = 'solarWorld.urls'
 
@@ -74,6 +78,19 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Кеширование с помощью Redis (Memurai)
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",   
+        "LOCATION": "redis://127.0.0.1:6379/1",         
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",  
+        },
+        "KEY_PREFIX": "solar_world",                   
+        "TIMEOUT": 60 * 15,                             
     }
 }
 
@@ -122,5 +139,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-LOGIN_REDIRECT_URL = 'profile'   # после входа в профиль
-LOGOUT_REDIRECT_URL = 'main'  # после выхода на главную
+LOGIN_REDIRECT_URL = 'profile'   # после входа - в профиль
+LOGOUT_REDIRECT_URL = 'main'  # после выхода - на главную
