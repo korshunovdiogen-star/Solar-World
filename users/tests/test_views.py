@@ -140,6 +140,7 @@ def test_toggle_favorite_unauthenticated(client, planet):
 @pytest.mark.django_db
 def test_history_saved_on_planet_detail(client, user, planet):
     client.login(username='testuser', password='testpass')
+    print(client.login(username='testuser', password='testpass'))
     url = reverse('planet_detail', args=[planet.id])
     response = client.get(url)
     assert response.status_code == 200
