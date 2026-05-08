@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+import sys
 
 load_dotenv() 
 
@@ -141,3 +141,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = 'profile'   # после входа - в профиль
 LOGOUT_REDIRECT_URL = 'main'  # после выхода - на главную
+
+if 'test' in sys.argv or 'pytest' in sys.modules:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
