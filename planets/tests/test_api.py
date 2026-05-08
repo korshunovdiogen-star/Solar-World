@@ -50,7 +50,7 @@ def test_catalog_api():
     assert data['results'][0]['name'] == 'Марс'
 
     # 4. Сортировка по радиусу по убыванию
-    response = client.get(url, {'ordering': 'radius_desc'})
+    response = client.get(url, {'category': 'planet', 'ordering': 'radius_desc'})
     assert response.status_code == 200
     data = response.json()
     radii = [item['radius'] for item in data['results']]

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from functools import wraps
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from django.utils import timezone
@@ -18,6 +19,9 @@ from django.contrib.contenttypes.models import ContentType
 from users.models import History, Favorite
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from users.decorators import track_user_activity
+
+
 
 
 # Главная страница
@@ -26,13 +30,13 @@ def main(request):
     return render(request, 'planets/main.html')
 
 # Список всех планет
-@cache_page(60 * 15)
 def planet_list(request):
     planets = Planet.objects.all()
     return render(request, 'planets/planet_list.html', {'planets': planets})
 
 # Страница планеты
-def planet_detail(request, pk):
+@track_user_activity(Planet)
+def planet_detail(request, pk, is_favorite=False):
     cache_key = f"planet:{pk}:detail"
     cached_context = cache.get(cache_key)
 
@@ -44,18 +48,7 @@ def planet_detail(request, pk):
     lines = planet.text.splitlines()
     remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
     satellites = planet.satellites.all().order_by('satellite_type', 'name') 
-    is_favorite = False
 
-    if request.user.is_authenticated:
-        content_type = ContentType.objects.get_for_model(Planet)
-        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=planet.id).exists()
-        History.objects.update_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=planet.id,
-            defaults={'viewed_at': timezone.now()}
-        )
-    
     context = {
         'planet': planet, #сам объект
         'satellites': satellites,# список объектов спутников 
@@ -68,8 +61,8 @@ def planet_detail(request, pk):
     return render(request, 'planets/planet_detail.html', context)
 
 # Страница конкретного спутника
-@cache_page(60 * 15)
-def satellite_detail(request, pk):
+@track_user_activity(Satellite)
+def satellite_detail(request, pk, is_favorite=False):
     cache_key = f"satellite:{pk}:detail"
     cached_context = cache.get(cache_key)
 
@@ -80,17 +73,6 @@ def satellite_detail(request, pk):
     first_line = satellite.text.splitlines()[0] if satellite.text else ''
     lines = satellite.text.splitlines()
     remaining_text = "\n".join(lines[1:])  
-    is_favorite = False
-
-    if request.user.is_authenticated:
-        content_type = ContentType.objects.get_for_model(Satellite)
-        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=satellite.id).exists()
-        History.objects.update_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=satellite.id,
-            defaults={'viewed_at': timezone.now()}
-        )
 
     context={   
         'satellite': satellite,
@@ -103,8 +85,8 @@ def satellite_detail(request, pk):
     return render(request, 'planets/satellite_detail.html', context)
 
 
-@cache_page(60 * 15)
-def mission_detail(request, pk):
+@track_user_activity(Mission)
+def mission_detail(request, pk, is_favorite=False):
     cache_key = f"mission:{pk}:detail"
     cached_context = cache.get(cache_key)
 
@@ -116,17 +98,6 @@ def mission_detail(request, pk):
     lines = mission.text.splitlines()
     remaining_text = "\n".join(lines[1:])  
     duration = (timezone.now().date() - mission.launch_date).days 
-    is_favorite = False
-
-    if request.user.is_authenticated:
-        content_type = ContentType.objects.get_for_model(Mission)
-        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=mission.id).exists()
-        History.objects.update_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=mission.id,
-            defaults={'viewed_at': timezone.now()}
-        )
 
     context={
         'mission': mission, 
@@ -140,8 +111,8 @@ def mission_detail(request, pk):
     return render(request, 'planets/mission_detail.html', context)
 
 
-@cache_page(60 * 15)
-def spaceAgency_detail(request, pk):
+@track_user_activity(SpaceAgency)
+def spaceAgency_detail(request, pk, is_favorite=False):
     cache_key = f"spaceAgency:{pk}:detail"
     cached_context = cache.get(cache_key)
 
@@ -153,17 +124,6 @@ def spaceAgency_detail(request, pk):
     lines = spaceAgency.text.splitlines()
     remaining_text = "\n".join(lines[1:])  
     days_passed=date.today()-spaceAgency.established_date
-    is_favorite = False
-
-    if request.user.is_authenticated:
-        content_type = ContentType.objects.get_for_model(SpaceAgency)
-        is_favorite = Favorite.objects.filter(user=request.user, content_type=content_type, object_id=spaceAgency.id).exists()
-        History.objects.update_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=spaceAgency.id,
-            defaults={'viewed_at': timezone.now()}
-        )
 
     context={
         'spaceAgency': spaceAgency, 
@@ -177,8 +137,8 @@ def spaceAgency_detail(request, pk):
     return render(request, 'planets/spaceAgency_detail.html', context)
 
 
-@cache_page(60 * 15)
-def company_detail(request, pk):
+@track_user_activity(Company)
+def company_detail(request, pk, is_favorite=False):
     cache_key = f"company:{pk}:detail"
     cached_context = cache.get(cache_key)
 
