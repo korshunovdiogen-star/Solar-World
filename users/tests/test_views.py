@@ -129,7 +129,7 @@ def test_toggle_favorite_unauthenticated(client, planet):
     url = reverse('toggle_favorite')
     data = {'content_type': 'planet', 'object_id': planet.id}
     response = client.post(url, json.dumps(data), content_type='application/json')
-    assert response.status_code == 302  # редирект на login
+    assert response.status_code == 302 
 
 # ---- Тесты истории (автоматическое сохранение при просмотре) ----
 @pytest.mark.django_db
