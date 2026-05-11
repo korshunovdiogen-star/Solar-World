@@ -2,17 +2,15 @@ import pytest
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from users.models import Profile, Favorite, History
-from planets.models import Planet, Satellite  # для создания тестовых объектов
+from planets.models import Planet, Satellite 
 
-# Фикстура для пользователя
 @pytest.fixture
 def user():
     return User.objects.create_user(username="testuser", password="testpass")
 
-# Фикстура для планеты (как пример объекта, который можно добавить в избранное/историю)
 @pytest.fixture
 def planet():
-    return Planet.objects.create(name="Марс", order=4, radius=3390, planet_type="terrestrial")
+    return Planet.objects.create(name="Марс", order=4, radius=3390, planet_type="TER")
 
 # --- Тесты для Profile ---
 @pytest.mark.django_db
@@ -40,7 +38,7 @@ def test_favorite_unique_constraint(user, planet):
     """Один пользователь не может добавить один и тот же объект дважды"""
     ct = ContentType.objects.get_for_model(Planet)
     Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
-    with pytest.raises(Exception):  # IntegrityError
+    with pytest.raises(Exception):  
         Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
 
 @pytest.mark.django_db
@@ -70,8 +68,6 @@ def test_history_unique_together(user, planet):
     """Один пользователь не может иметь две записи об одном объекте (unique_together)"""
     ct = ContentType.objects.get_for_model(Planet)
     History.objects.create(user=user, content_type=ct, object_id=planet.id)
-    # Повторное создание должно обновить viewed_at (update_or_create), но если просто create, то ошибка
-    # Проверяем, что unique_together настроен
     with pytest.raises(Exception):
         History.objects.create(user=user, content_type=ct, object_id=planet.id)
 
@@ -80,12 +76,9 @@ def test_history_ordering(user, planet):
     """Записи истории должны сортироваться по убыванию viewed_at"""
     ct = ContentType.objects.get_for_model(Planet)
     h1 = History.objects.create(user=user, content_type=ct, object_id=planet.id)
-    # Создадим второй объект (спутник)
     satellite = Satellite.objects.create(name="Фобос", radius=11, planet=planet)
     ct2 = ContentType.objects.get_for_model(Satellite)
     h2 = History.objects.create(user=user, content_type=ct2, object_id=satellite.id)
-    # Получаем историю пользователя
     history_list = History.objects.filter(user=user)
-    # По умолчанию order by -viewed_at
     assert history_list[0] == h2  # более поздний (новый) должен быть первым
     assert history_list[1] == h1

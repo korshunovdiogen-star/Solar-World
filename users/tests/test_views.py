@@ -22,7 +22,7 @@ def planet():
         name="Марс",
         order=4,
         radius=3390,
-        planet_type="terrestrial",
+        planet_type="TER",
         text="Марс — четвёртая планета.\nИнтересный факт: ..."
     )
 
@@ -61,32 +61,27 @@ def test_register_view_post_invalid(client):
         'password2': 'different'
     }
     response = client.post(url, data)
-    assert response.status_code == 200  # форма с ошибками
+    assert response.status_code == 200
     assert 'form' in response.context
     assert response.context['form'].errors
     assert not User.objects.filter(username='newuser').exists()
 
-# ---- Тесты входа/выхода (Django предоставляет стандартные представления) ----
 @pytest.mark.django_db
 def test_login_view(client, user):
     url = reverse('login')
     data = {'username': 'testuser', 'password': 'testpass'}
     response = client.post(url, data)
     assert response.status_code == 302
-    # Если LOGIN_REDIRECT_URL = 'profile', то редирект на /profile/
-    assert response.url == reverse('profile')  # замените на reverse('main') если нужно
+    assert response.url == reverse('profile')  
 
 @pytest.mark.django_db
 def test_logout_view(client, user):
     client.login(username='testuser', password='testpass')
     url = reverse('logout')
-    # В современных версиях Django logout работает только через POST
     response = client.post(url)
     assert response.status_code == 302
-    # Обычно после выхода редирект на главную
     assert response.url == reverse('main')
 
-# ---- Тесты профиля ----
 @pytest.mark.django_db
 def test_profile_view_requires_login(client):
     url = reverse('profile')
@@ -147,7 +142,7 @@ def test_history_saved_on_planet_detail(client, user, planet):
     ct = ContentType.objects.get_for_model(Planet)
     assert History.objects.filter(user=user, content_type=ct, object_id=planet.id).exists()
 
-# ---- Дополнительно: проверка, что история не дублируется при повторном просмотре ----
+# ---- проверка, что история не дублируется при повторном просмотре ----
 @pytest.mark.django_db
 def test_history_does_not_duplicate(client, user, planet):
     client.login(username='testuser', password='testpass')
