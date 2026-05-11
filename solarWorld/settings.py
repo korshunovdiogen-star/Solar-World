@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import sys
-
+import dj_database_url
 load_dotenv() 
 
 
@@ -74,14 +74,20 @@ WSGI_APPLICATION = 'solarWorld.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
-# Кеширование с помощью Redis (Memurai)
+
+# Кеширование с помощью Redis
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",   
@@ -148,3 +154,16 @@ if 'test' in sys.argv or 'pytest' in sys.modules:
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
+
+# Настройки для Render (применяются, только если проект запущен в облаке)
+if 'RENDER' in os.environ:
+    ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', '*')]
+    
+
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STATIC_ROOT = Path(__file__).resolve().parent.parent / 'staticfiles'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
