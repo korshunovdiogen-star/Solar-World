@@ -20,7 +20,9 @@ from users.models import History, Favorite
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from users.decorators import track_user_activity
-
+from .utils import separate_first_line
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 
 
@@ -39,14 +41,13 @@ def planet_list(request):
 def planet_detail(request, pk, is_favorite=False):
     cache_key = f"planet:{pk}:detail"
     cached_context = cache.get(cache_key)
-
     if cached_context is not None:
         return render(request, 'planets/planet_detail.html', cached_context)
 
     planet = get_object_or_404(Planet, pk=pk)
-    first_line = planet.text.splitlines()[0] if planet.text else ''
-    lines = planet.text.splitlines()
-    remaining_text = "\n".join(lines[1:])  # все строки, кроме первой
+
+    first_line, remaining_text = separate_first_line(planet);
+
     satellites = planet.satellites.all().order_by('satellite_type', 'name') 
 
     context = {
@@ -70,9 +71,8 @@ def satellite_detail(request, pk, is_favorite=False):
         return render(request, 'planets/satellite_detail.html', cached_context)
 
     satellite = get_object_or_404(Satellite, pk=pk)
-    first_line = satellite.text.splitlines()[0] if satellite.text else ''
-    lines = satellite.text.splitlines()
-    remaining_text = "\n".join(lines[1:])  
+
+    first_line, remaining_text = separate_first_line(satellite); 
 
     context={   
         'satellite': satellite,
@@ -94,9 +94,9 @@ def mission_detail(request, pk, is_favorite=False):
         return render(request, 'planets/mission_detail.html', cached_context)
 
     mission = get_object_or_404(Mission, pk=pk)
-    first_line = mission.text.splitlines()[0] if mission.text else ''
-    lines = mission.text.splitlines()
-    remaining_text = "\n".join(lines[1:])  
+
+    first_line, remaining_text = separate_first_line(mission); 
+
     duration = (timezone.now().date() - mission.launch_date).days 
 
     context={
@@ -120,9 +120,8 @@ def spaceAgency_detail(request, pk, is_favorite=False):
         return render(request, 'planets/spaceAgency_detail.html', cached_context)
 
     spaceAgency = get_object_or_404(SpaceAgency, pk=pk)
-    first_line = spaceAgency.text.splitlines()[0] if spaceAgency.text else ''
-    lines = spaceAgency.text.splitlines()
-    remaining_text = "\n".join(lines[1:])  
+
+    first_line, remaining_text = separate_first_line(spaceAgency);  
     days_passed=date.today()-spaceAgency.established_date
 
     context={
@@ -146,9 +145,8 @@ def company_detail(request, pk, is_favorite=False):
         return render(request, 'planets/company_detail.html', cached_context)
 
     company = get_object_or_404(Company, pk=pk)
-    first_line = company.text.splitlines()[0] if company.text else ''
-    lines = company.text.splitlines()
-    remaining_text = "\n".join(lines[1:])
+
+    first_line, remaining_text = separate_first_line(company);  
     days_passed=date.today()-company.established_date
 
     context={
@@ -169,6 +167,23 @@ def company_detail(request, pk, is_favorite=False):
 def catalog_page(request):
     return render(request, 'planets/catalog.html')
 
+SORT_MAP = {
+    'all': {'name_asc': 'name', 'name_desc': '-name'},
+    'planet': {'name_asc': 'name', 'name_desc': '-name', 
+               'radius_asc': 'radius', 'radius_desc': '-radius',
+               'type_asc' : 'planet_type', 'type_desc' : '-planet_type'},
+    'satellite': {'name_asc': 'name', 'name_desc': '-name',
+                  'radius_asc': 'radius', 'radius_desc': '-radius',
+                  'type_asc' : 'satellite_type', 'type_desc' : '-satellite_type'},
+    'mission': {'name_asc': 'name', 'name_desc': '-name',
+                'mission_type_asc': 'mission_type','mission_type_desc': '-mission_type',
+                'agency_asc': 'space_agency__name', 'agency_desc': '-space_agency__name'},
+    'agency': {'name_asc': 'name', 'name_desc': '-name'},
+    'company': {'name_asc': 'name', 'name_desc': '-name',
+                'revenue_asc': 'revenue_2025', 'revenue_desc': '-revenue_2025',
+                'country_asc' : 'country', 'country_desc' : '-country'},
+}
+
 @cache_page(60 * 15)
 def catalog_api(request):
     q = request.GET.get('q', '').strip()
@@ -180,69 +195,6 @@ def catalog_api(request):
     page = max(1, page) # Защита от некорректного номера страницы
     results = []
     total_pages = 1
-
-    # Функция для применения сортировки к QuerySet
-    def apply_ordering(queryset, model_type):
-        if model_type == 'planet':
-            if ordering == 'name_asc':
-                return queryset.order_by('name')
-            elif ordering == 'name_desc':
-                return queryset.order_by('-name')
-            elif ordering == 'radius_asc':
-                return queryset.order_by('radius')
-            elif ordering == 'radius_desc':
-                return queryset.order_by('-radius')
-            elif ordering == 'type_asc':
-                return queryset.order_by('planet_type')
-            else:
-                return queryset
-        elif model_type == 'satellite':
-            if ordering == 'name_asc':
-                return queryset.order_by('name')
-            elif ordering == 'name_desc':
-                return queryset.order_by('-name')
-            elif ordering == 'radius_asc':
-                return queryset.order_by('radius')
-            elif ordering == 'radius_desc':
-                return queryset.order_by('-radius')
-            elif ordering == 'type_asc':
-                return queryset.order_by('satellite_type')
-            else:
-                return queryset
-        elif model_type == 'mission':
-            if ordering == 'name_asc':
-                return queryset.order_by('name')
-            elif ordering == 'name_desc':
-                return queryset.order_by('-name')
-            elif ordering == 'mission_type_asc':
-                return queryset.order_by('mission_type')
-            elif ordering == 'agency_asc':
-                return queryset.order_by('space_agency__name') 
-            else:
-                return queryset
-        elif model_type == 'agency':
-            if ordering == 'name_asc':
-                return queryset.order_by('name')
-            elif ordering == 'name_desc':
-                return queryset.order_by('-name')
-            else:
-                return queryset
-        elif model_type == 'company':
-            if ordering == 'name_asc':
-                return queryset.order_by('name')
-            elif ordering == 'name_desc':
-                return queryset.order_by('-name')
-            elif ordering == 'revenue_asc':
-                return queryset.order_by('-revenue_2025')
-            elif ordering == 'revenue_desc':
-                return queryset.order_by('revenue_2025')
-            elif ordering == 'country_asc':
-                return queryset.order_by('country')
-            elif ordering == 'country_desc':
-                return queryset.order_by('-country')
-            else:
-                return queryset
-        return queryset
 
 
 
@@ -310,12 +262,14 @@ def catalog_api(request):
                 elif category == 'mission':
                     queryset = queryset.prefetch_related('agencies')
 
+                sort_field = SORT_MAP.get(category, {}).get(ordering, 'id')
+                queryset = queryset.order_by(sort_field)
+
                 total_count = queryset.count()
                 total_pages = (total_count + per_page - 1) // per_page if total_count > 0 else 1
                 page = min(page, total_pages)
                 offset = (page - 1) * per_page
 
-                queryset = apply_ordering(queryset, model_type)
                 items = queryset[offset:offset + per_page]
                 results = serializer_class(items, many=True).data
 
@@ -336,7 +290,6 @@ def catalog_api(request):
         'total_pages': total_pages,
         'current_page': page,
     })
-
 
 
 
