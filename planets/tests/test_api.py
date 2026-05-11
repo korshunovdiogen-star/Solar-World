@@ -9,19 +9,19 @@ def test_catalog_api():
     Planet.objects.create(
         name="Марс",
         radius=3390,
-        planet_type="terrestrial",
+        planet_type="TER",
         order=4
     )
     Planet.objects.create(
         name="Венера",
         radius=6052,
-        planet_type="terrestrial",
+        planet_type="TER",
         order=2
     )
     Planet.objects.create(
         name="Юпитер",
         radius=69911,
-        planet_type="gas_giant",
+        planet_type="GAS",
         order=5
     )
 

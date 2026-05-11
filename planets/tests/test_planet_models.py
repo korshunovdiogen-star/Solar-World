@@ -7,7 +7,7 @@ def test_planet_creation():
     planet = Planet.objects.create(
         name="Марс",
         radius=3390,
-        planet_type="terrestrial",
+        planet_type="TER",
         order=4,
     )
     assert planet.name == "Марс"
@@ -16,9 +16,9 @@ def test_planet_creation():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("name, radius, ptype, order", [
-    ("Меркурий", 2440, "terrestrial", 1),
-    ("Юпитер", 69911, "gas_giant", 2),
-    ("Плутон", 1188, "dwarf", 3),
+    ("Меркурий", 2440, "TER", 1),
+    ("Юпитер", 69911, "GAS", 2),
+    ("Плутон", 1188, "DWA", 3),
 ])
 def test_planet_types(name, radius, ptype, order):
     planet = Planet.objects.create(name=name, radius=radius, planet_type=ptype, order=order)
@@ -27,12 +27,11 @@ def test_planet_types(name, radius, ptype, order):
 
 @pytest.mark.django_db
 def test_satellite_creation():
-    # Сначала создадим планету-хозяина
     planet = Planet.objects.create(name="Марс", radius=3390, order=4)
     satellite = Satellite.objects.create(
         name="Фобос",
         radius=11,
-        satellite_type="irregular",   # тип спутника (регулярный/нерегулярный)
+        satellite_type="IRR",   
         planet=planet
     )
     assert satellite.name == "Фобос"
@@ -42,12 +41,11 @@ def test_satellite_creation():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("name, radius, sat_type", [
-    ("Луна", 1737, "regular"),
-    ("Деймос", 6, "irregular"),
-    ("Европа", 1561, "regular"),
+    ("Луна", 1737, "REG"),
+    ("Деймос", 6, "IRR"),
+    ("Европа", 1561, "REG"),
 ])
 def test_satellite_types(name, radius, sat_type):
-    # Для параметризации нужна планета-хозяин
     planet = Planet.objects.create(name="Тестовая планета", radius=99999, order=99)
     satellite = Satellite.objects.create(
         name=name,
@@ -57,12 +55,11 @@ def test_satellite_types(name, radius, sat_type):
     )
     assert satellite.satellite_type == sat_type
 
-# --- Тесты для Mission ---
 @pytest.mark.django_db
 def test_mission_creation():
     mission = Mission.objects.create(
         name="Аполлон-11",
-        mission_type="piloted",
+        mission_type="OTH",
         launch_date="1969-07-16",
         status="completed",
         success=True
@@ -73,9 +70,9 @@ def test_mission_creation():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("name, mtype, success", [
-    ("Вояджер-1", "flyby", True),
-    ("Марс-3", "lander", False),
-    ("JWST", "telescope", True),
+    ("Вояджер-1", "OTH", True),
+    ("Марс-3", "MRV", False),
+    ("JWST", "TEL", True),
 ])
 def test_mission_types(name, mtype, success):
     mission = Mission.objects.create(
@@ -125,7 +122,7 @@ def test_planet_detail_view(client):
     planet = Planet.objects.create(
         name="Марс",
         radius=3390,
-        planet_type="terrestrial",
+        planet_type="TER",
         order=4,
         text="Марс — четвёртая планета.\nИнтересный факт: ..."
     )
@@ -140,7 +137,7 @@ def test_satellite_detail_view(client):
     satellite = Satellite.objects.create(
         name="Фобос",
         radius=11,
-        satellite_type="irregular",
+        satellite_type="IRR",
         planet=planet,
         text="Фобос — спутник Марса.\nОписание..."
     )
@@ -153,7 +150,7 @@ def test_satellite_detail_view(client):
 def test_mission_detail_view(client):
     mission = Mission.objects.create(
         name="Аполлон-11",
-        mission_type="piloted",
+        mission_type="OTH",
         launch_date="1969-07-16",
         status="completed",
         success=True,
@@ -196,8 +193,8 @@ def test_company_detail_view(client):
 
 @pytest.mark.django_db
 def test_planet_list_view(client):
-    mars = Planet.objects.create(name="Марс", order=4, radius=3390, planet_type="terrestrial")
-    venus = Planet.objects.create(name="Венера", order=2, radius=6052, planet_type="terrestrial")
+    mars = Planet.objects.create(name="Марс", order=4, radius=3390, planet_type="TER")
+    venus = Planet.objects.create(name="Венера", order=2, radius=6052, planet_type="TER")
     url = reverse('planet_list')
     response = client.get(url)
     assert response.status_code == 200
