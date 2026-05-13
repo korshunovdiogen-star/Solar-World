@@ -34,12 +34,12 @@
         <div id="sort-buttons-planet-satellite" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
             <button class="sort-btn" data-sort="radius">Радиус <span class="sort-direction">↑</span></button>
-            <button class="sort-btn" data-sort="type">Тип</button>
+            <button class="sort-btn" data-sort="type">Тип <span class="sort-direction">↑</span></button>
         </div>
         <div id="sort-buttons-mission" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
-            <button class="sort-btn" data-sort="mission_type">Тип миссии</button>
-            <button class="sort-btn" data-sort="agency">Агентство</button>
+            <button class="sort-btn" data-sort="mission_type">Тип миссии <span class="sort-direction">↑</span></button>
+            <button class="sort-btn" data-sort="agency">Агентство <span class="sort-direction">↑</span></button>
         </div>
         <div id="sort-buttons-agency" class="sort-buttons-group" style="display: none;">
             <button class="sort-btn" data-sort="name">Название <span class="sort-direction">↑</span></button>
@@ -102,17 +102,16 @@
             const btns = visibleGroup.querySelectorAll('.sort-btn');
             btns.forEach(btn => {
                 const sortField = btn.getAttribute('data-sort');
+                const dirSpan = btn.querySelector('.sort-direction');
                 if (sortField === currentSort) {
                     btn.classList.add('active');
-                    if (sortField === 'name' || sortField === 'radius' || sortField === 'revenue_2025' || sortField === 'country') {
-                        const dirSpan = btn.querySelector('.sort-direction');
-                        if (dirSpan) dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
+                    if (dirSpan) {
+                        dirSpan.textContent = sortOrder === 'asc' ? '↑' : '↓';
                     }
                 } else {
                     btn.classList.remove('active');
-                    if (sortField === 'name') {
-                        const dirSpan = btn.querySelector('.sort-direction');
-                        if (dirSpan) dirSpan.textContent = '↑';
+                    if (dirSpan) {
+                        dirSpan.textContent = '↑';
                     }
                 }
             });
@@ -155,7 +154,7 @@
                 sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
             } else {
                 currentSort = sortField;
-                sortOrder = 'asc';
+                sortOrder = 'desc';  
             }
             updateActiveButtons();
             currentPage = 1;
@@ -168,7 +167,6 @@
             const category = categorySelect.value;
             const ordering = getOrdering();
             const url = `/api/catalog/?q=${encodeURIComponent(q)}&category=${category}&page=${currentPage}&ordering=${ordering}`;
-
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
