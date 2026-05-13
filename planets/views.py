@@ -36,7 +36,6 @@ def planet_list(request):
     planets = Planet.objects.all()
     return render(request, 'planets/planet_list.html', {'planets': planets})
 
-# Страница планеты
 @track_user_activity(Planet)
 def planet_detail(request, pk, is_favorite=False):
     cache_key = f"planet:{pk}:detail"
@@ -61,7 +60,7 @@ def planet_detail(request, pk, is_favorite=False):
     cache.set(cache_key, context, timeout=60 * 15)
     return render(request, 'planets/planet_detail.html', context)
 
-# Страница конкретного спутника
+
 @track_user_activity(Satellite)
 def satellite_detail(request, pk, is_favorite=False):
     cache_key = f"satellite:{pk}:detail"
@@ -216,7 +215,7 @@ def catalog_api(request):
             print(f"Ошибка в спутниках: {e}")
 
         try:
-            missions = Mission.objects.filter(name__icontains=q).prefetch_related('agencies')[:MAX_FOR_ALL]
+            missions = Mission.objects.filter(name__icontains=q).prefetch_related('space_agency')[:MAX_FOR_ALL]
             all_results += MissionSerializer(missions, many=True).data
         except Exception as e:
             print(f"Ошибка в миссиях: {e}")
@@ -260,7 +259,7 @@ def catalog_api(request):
                 if category == 'satellite':
                     queryset = queryset.select_related('planet')
                 elif category == 'mission':
-                    queryset = queryset.prefetch_related('agencies')
+                    queryset = queryset.prefetch_related('space_agency')
 
                 sort_field = SORT_MAP.get(category, {}).get(ordering, 'id')
                 queryset = queryset.order_by(sort_field)

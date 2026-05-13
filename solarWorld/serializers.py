@@ -113,7 +113,6 @@ class MissionSerializer(serializers.ModelSerializer):
         return reverse('mission_detail', args=[obj.id]) 
 
     def get_agency_names(self, obj):
-        # obj.space_agency — это ManyToMany поле
         return [agency.name for agency in obj.space_agency.all()]
 
 
