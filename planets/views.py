@@ -282,8 +282,6 @@ def catalog_api(request):
             total_pages = 1
             
     
-
-
     return JsonResponse({
         'results': results,
         'total_pages': total_pages,

@@ -21,19 +21,17 @@ def register(request):
 
 @login_required
 def add_favorite(request, content_type, object_id):
-    """Добавляет объект в избранное"""
     content_type_obj = get_object_or_404(ContentType, app_label='planets', model=content_type)
     favorite, created = Favorite.objects.get_or_create(
         user=request.user,
         content_type=content_type_obj,
         object_id=object_id
     )
-    # Перенаправляем обратно на страницу, с которой пришли
+    # Перенаправляет обратно на страницу, с которой пришли
     return redirect(request.META.get('HTTP_REFERER', 'main'))
 
 @login_required
 def remove_favorite(request, content_type, object_id):
-    """Удаляет объект из избранного"""
     content_type_obj = get_object_or_404(ContentType, app_label='planets', model=content_type)
     Favorite.objects.filter(
         user=request.user,
@@ -45,7 +43,7 @@ def remove_favorite(request, content_type, object_id):
 @login_required
 def profile(request):
     favorites = Favorite.objects.filter(user=request.user).select_related('content_type')
-    history = History.objects.filter(user=request.user).select_related('content_type')[:20]  # последние 20
+    history = History.objects.filter(user=request.user).select_related('content_type')[:20] 
     context = {
         'favorites': favorites,
         'history': history,
@@ -61,7 +59,7 @@ def profile(request):
 def toggle_favorite(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        content_type = data.get('content_type')   # 'planet', 'satellite', 'mission', 'spaceagency'
+        content_type = data.get('content_type')  
         object_id = data.get('object_id')
         if not content_type or not object_id:
             return JsonResponse({'error': 'Missing data'}, status=400)
