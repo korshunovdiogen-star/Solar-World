@@ -2,14 +2,12 @@
    1. ОСНОВНЫЕ СТИЛИ BODY (с параллакс-фоном)
    ============================================================ */
 body {
-    /* Путь к картинке (относительно CSS) */
     background-image: url('../images/solar_system_bg.webp');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     transition: background-position 0.05s linear; /* быстрая реакция на движение мыши */
-    /* Фон по умолчанию (если картинка не загрузилась) */
-    background: none; /* ⚠️ ПРИМЕЧАНИЕ: эта строка переопределяет background-image! */
+    background: none; 
     margin: 0;
     position: relative;
     z-index: 1;
@@ -48,13 +46,12 @@ body {
    ============================================================ */
 .hero-overlay {
     position: relative;
-    z-index: 2; /* поверх фона */
+    z-index: 2; 
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: flex-end; /* прижимаем содержимое к правому краю */
-    align-items: center; /* вертикальное центрирование */
-    /* Градиентное затемнение справа для лучшей читаемости текста */
+    justify-content: flex-end; 
+    align-items: center;
     background: linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%);
 }
 
@@ -62,16 +59,15 @@ body {
    5. ОСНОВНОЙ КОНТЕЙНЕР ТЕКСТА
    ============================================================ */
 .hero-content {
-    margin-right: 10%; /* отступ от правого края */
+    margin-right: 10%;
     text-align: right;
     color: #fff;
     max-width: 600px;
 }
 
-/* Заголовок (стиль Goblin One) */
 .hero-title {
     font-family: 'Goblin One';
-    font-size: clamp(2.5rem, 7vw, 5rem); /* адаптивный размер */
+    font-size: clamp(2.5rem, 7vw, 5rem); 
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
@@ -79,15 +75,13 @@ body {
     text-shadow: 2px 2px 0px #000, 0px 0px 20px rgba(0,0,0,0.8), 0px 10px 40px rgba(0,0,0,1);
 }
 
-/* Контейнер для подзаголовков (две строки) */
 .hero-subtitle-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* прижимаем к правому краю */
+    align-items: flex-end;
     margin-top: 15px;
 }
 
-/* Стиль подзаголовков (печатающийся текст) */
 .hero-subtitle {
     font-family: 'Courier New', Courier, monospace;
     font-size: 1.1rem;
@@ -98,16 +92,14 @@ body {
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
-    width: 0; /* изначально скрыт */
-    border-right: 3px solid transparent; /* курсор (прозрачный) */
+    width: 0;
+    border-right: 3px solid transparent; 
 }
 
-/* Анимация печати для первой строки */
 .line-1 {
     animation: typing 2s steps(20, end) forwards, blink-caret .75s step-end 3;
 }
 
-/* Анимация печати для второй строки (с задержкой) */
 .line-2 {
     animation: typing 2s steps(20, end) 2.2s forwards, blink-caret .75s step-end infinite 2.2s;
 }
@@ -230,51 +222,229 @@ body {
 }
 
 /* ============================================================
-   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
+   БЛОК "ПЛАНЕТА ДНЯ" (в стиле secondary кнопки)
+   ============================================================ */
+.daily-planet-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+    padding: 12px 18px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 2px solid #ff8c00;
+    border-radius: 50px;
+    max-width: 540px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: #ff8c00;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.daily-planet-card:hover {
+    background: rgba(255, 140, 0, 0.15);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
+}
+
+/* Картинка планеты */
+.daily-planet-image {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s ease;
+}
+
+.daily-planet-card:hover .daily-planet-image {
+    transform: scale(1.05) rotate(-3deg);
+}
+
+/* Текстовая часть */
+.daily-planet-info {
+    flex: 1;
+    text-align: right;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.daily-planet-label {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem; /* увеличен */
+    font-weight: 700; /* жирный */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ff8c00;
+    opacity: 1; /* полностью непрозрачный */
+    text-shadow: 0 0 8px rgba(255, 140, 0, 0.4); /* лёгкое свечение */
+    margin-bottom: 4px;
+}
+
+.daily-planet-name {
+    font-family: 'Goblin One', serif;
+    font-size: 1.4rem;
+    line-height: 1.2;
+    color: inherit; /* наследует цвет от родителя (при наведении становится белым) */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.daily-planet-first-line {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    color: #ddd;
+    opacity: 0.7;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .daily-planet-card {
+        flex-direction: row;
+        padding: 10px 16px;
+        gap: 12px;
+        max-width: 100%;
+        border-radius: 40px;
+    }
+
+    .daily-planet-image {
+        width: 46px;
+        height: 46px;
+    }
+
+    .daily-planet-name {
+        font-size: 1.2rem;
+    }
+
+    .daily-planet-first-line {
+        font-size: 0.8rem;
+    }
+
+    .daily-planet-label {
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .daily-planet-card {
+        flex-direction: row;
+        align-items: center;
+        padding: 8px 14px;
+        gap: 10px;
+        border-radius: 30px;
+    }
+
+    .daily-planet-image {
+        width: 40px;
+        height: 40px;
+    }
+
+    .daily-planet-name {
+        font-size: 1.0rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .daily-planet-first-line {
+        font-size: 0.7rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .daily-planet-info {
+        text-align: right;
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ И МОБИЛЬНЫХ 
    ============================================================ */
 @media (max-width: 768px) {
-    .parallax-bg {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transform: none !important;
+    .daily-planet-card {
+        flex-direction: row;
+        padding: 8px 14px;
+        gap: 10px;
+        max-width: 100%;
+        border-radius: 40px;
     }
 
-    .hero-overlay {
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.4);
+    .daily-planet-image {
+        width: 40px;
+        height: 40px;
     }
 
-    .hero-content {
-        max-width: 90%;
-        margin-right: 0;
-        text-align: center;
+    .daily-planet-name {
+        font-size: 1.0rem;
     }
 
-    .hero-title {
-        font-size: clamp(2rem, 8vw, 3rem);
-        letter-spacing: 2px;
+    .daily-planet-first-line {
+        font-size: 0.7rem;
     }
 
-    .hero-subtitle-container {
+    .daily-planet-label {
+        font-size: 0.55rem;
+    }
+
+    .daily-planet-arrow {
+        font-size: 1.0rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .daily-planet-card {
+        flex-direction: row;
         align-items: center;
+        padding: 6px 12px;
+        gap: 8px;
+        border-radius: 30px;
     }
 
-    .hero-subtitle {
-        font-size: 1rem;
-        letter-spacing: 1px;
+    .daily-planet-image {
+        width: 36px;
+        height: 36px;
     }
 
-    .hero-buttons-column {
-        align-items: center;
-        gap: 12px;
-    }
-
-    .space-btn {
-        padding: 12px 24px;
+    .daily-planet-name {
         font-size: 0.9rem;
-        width: auto;
-        min-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .daily-planet-first-line {
+        font-size: 0.65rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .daily-planet-info {
+        text-align: right;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .daily-planet-arrow {
+        font-size: 0.9rem;
+        margin-left: 4px;
     }
 }

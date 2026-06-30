@@ -17,6 +17,7 @@ router.register(r'companies', CompanyViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
+    path('planet-of-the-day/', views.planet_of_the_day, name='planet_of_the_day'),
     path('planets/', views.planet_list, name='planet_list'),
     path('planet/<int:pk>/', views.planet_detail, name='planet_detail'),
     path('satellite/<int:pk>/', views.satellite_detail, name='satellite_detail'),

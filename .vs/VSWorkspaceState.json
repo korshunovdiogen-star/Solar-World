@@ -4,6 +4,7 @@
     "\\planets",
     "\\planets\\templates",
     "\\planets\\templates\\planets",
+    "\\solarWorld",
     "\\templates",
     "\\templates\\includes",
     "\\users",
@@ -11,6 +12,6 @@
     "\\users\\templates\\users",
     "\\users\\tests"
   ],
-  "SelectedNode": "\\planets\\templates\\planets\\planet_detail.html",
+  "SelectedNode": "\\solarWorld\\settings.py",
   "PreviewInSolutionExplorer": false
 }
