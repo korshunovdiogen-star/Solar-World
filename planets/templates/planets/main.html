@@ -30,7 +30,24 @@
                         <span>База знаний</span>
                     </a>
                 </div>
-                </div>
+                {% if daily_planet and daily_planet.id %}
+                <a href="{% url 'planet_detail' pk=daily_planet.id %}" class="daily-planet-card">
+                    {% if daily_planet.image %}
+                    <img src="{{ daily_planet.image.url }}" alt="{{ daily_planet.name }}" class="daily-planet-image">
+                    {% else %}
+                    <div class="daily-planet-image" style="background: radial-gradient(circle at 30% 30%, #555, #222);"></div>
+                    {% endif %}
+
+                    <div class="daily-planet-info">
+                        <div class="daily-planet-label">★ Планета дня</div>
+                        <div class="daily-planet-name">{{ daily_planet.name }}</div>
+                        {% if daily_first_line %}
+                        <div class="daily-planet-first-line">{{ daily_first_line|truncatechars:60 }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                </a>
+            </div>
             </div>
     </div>
 

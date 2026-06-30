@@ -9,9 +9,14 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+FASTAPI_URLS = {
+    'local': 'http://localhost:8001',    
+    'prod': 'http://fastapi-service:8000',
+}
+
+FASTAPI_URL = os.getenv('FASTAPI_URL', FASTAPI_URLS.get(ENVIRONMENT, 'http://localhost:8001'))
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -21,6 +26,7 @@ DEBUG = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ALLOWED_HOSTS = ['LorAdmin.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -95,6 +101,8 @@ CACHES = {
         "TIMEOUT": 60 * 15,                             
     }
 }
+
+
 
 
 # Password validation

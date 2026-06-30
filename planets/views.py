@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from django.utils import timezone
 from datetime import date
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Planet, Satellite, Mission, SpaceAgency, Company
 from rest_framework import serializers
 from rest_framework import viewsets
@@ -20,16 +20,29 @@ from users.models import History, Favorite
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from users.decorators import track_user_activity
-from .utils import separate_first_line
+from .utils import separate_first_line, get_daily_planet_from_microservice
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+import logging
+import requests
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
-
-# Главная страница
-@cache_page(60 * 15)
+@cache_page(60 * 15)  # кеш страницы на 15 минут
 def main(request):
-    return render(request, 'planets/main.html')
+    planet = get_daily_planet_from_microservice()
+    first_line = ""
+    if planet and planet.text:
+        lines = planet.text.split('\n', 1)
+        first_line = lines[0] if lines else ""
+
+    context = {
+        'daily_planet': planet,
+        'daily_first_line': first_line,
+    }
+    return render(request, 'planets/main.html', context)
 
 # Список всех планет
 def planet_list(request):
@@ -54,7 +67,7 @@ def planet_detail(request, pk, is_favorite=False):
         'satellites': satellites,# список объектов спутников 
         'first_line': first_line, # Первая строка описания (подзаголовок)
         'remaining_text': remaining_text, # текст описания без первой строки
-        'is_favorite': is_favorite,
+        'is_favorite': is_favorite, # является ли избранным
         'content_type': 'planet', # используется в кнопке избранного
     }
     cache.set(cache_key, context, timeout=60 * 15)
@@ -290,7 +303,11 @@ def catalog_api(request):
 
 
 
-
+def planet_of_the_day(request):
+    planet = get_daily_planet_from_microservice()
+    if planet is None:
+        return redirect('planet_detail', pk=1)
+    return redirect('planet_detail', pk=planet.id)
 
 
 # API
