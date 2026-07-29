@@ -3,7 +3,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import sys
 import dj_database_url
-load_dotenv() 
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 
 FASTAPI_URLS = {
-    'local': 'http://localhost:8001',    
+    'local': 'http://localhost:8001',
     'prod': 'http://fastapi-service:8000',
 }
 
@@ -92,17 +92,15 @@ DATABASES = {
 # Кеширование с помощью Redis
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",   
-        "LOCATION": "redis://127.0.0.1:6379/1",         
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",  
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
-        "KEY_PREFIX": "solar_world",                   
-        "TIMEOUT": 60 * 15,                             
+        "KEY_PREFIX": "solar_world",
+        "TIMEOUT": 60 * 15,
     }
 }
-
-
 
 
 # Password validation
@@ -162,7 +160,6 @@ if 'test' in sys.argv or 'pytest' in sys.modules:
 # Настройки для Render (применяются, только если проект запущен в облаке)
 if 'RENDER' in os.environ:
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', '*')]
-    
 
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)

@@ -30,7 +30,6 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-@cache_page(60 * 15)
 def main(request):
     planet = get_daily_planet_from_microservice()
     first_line = ""

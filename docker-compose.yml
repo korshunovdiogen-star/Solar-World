@@ -1,27 +1,88 @@
-web:
-  build: .
-  command: python manage.py runserver 0.0.0.0:8000
-  volumes:
-    - .:/app
-  ports:
-    - "8000:8000"
-  links:
-    - db
-  environment:
-    DB_ENGINE: django.db.backends.postgresql
-    DB_NAME: ${DB_NAME}
-    DB_USER: ${DB_USER}
-    DB_PASSWORD: ${DB_PASSWORD}
-    DB_HOST: db
-    DB_PORT: 5432
+services:
+  # Сервис базы данных PostgreSQL
+  db:
+    image: postgres:15
+    container_name: solar_db
+    environment:
+      POSTGRES_DB: solar_bd
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: solar26
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - solar_network
 
-db:
-  image: postgres:13
-  environment:
-    POSTGRES_DB: ${DB_NAME}
-    POSTGRES_USER: ${DB_USER}
-    POSTGRES_PASSWORD: ${DB_PASSWORD}
-  ports:
-    - "5432:5432"
-  volumes:
-    - /c/docker/pgdata:/var/lib/postgresql/data
+  # Сервис Redis
+  redis:
+    image: redis:7-alpine
+    container_name: solar_redis
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - solar_network
+
+  # Сервис Django
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: solar_django
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - FASTAPI_URL=http://fastapi:8001
+      - REDIS_URL=redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    networks:
+      - solar_network
+
+  # Сервис FastAPI
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: solar_fastapi
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:solar26@db:5432/solar_bd
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    networks:
+      - solar_network
+
+volumes:
+  postgres_data:
+
+networks:
+  solar_network:
+    driver: bridge

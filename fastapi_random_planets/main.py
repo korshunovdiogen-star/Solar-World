@@ -22,4 +22,5 @@ def get_todays_planet():
     numeric_hash = int.from_bytes(hash_bytes[:4], 'big')
     # Добавляем день года, чтобы сдвигать результат
     index = (numeric_hash + day_of_year) % 8
-    return {"planet_id": index}
+    real_planet_id = index + 2  #костыль т.к. в бд индексы планет начинаются с 2
+    return {"planet_id": real_planet_id}
