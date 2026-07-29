@@ -1,0 +1,116 @@
+Metadata-Version: 2.4
+Name: django-optimize-image
+Version: 0.3.0
+Summary: A Django middleware to optimize image uploads by converting them to WebP.
+Home-page: https://github.com/nahom-d54/django-optimize-image
+Author: Nahom D
+Author-email: nahom@nahom.eu.org
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: Pillow
+Requires-Dist: Django
+Provides-Extra: django32
+Requires-Dist: Django<4.0,>=3.2; extra == "django32"
+Provides-Extra: django42
+Requires-Dist: Django<5.0,>=4.2; extra == "django42"
+Provides-Extra: django50
+Requires-Dist: Django<6.0,>=5.0; extra == "django50"
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+# **Django Image Optimizer**
+
+A **Django middleware and utility** for optimizing uploaded images by converting them to WebP with configurable **width, height, and quality** settings.
+
+## **Features**
+
+✔ **Automatic optimization via middleware**  
+✔ **Manual optimization via utility function**  
+✔ **Supports per-request overrides**  
+✔ **Configurable defaults via `settings.py`**
+
+---
+
+## **Installation**
+
+```sh
+pip install django-image-optimizer
+```
+
+Add the middleware:
+
+```python
+MIDDLEWARE = [
+    # other middleware...
+    "optimizer_middleware.middleware.ImageOptimizationMiddleware",
+]
+```
+
+---
+
+## **Configuration**
+
+Set global defaults in **`settings.py`**:
+
+```python
+# Default image optimization settings
+IMAGE_OPTIMIZER_WIDTH = 800   # Resize width
+IMAGE_OPTIMIZER_HEIGHT = None  # Keep aspect ratio
+IMAGE_OPTIMIZER_QUALITY = 80  # WebP quality
+```
+
+> _By default, images are resized to 800px width while maintaining aspect ratio and optimized to 80% quality._
+
+---
+
+## **Usage**
+
+### **1️⃣ Automatic Optimization (Middleware)**
+
+Once added to `MIDDLEWARE`, the optimizer **automatically processes all uploaded images** in `POST`, `PUT`, and `PATCH` requests.
+
+✅ Converts images to **WebP**  
+✅ Resizes based on `settings.py`
+
+---
+
+### **2️⃣ Dynamic Overrides (Per Request)**
+
+Override optimization settings dynamically in a view using **`request.META`**:
+
+```python
+def upload_view(request):
+    request.META["IMAGE_OPTIMIZER_WIDTH"] = 600
+    request.META["IMAGE_OPTIMIZER_QUALITY"] = 90
+    return some_response
+```
+
+---
+
+### **3️⃣ Manual Optimization (Standalone Function)**
+
+Use the function **anywhere** in your code (views, forms, serializers, etc.).
+
+```python
+from optimizer_middleware.utils import optimize_image
+
+optimized_image = optimize_image(image_file, width=500, quality=85)
+```
+
+---
+
+## **License**
+
+[MIT License](LICENSE). Free to use and modify. 🚀
+
+---
+
+## **Contribution**
+
+Use this guide [Contribution](https://opensource.guide/how-to-contribute/)
