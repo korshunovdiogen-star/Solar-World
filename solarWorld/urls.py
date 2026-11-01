@@ -4,8 +4,10 @@ from planets.views import PlanetViewSet, SatelliteViewSet, MissionViewSet, Space
 from django.contrib import admin
 from planets import views
 from users import views as user_views
+from shop import views as shop_views
 from django.conf import settings
 from django.conf.urls.static import static
+
 
 # API
 router = DefaultRouter()
@@ -18,6 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
     path('planet-of-the-day/', views.planet_of_the_day, name='planet_of_the_day'),
+    path('planet-of-the-day/thumbnail/', views.planet_of_the_day_thumbnail, name='planet_of_the_day_thumbnail'),
     path('planets/', views.planet_list, name='planet_list'),
     path('planet/<int:pk>/', views.planet_detail, name='planet_detail'),
     path('satellite/<int:pk>/', views.satellite_detail, name='satellite_detail'),
@@ -31,16 +34,18 @@ urlpatterns = [
     path('register/', user_views.register, name='register'),
     path('users/', include('users.urls')),
     path('profile/', user_views.profile, name='profile'),
+    path('shop/', include('shop.urls')),
 ]
 
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+    if getattr(settings, 'ENABLE_DEBUG_TOOLBAR', False):
+        import debug_toolbar
+        urlpatterns = [
+            re_path(r'^__debug__/', include(debug_toolbar.urls)),
+        ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

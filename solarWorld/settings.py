@@ -3,11 +3,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 import sys
 import dj_database_url
-load_dotenv()
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 
@@ -38,17 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'rest_framework',
     'planets',
     'users',
+    'shop',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -56,6 +57,13 @@ MIDDLEWARE = [
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
+
+# Debug Toolbar выключен по умолчанию. Включить: ENABLE_DEBUG_TOOLBAR=1 в .env или окружении.
+ENABLE_DEBUG_TOOLBAR = os.getenv('ENABLE_DEBUG_TOOLBAR', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+
+if ENABLE_DEBUG_TOOLBAR:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(3, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'solarWorld.urls'
 

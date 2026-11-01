@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% block catalog_title %}Каталог{% endblock %} | Solar World{% endblock %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% block extra_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="catalog-container">
+    <div class="text-block" style="text-align: center; margin-bottom: 2rem;">
+        <h1>{% block catalog_heading %}Каталог{% endblock %}</h1>
+        <p>{% block catalog_subheading %}Выберите категорию и начните исследование{% endblock %}</p>
+    </div>
+
+    <!-- Панель фильтрации -->
+    <div class="filter-panel">
+        <input type="text" id="search-input" placeholder="Поиск по названию...">
+        <select id="category-select">
+            <option value="all">Все категории</option>
+            <!-- остальные опции добавляются через JS -->
+        </select>
+    </div>
+
+    <!-- Панель сортировки -->
+    <div class="sort-panel">
+        <span>Сортировать:</span>
+        <!-- кнопки сортировки будут добавлены через JS -->
+    </div>
+
+    <!-- Результаты -->
+    <div id="results-container" class="results-grid"></div>
+</div>
+
+<!-- Настройки для JavaScript -->
+<script>
+    window.catalogConfig = {% block catalog_config %}{
+        apiUrl: '/api/catalog/',
+        categoryOptions: {
+            'planet': 'Планеты',
+            'satellite': 'Спутники',
+            'mission': 'Миссии',
+            'agency': 'Агентства',
+            'company': 'Компании'
+        },
+        sortFields: {
+            'name': 'Название',
+            'radius': 'Радиус',
+            'type': 'Тип'
+        },
+        renderCard: function(item) {
+            // Базовая карточка – можно переопределить в дочернем шаблоне
+            return `<div class="catalog-card">
+                <div class="card-category">${item.model_type}</div>
+                <div class="card-content">
+                    <h3>${item.name}</h3>
+                    <p>${item.first_line || ''}</p>
+                </div>
+                <div class="card-image">
+                    <img src="${item.image ? item.image : '/static/images/default.jpg'}" alt="${item.name}">
+                </div>
+            </div>`;
+        }
+    }{% endblock %};
+</script>
+
+<script src="{% static 'js/catalog.js' %}"></script>
+{% endblock %}

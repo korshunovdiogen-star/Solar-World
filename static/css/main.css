@@ -66,8 +66,8 @@ body {
 }
 
 .hero-title {
-    font-family: 'Goblin One';
-    font-size: clamp(2.5rem, 7vw, 5rem); 
+    font-family: 'Goblin One', serif;
+    font-size: clamp(2.35rem, 6.25vw, 4.5rem); 
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;

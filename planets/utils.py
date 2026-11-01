@@ -1,10 +1,18 @@
 import requests
 from django.conf import settings
 from django.core.cache import cache
+from django.utils import timezone
 from .models import Planet
+from datetime import datetime, time, timedelta
+from io import BytesIO
+from PIL import Image, ImageOps
 import logging
 
 logger = logging.getLogger(__name__)
+
+CACHE_KEY = 'daily_planet_from_microservice_id'
+THUMBNAIL_SIZE = (128, 128)
+
 
 def get_daily_planet_from_microservice():
     """
@@ -12,62 +20,90 @@ def get_daily_planet_from_microservice():
     возвращает объект Planet.
     Если микросервис недоступен или планета не найдена — возвращает None.
     """
-    print("=== DEBUG: start get_daily_planet_from_microservice")
-
     # 1. Проверяем кеш
-    planet_id = cache.get('daily_planet_from_microservice_id')
-    print(f"=== DEBUG: cached planet_id = {planet_id}")
+    planet_id = cache.get(CACHE_KEY)
 
     if planet_id is not None:
-        try:
-            planet = Planet.objects.get(pk=planet_id)
-            print(f"=== DEBUG: found planet from cache: {planet}")
+        planet = Planet.objects.filter(pk=planet_id).first()
+        if planet is not None:
             return planet
-        except Planet.DoesNotExist:
-            print("=== DEBUG: planet from cache not found in DB, clearing cache")
-            cache.delete('daily_planet_from_microservice_id')
+        cache.delete(CACHE_KEY)
 
     # 2. Запрос к FastAPI
     try:
         url = f"{settings.FASTAPI_URL}/planet/today"
-        print(f"=== DEBUG: requesting {url}")
-        response = requests.get(url, timeout=2)  # таймаут добавлен
-        print(f"=== DEBUG: response status = {response.status_code}")
+        response = requests.get(url, timeout=2)
         response.raise_for_status()
-        data = response.json()
-        print(f"=== DEBUG: response data = {data}")
-
-        planet_id = data.get('planet_id')
-        print(f"=== DEBUG: planet_id from response = {planet_id}")
+        planet_id = response.json().get('planet_id')
 
         if planet_id is None:
-            print("=== DEBUG: no planet_id in response")
             return None
 
         planet = Planet.objects.filter(pk=planet_id).first()
-        print(f"=== DEBUG: planet from DB = {planet}")
-
-        if planet:
-            cache.set('daily_planet_from_microservice_id', planet_id, timeout=60 * 10)
-            print("=== DEBUG: cached planet_id")
+        if planet is not None:
+            cache.set(CACHE_KEY, planet_id, timeout=60 * 10)
         return planet
 
     except requests.exceptions.Timeout:
-        print("=== DEBUG: EXCEPTION: Timeout")
-        logger.error("FastAPI timeout")
+        logger.warning("FastAPI timeout while fetching planet of the day")
         return None
     except requests.exceptions.ConnectionError:
-        print("=== DEBUG: EXCEPTION: ConnectionError")
-        logger.error("FastAPI connection error")
+        logger.warning("FastAPI connection error while fetching planet of the day")
         return None
     except requests.exceptions.RequestException as e:
-        print(f"=== DEBUG: EXCEPTION: {e}")
-        logger.error("FastAPI request failed: %s", e)
+        logger.warning("FastAPI request failed: %s", e)
         return None
     except ValueError as e:
-        print(f"=== DEBUG: EXCEPTION: Invalid JSON: {e}")
-        logger.error("Invalid JSON from FastAPI: %s", e)
+        logger.warning("Invalid JSON from FastAPI: %s", e)
         return None
+
+
+def seconds_until_midnight():
+    """Сколько секунд осталось до ближайшей полуночи (по локальному времени)."""
+    now = timezone.localtime()
+    tomorrow = datetime.combine(now.date() + timedelta(days=1), time.min, tzinfo=now.tzinfo)
+    return max(60, int((tomorrow - now).total_seconds()))
+
+
+def get_daily_planet_thumbnail(planet):
+    """
+    Возвращает байты квадратной WebP-миниатюры планеты дня.
+
+    Миниатюра создаётся один раз за сутки и хранится в кеше (Redis)
+    до полуночи, поэтому новые файлы на диске не появляются.
+    Оригинальная картинка не изменяется.
+    """
+    if planet is None or not planet.image:
+        return None
+
+    cache_key = f'daily_planet_thumbnail:{planet.pk}:{timezone.localdate().isoformat()}'
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    try:
+        with planet.image.open('rb') as source:
+            image = Image.open(source)
+            image.load()
+    except (OSError, ValueError) as e:
+        logger.warning("Cannot open image for planet %s: %s", planet.pk, e)
+        return None
+
+    if image.mode in ('RGBA', 'LA', 'P'):
+        image = image.convert('RGBA')
+        background = Image.new('RGB', image.size, (0, 0, 0))
+        background.paste(image, mask=image.split()[-1])
+        image = background
+    elif image.mode != 'RGB':
+        image = image.convert('RGB')
+
+    thumbnail = ImageOps.fit(image, THUMBNAIL_SIZE, Image.LANCZOS)
+    buffer = BytesIO()
+    thumbnail.save(buffer, 'WEBP', quality=85, method=6)
+    data = buffer.getvalue()
+
+    cache.set(cache_key, data, timeout=seconds_until_midnight())
+    return data
 
 
 def separate_first_line(obj):

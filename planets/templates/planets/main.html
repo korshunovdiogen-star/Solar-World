@@ -2,13 +2,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="preload" as="image" href="{% static 'images/solar_system_bg.webp' %}" fetchpriority="high">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/static/images/favicon.png" type="image/x-icon" />
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solar World</title>
+    <link rel="icon" href="/static/images/favicon.png" type="image/x-icon" />
+    <link rel="preload" as="image" href="{% static 'images/solar_system_bg.webp' %}" fetchpriority="high">
+    <link rel="preload" as="font" type="font/woff2" href="{% static 'fonts/goblin-one-400.woff2' %}" crossorigin>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
     <div class="parallax-bg"></div>
@@ -33,7 +34,7 @@
                 {% if daily_planet and daily_planet.id %}
                 <a href="{% url 'planet_detail' pk=daily_planet.id %}" class="daily-planet-card">
                     {% if daily_planet.image %}
-                    <img src="{{ daily_planet.image.url }}" alt="{{ daily_planet.name }}" class="daily-planet-image">
+                    <img src="{% url 'planet_of_the_day_thumbnail' %}" alt="{{ daily_planet.name }}" class="daily-planet-image" width="56" height="56">
                     {% else %}
                     <div class="daily-planet-image" style="background: radial-gradient(circle at 30% 30%, #555, #222);"></div>
                     {% endif %}

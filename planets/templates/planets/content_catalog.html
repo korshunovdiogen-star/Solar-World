@@ -1,0 +1,71 @@
+{% extends 'catalog_base.html' %}
+{% load static %}
+
+{% block catalog_title %}Каталог статей{% endblock %}
+{% block catalog_heading %}Каталог{% endblock %}
+{% block catalog_subheading %}Выберите категорию и начните исследование{% endblock %}
+
+{% block catalog_config %}
+{
+    apiUrl: '/api/catalog/',
+    categoryOptions: {
+        'planet': 'Планеты',
+        'satellite': 'Спутники',
+        'mission': 'Миссии',
+        'agency': 'Агентства',
+        'company': 'Компании'
+    },
+    sortFields: {
+        'name': 'Название',
+        'radius': 'Радиус',
+        'type': 'Тип'
+    },
+    renderCard: function(item) {
+        // Здесь можно использовать ту же логику, что была в старом catalog.html
+        let detailUrl = '';
+        if (item.model_type === 'planet') detailUrl = `/planet/${item.id}/`;
+        else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
+        else if (item.model_type === 'mission') detailUrl = `/mission/${item.id}/`;
+        else if (item.model_type === 'spaceagency') detailUrl = `/spaceAgency/${item.id}/`;
+        else if (item.model_type === 'company') detailUrl = `/company/${item.id}/`;
+
+        const imageUrl = item.image ? item.image : '/static/images/default.jpg';
+        let extraInfo = '';
+        if (item.model_type === 'planet') {
+            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+        } else if (item.model_type === 'satellite') {
+            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+        } else if (item.model_type === 'mission') {
+            const agencies = item.agency_names && item.agency_names.length ? item.agency_names.join(', ') : '—';
+            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${agencies}</div>`;
+        } else if (item.model_type === 'spaceagency') {
+            extraInfo = `<div class="card-meta">${item.country || '—'}</div>`;
+        } else if (item.model_type === 'company') {
+            let revenueText = item.revenue_2025 ? `${item.revenue_2025} млн USD` : '—';
+            extraInfo = `<div class="card-meta">${item.country || '—'} • Прибыль: ${revenueText}</div>`;
+        }
+
+        let categoryName = '';
+        if (item.model_type === 'planet') categoryName = 'Планета';
+        else if (item.model_type === 'satellite') categoryName = 'Спутник';
+        else if (item.model_type === 'mission') categoryName = 'Миссия';
+        else if (item.model_type === 'spaceagency') categoryName = 'Агентство';
+        else if (item.model_type === 'company') categoryName = 'Компания';
+        else categoryName = item.model_type;
+
+        return `<a href="${detailUrl}" class="catalog-card-link">
+    <div class="catalog-card">
+        <div class="card-category">${categoryName}</div>
+        <div class="card-content">
+            <h3>${item.name}</h3>
+            <p>${item.first_line || item.model_type}</p>
+            ${extraInfo}
+        </div>
+        <div class="card-image">
+            <img src="${imageUrl}" alt="${item.name}">
+        </div>
+    </div>
+</a>`;
+    }
+}
+{% endblock %}

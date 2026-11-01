@@ -1,0 +1,33 @@
+{% extends 'catalog_base.html' %}
+{% load static %}
+
+{% block catalog_title %}Магазин{% endblock %}
+{% block catalog_heading %}Магазин{% endblock %}
+{% block catalog_subheading %}Товары для космических путешественников{% endblock %}
+
+{% block catalog_config %}
+{
+    apiUrl: '/shop/api/',
+    categoryOptions: JSON.parse('{{ category_options_json|escapejs }}'),
+    sortFields: {
+        'name': 'Название',
+        'price': 'Цена',
+        'stock': 'Остаток'
+    },
+    renderCard: function(item) {
+        const imageUrl = item.image_url ? item.image_url : '/static/images/default.jpg';
+        return `<div class="catalog-card">
+    <div class="card-category">${item.category_name || 'Без категории'}</div>
+    <div class="card-content">
+        <h3>${item.name}</h3>
+        <p>Цена: ${item.price} руб.</p>
+        <p>Остаток: ${item.stock} шт.</p>
+        <p>${item.description ? item.description.substring(0, 100) + '...' : ''}</p>
+    </div>
+    <div class="card-image">
+        <img src="${imageUrl}" alt="${item.name}">
+    </div>
+</div>`;
+    }
+}
+{% endblock %}

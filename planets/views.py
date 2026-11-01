@@ -14,13 +14,18 @@ from solarWorld.serializers import (
     CompanySerializer
 )
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.contenttypes.models import ContentType
 from users.models import History, Favorite
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from users.decorators import track_user_activity
-from .utils import separate_first_line, get_daily_planet_from_microservice
+from .utils import (
+    separate_first_line,
+    get_daily_planet_from_microservice,
+    get_daily_planet_thumbnail,
+    seconds_until_midnight,
+)
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 import logging
@@ -176,7 +181,7 @@ def company_detail(request, pk, is_favorite=False):
 
 
 def catalog_page(request):
-    return render(request, 'planets/catalog.html')
+    return render(request, 'planets/content_catalog.html')
 
 SORT_MAP = {
     'all': {'name_asc': 'name', 'name_desc': '-name'},
@@ -307,6 +312,30 @@ def planet_of_the_day(request):
     if planet is None:
         return redirect('planet_detail', pk=1)
     return redirect('planet_detail', pk=planet.id)
+
+
+def planet_of_the_day_thumbnail(request):
+    """
+    Отдаёт уменьшенную картинку планеты дня.
+
+    Миниатюра генерируется один раз в сутки и лежит в кеше до полуночи,
+    поэтому карточка на главной не тянет полноразмерный файл (сотни КБ),
+    а новые файлы на диске не создаются. При ошибке — отдаём оригинал.
+    """
+    planet = get_daily_planet_from_microservice()
+
+    if planet is None or not planet.image:
+        raise Http404('Планета дня не найдена')
+
+    data = get_daily_planet_thumbnail(planet)
+    if data is None:
+        # Не смогли построить миниатюру — отдаём оригинал без поломки картинки
+        return redirect(planet.image.url)
+
+    response = HttpResponse(data, content_type='image/webp')
+    response['Cache-Control'] = f'public, max-age={seconds_until_midnight()}'
+    response['ETag'] = f'"{planet.pk}-{timezone.localdate().isoformat()}"'
+    return response
 
 
 # API
