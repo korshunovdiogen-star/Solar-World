@@ -29,7 +29,10 @@
                         <a href="{% url fav.content_type.model|add:'_detail' pk=fav.object_id %}">
                             {{ fav.content_object.name }}
                         </a>
-                        <a href="{% url 'remove_favorite' content_type=fav.content_type.model object_id=fav.object_id %}" class="remove-fav">🗑️</a>
+                        <form method="post" action="{% url 'remove_favorite' content_type=fav.content_type.model object_id=fav.object_id %}" class="remove-fav-form">
+                            {% csrf_token %}
+                            <button type="submit" class="remove-fav" title="Удалить из избранного" aria-label="Удалить из избранного">🗑️</button>
+                        </form>
                     </li>
                     {% endfor %}
                 </ul>

@@ -131,6 +131,103 @@ def test_toggle_favorite_unauthenticated(client, planet):
     response = client.post(url, json.dumps(data), content_type='application/json')
     assert response.status_code == 302 
 
+@pytest.mark.django_db
+def test_toggle_favorite_requires_post(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    response = client.get(reverse('toggle_favorite'))
+    assert response.status_code == 405
+
+@pytest.mark.django_db
+def test_toggle_favorite_requires_csrf(user, planet):
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user)
+    data = {'content_type': 'planet', 'object_id': planet.id}
+    response = client.post(
+        reverse('toggle_favorite'),
+        json.dumps(data),
+        content_type='application/json',
+    )
+    assert response.status_code == 403
+
+@pytest.mark.django_db
+def test_toggle_favorite_invalid_json(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    response = client.post(
+        reverse('toggle_favorite'),
+        '{not json',
+        content_type='application/json',
+    )
+    assert response.status_code == 400
+
+@pytest.mark.django_db
+def test_toggle_favorite_unknown_object(client, user):
+    client.login(username='testuser', password='testpass')
+    data = {'content_type': 'planet', 'object_id': 999999}
+    response = client.post(
+        reverse('toggle_favorite'),
+        json.dumps(data),
+        content_type='application/json',
+    )
+    assert response.status_code == 404
+
+@pytest.mark.django_db
+def test_favorite_endpoints_require_post(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    add_url = reverse('add_favorite', args=['planet', planet.id])
+    remove_url = reverse('remove_favorite', args=['planet', planet.id])
+    assert client.get(add_url).status_code == 405
+    assert client.get(remove_url).status_code == 405
+
+@pytest.mark.django_db
+def test_add_and_remove_favorite_post(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    ct = ContentType.objects.get_for_model(Planet)
+    add_url = reverse('add_favorite', args=['planet', planet.id])
+    remove_url = reverse('remove_favorite', args=['planet', planet.id])
+
+    assert client.post(add_url).status_code == 302
+    assert Favorite.objects.filter(user=user, content_type=ct, object_id=planet.id).exists()
+
+    assert client.post(remove_url).status_code == 302
+    assert not Favorite.objects.filter(user=user, content_type=ct, object_id=planet.id).exists()
+
+@pytest.mark.django_db
+def test_add_favorite_rejects_unknown_object(client, user):
+    client.login(username='testuser', password='testpass')
+    response = client.post(reverse('add_favorite', args=['planet', 999999]))
+    assert response.status_code == 404
+
+@pytest.mark.django_db
+def test_favorite_redirect_ignores_external_referer(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    url = reverse('add_favorite', args=['planet', planet.id])
+    response = client.post(url, HTTP_REFERER='https://evil.example/phish')
+    assert response.status_code == 302
+    assert response.url == reverse('main')
+
+@pytest.mark.django_db
+def test_favorite_redirect_allows_same_host_referer(client, user, planet):
+    client.login(username='testuser', password='testpass')
+    url = reverse('add_favorite', args=['planet', planet.id])
+    referer = 'http://testserver' + reverse('profile')
+    response = client.post(url, HTTP_REFERER=referer)
+    assert response.status_code == 302
+    assert response.url == referer
+
+@pytest.mark.django_db
+def test_profile_remove_favorite_uses_post_form(client, user, planet):
+    ct = ContentType.objects.get_for_model(Planet)
+    Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
+    client.login(username='testuser', password='testpass')
+
+    response = client.get(reverse('profile'))
+    content = response.content.decode()
+    remove_url = reverse('remove_favorite', args=['planet', planet.id])
+
+    assert f'action="{remove_url}"' in content
+    assert 'method="post"' in content
+    assert 'csrfmiddlewaretoken' in content
+
 # ---- Тесты истории (автоматическое сохранение при просмотре) ----
 @pytest.mark.django_db
 def test_history_saved_on_planet_detail(client, user, planet):

@@ -171,10 +171,21 @@ body {
             color: var(--neon-blue);
         }
 
+.remove-fav-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
 .remove-fav {
     color: #ff7777;
     text-decoration: none;
     font-size: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .date {

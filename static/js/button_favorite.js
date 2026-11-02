@@ -14,6 +14,11 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.content : getCookie('csrftoken');
+}
+
 // Создаём элемент для динамического тултипа
 const tooltip = document.createElement('div');
 tooltip.className = 'dynamic-tooltip';
@@ -72,15 +77,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+                    'X-CSRFToken': getCsrfToken()
                 },
                 body: JSON.stringify({
                     content_type: contentType,
                     object_id: objectId
                 })
             })
-                .then(response => response.json())
+                .then(response => {
+                    // @login_required перенаправляет анонимного пользователя на вход
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return null;
+                    }
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    if (!data) {
+                        return;
+                    }
                     if (data.is_favorite) {
                         this.classList.add('active');
                     } else {

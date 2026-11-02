@@ -58,7 +58,9 @@ def planet_detail(request, pk, is_favorite=False):
     cache_key = f"planet:{pk}:detail"
     cached_context = cache.get(cache_key)
     if cached_context is not None:
-        return render(request, 'planets/planet_detail.html', cached_context)
+        context = dict(cached_context)
+        context['is_favorite'] = is_favorite
+        return render(request, 'planets/planet_detail.html', context)
 
     planet = get_object_or_404(Planet, pk=pk)
 
@@ -74,7 +76,12 @@ def planet_detail(request, pk, is_favorite=False):
         'is_favorite': is_favorite, # является ли избранным
         'content_type': 'planet', # используется в кнопке избранного
     }
+    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    context.pop('is_favorite', None)
     cache.set(cache_key, context, timeout=60 * 15)
+
+    context = dict(context)
+    context['is_favorite'] = is_favorite
     return render(request, 'planets/planet_detail.html', context)
 
 
@@ -84,7 +91,9 @@ def satellite_detail(request, pk, is_favorite=False):
     cached_context = cache.get(cache_key)
 
     if cached_context is not None:
-        return render(request, 'planets/satellite_detail.html', cached_context)
+        context = dict(cached_context)
+        context['is_favorite'] = is_favorite
+        return render(request, 'planets/satellite_detail.html', context)
 
     satellite = get_object_or_404(Satellite, pk=pk)
 
@@ -97,7 +106,12 @@ def satellite_detail(request, pk, is_favorite=False):
         'is_favorite': is_favorite,
         'content_type': 'satellite',
         }
+    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    context.pop('is_favorite', None)
     cache.set(cache_key, context, timeout=60 * 15)
+
+    context = dict(context)
+    context['is_favorite'] = is_favorite
     return render(request, 'planets/satellite_detail.html', context)
 
 
@@ -107,7 +121,9 @@ def mission_detail(request, pk, is_favorite=False):
     cached_context = cache.get(cache_key)
 
     if cached_context is not None:
-        return render(request, 'planets/mission_detail.html', cached_context)
+        context = dict(cached_context)
+        context['is_favorite'] = is_favorite
+        return render(request, 'planets/mission_detail.html', context)
 
     mission = get_object_or_404(Mission, pk=pk)
 
@@ -123,7 +139,12 @@ def mission_detail(request, pk, is_favorite=False):
         'is_favorite': is_favorite,
         'content_type': 'mission', 
     }
+    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    context.pop('is_favorite', None)
     cache.set(cache_key, context, timeout=60 * 15)
+
+    context = dict(context)
+    context['is_favorite'] = is_favorite
     return render(request, 'planets/mission_detail.html', context)
 
 
@@ -133,7 +154,9 @@ def spaceAgency_detail(request, pk, is_favorite=False):
     cached_context = cache.get(cache_key)
 
     if cached_context is not None:
-        return render(request, 'planets/spaceAgency_detail.html', cached_context)
+        context = dict(cached_context)
+        context['is_favorite'] = is_favorite
+        return render(request, 'planets/spaceAgency_detail.html', context)
 
     spaceAgency = get_object_or_404(SpaceAgency, pk=pk)
 
@@ -148,7 +171,12 @@ def spaceAgency_detail(request, pk, is_favorite=False):
         'is_favorite': is_favorite,
         'content_type': 'spaceAgency',
         }
+    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    context.pop('is_favorite', None)
     cache.set(cache_key, context, timeout=60 * 15)
+
+    context = dict(context)
+    context['is_favorite'] = is_favorite
     return render(request, 'planets/spaceAgency_detail.html', context)
 
 
@@ -158,7 +186,9 @@ def company_detail(request, pk, is_favorite=False):
     cached_context = cache.get(cache_key)
 
     if cached_context is not None:
-        return render(request, 'planets/company_detail.html', cached_context)
+        context = dict(cached_context)
+        context['is_favorite'] = is_favorite
+        return render(request, 'planets/company_detail.html', context)
 
     company = get_object_or_404(Company, pk=pk)
 
@@ -172,7 +202,12 @@ def company_detail(request, pk, is_favorite=False):
         'days_passed': days_passed.days, #сколько дней прошло со дня основания
         'content_type': 'company',
     }
+    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    context.pop('is_favorite', None)
     cache.set(cache_key, context, timeout=60 * 15)
+
+    context = dict(context)
+    context['is_favorite'] = is_favorite
     return render(request, 'planets/company_detail.html', context)
 
 
@@ -339,22 +374,22 @@ def planet_of_the_day_thumbnail(request):
 
 
 # API
-class PlanetViewSet(viewsets.ModelViewSet):
+class PlanetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Planet.objects.all()
     serializer_class = PlanetSerializer
 
-class SatelliteViewSet(viewsets.ModelViewSet):
+class SatelliteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Satellite.objects.all()
     serializer_class = SatelliteSerializer
 
-class MissionViewSet(viewsets.ModelViewSet):
+class MissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Mission.objects.all()
     serializer_class = MissionSerializer
 
-class SpaceAgencyViewSet(viewsets.ModelViewSet):
+class SpaceAgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SpaceAgency.objects.all()
     serializer_class = SpaceAgencySerializer
 
-class CompanyViewSet(viewsets.ModelViewSet):
+class CompanyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer

@@ -33,6 +33,9 @@ SORT_MAP = {
 def shop_api(request):
     q = request.GET.get('q', '').strip()
     category_slug = request.GET.get('category', 'all') 
+    categories = dict(
+        Category.objects.order_by('name').values_list('slug', 'name')
+    )
     ordering = request.GET.get('ordering', 'name_asc')
     page = int(request.GET.get('page', 1))
     per_page = 12
