@@ -3,6 +3,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import sys
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
+from solarWorld.env import detect_environment, env_bool, env_int, env_list, env_str
 
 
 
@@ -11,24 +13,67 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env')
 
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
+# Окружение определяется автоматически:
+# - ENVIRONMENT из .env или переменных окружения имеет приоритет;
+# - на Render/Railway/Heroku окружение считается production;
+# - во всех остальных случаях — local.
+ENVIRONMENT = detect_environment()
+IS_PRODUCTION = ENVIRONMENT in {'prod', 'production'}
 
 FASTAPI_URLS = {
     'local': 'http://localhost:8001',
     'prod': 'http://fastapi-service:8000',
 }
 
-FASTAPI_URL = os.getenv('FASTAPI_URL', FASTAPI_URLS.get(ENVIRONMENT, 'http://localhost:8001'))
+FASTAPI_URL = env_str(
+    'FASTAPI_URL',
+    FASTAPI_URLS['prod'] if IS_PRODUCTION else FASTAPI_URLS['local'],
+)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = env_str('SECRET_KEY')
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        'SECRET_KEY не задан. Добавьте его в .env для локального запуска '
+        'или в переменные окружения на хостинге.'
+    )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Локально DEBUG включён, на хостинге — выключен.
+# Явное значение DEBUG в .env или окружении имеет приоритет.
+DEBUG = env_bool('DEBUG', default=not IS_PRODUCTION)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ALLOWED_HOSTS = ['LorAdmin.pythonanywhere.com']
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Домены: локальные по умолчанию, на Render внешний домен добавляется сам.
+RENDER_EXTERNAL_HOSTNAME = env_str('RENDER_EXTERNAL_HOSTNAME')
+
+ALLOWED_HOSTS = env_list(
+    'ALLOWED_HOSTS',
+    default=['localhost', '127.0.0.1', '[::1]'],
+)
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS')
+if RENDER_EXTERNAL_HOSTNAME:
+    render_origin = f'https://{RENDER_EXTERNAL_HOSTNAME}'
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
+
+# HTTPS включается автоматически в production. Локально остаётся http.
+# При необходимости можно переопределить через USE_HTTPS.
+USE_HTTPS = env_bool('USE_HTTPS', default=IS_PRODUCTION)
+
+if USE_HTTPS:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_HSTS_SECONDS = env_int('SECURE_HSTS_SECONDS', default=3600)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+        'SECURE_HSTS_INCLUDE_SUBDOMAINS',
+        default=False,
+    )
+    SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', default=False)
 
 
 # Application definition
@@ -167,8 +212,6 @@ if 'test' in sys.argv or 'pytest' in sys.modules:
 
 # Настройки для Render (применяются, только если проект запущен в облаке)
 if 'RENDER' in os.environ:
-    ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', '*')]
-
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
