@@ -11,7 +11,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 CACHE_KEY = 'daily_planet_from_microservice_id'
+NEGATIVE_CACHE_KEY = 'daily_planet_from_microservice:unavailable'
+NEGATIVE_CACHE_TIMEOUT = 30
 THUMBNAIL_SIZE = (128, 128)
+
+
+def _mark_microservice_unavailable():
+    """Не дёргаем упавший FastAPI на каждой загрузке страницы."""
+    cache.set(NEGATIVE_CACHE_KEY, True, timeout=NEGATIVE_CACHE_TIMEOUT)
 
 
 def get_daily_planet_from_microservice():
@@ -20,6 +27,10 @@ def get_daily_planet_from_microservice():
     возвращает объект Planet.
     Если микросервис недоступен или планета не найдена — возвращает None.
     """
+    # 0. Недавно была ошибка — не повторяем запрос слишком часто
+    if cache.get(NEGATIVE_CACHE_KEY):
+        return None
+
     # 1. Проверяем кеш
     planet_id = cache.get(CACHE_KEY)
 
@@ -37,24 +48,32 @@ def get_daily_planet_from_microservice():
         planet_id = response.json().get('planet_id')
 
         if planet_id is None:
+            _mark_microservice_unavailable()
             return None
 
         planet = Planet.objects.filter(pk=planet_id).first()
         if planet is not None:
+            cache.delete(NEGATIVE_CACHE_KEY)
             cache.set(CACHE_KEY, planet_id, timeout=60 * 10)
+        else:
+            _mark_microservice_unavailable()
         return planet
 
     except requests.exceptions.Timeout:
         logger.warning("FastAPI timeout while fetching planet of the day")
+        _mark_microservice_unavailable()
         return None
     except requests.exceptions.ConnectionError:
         logger.warning("FastAPI connection error while fetching planet of the day")
+        _mark_microservice_unavailable()
         return None
     except requests.exceptions.RequestException as e:
         logger.warning("FastAPI request failed: %s", e)
+        _mark_microservice_unavailable()
         return None
     except ValueError as e:
         logger.warning("Invalid JSON from FastAPI: %s", e)
+        _mark_microservice_unavailable()
         return None
 
 
@@ -107,7 +126,9 @@ def get_daily_planet_thumbnail(planet):
 
 
 def separate_first_line(obj):
-    first_line = obj.text.splitlines()[0] if obj.text else ''
+    if not obj.text:
+        return '', ''
     lines = obj.text.splitlines()
+    first_line = lines[0] if lines else ''
     remaining_text = "\n".join(lines[1:])
     return first_line, remaining_text

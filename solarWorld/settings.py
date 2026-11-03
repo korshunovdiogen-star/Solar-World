@@ -63,6 +63,13 @@ if RENDER_EXTERNAL_HOSTNAME:
 # При необходимости можно переопределить через USE_HTTPS.
 USE_HTTPS = env_bool('USE_HTTPS', default=IS_PRODUCTION)
 
+# Безопасные заголовки. Django включает часть из них по умолчанию,
+# но явные настройки понятнее и не зависят от версии.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+SESSION_COOKIE_HTTPONLY = True
+
 if USE_HTTPS:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -143,13 +150,20 @@ DATABASES = {
 
 
 # Кеширование с помощью Redis
+REDIS_CACHE_OPTIONS = {
+    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    # Если Redis недоступен, сайт продолжает работать без кеша,
+    # а не падает с ConnectionError.
+    "IGNORE_EXCEPTIONS": True,
+    "SOCKET_CONNECT_TIMEOUT": 1,
+    "SOCKET_TIMEOUT": 1,
+}
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
+        "OPTIONS": REDIS_CACHE_OPTIONS,
         "KEY_PREFIX": "solar_world",
         "TIMEOUT": 60 * 15,
     }

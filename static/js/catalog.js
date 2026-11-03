@@ -1,11 +1,37 @@
 
 
 (function () {
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function safeUrl(value, fallback) {
+        const url = String(value == null ? '' : value).trim();
+        if (
+            (url.startsWith('/') && !url.startsWith('//')) ||
+            /^https?:\/\//i.test(url)
+        ) {
+            return escapeHtml(url);
+        }
+        return escapeHtml(fallback || '');
+    }
+
+    // Эти функции используют renderCard в шаблонах.
+    window.catalogEscapeHtml = escapeHtml;
+    window.catalogSafeUrl = safeUrl;
+
     document.addEventListener('DOMContentLoaded', function () {
         const config = window.catalogConfig || {};
         const apiUrl = config.apiUrl || '/api/catalog/';
         const categoryOptions = config.categoryOptions || {};
-        const sortFields = config.sortFields || {};
+        const sortFieldsConfig = config.sortFields || {};
+        const sortFieldsArePerCategory = Object.values(sortFieldsConfig)
+            .some(value => value && typeof value === 'object');
         const renderCard = config.renderCard || function (item) { return ''; };
 
         const searchInput = document.getElementById('search-input');
@@ -27,18 +53,45 @@
         let sortOrder = 'asc';
 
         const sortPanel = document.querySelector('.sort-panel');
-        if (sortFields && Object.keys(sortFields).length > 0) {
+
+        function getSortFields(category) {
+            if (!sortFieldsArePerCategory) {
+                return sortFieldsConfig;
+            }
+            return sortFieldsConfig[category] || sortFieldsConfig.all || {};
+        }
+
+        function renderSortButtons(category) {
+            if (!sortPanel) return;
+
+            const fields = getSortFields(category);
+            const oldGroup = sortPanel.querySelector('.sort-buttons-group');
+            if (oldGroup) oldGroup.remove();
+
+            if (Object.keys(fields).length === 0) return;
+
+            // Если у новой категории нет выбранного поля, возвращаемся к первому.
+            if (!Object.prototype.hasOwnProperty.call(fields, currentSort)) {
+                currentSort = Object.keys(fields)[0];
+                sortOrder = 'asc';
+            }
+
             const group = document.createElement('div');
             group.className = 'sort-buttons-group';
             group.style.display = 'flex';
-            for (const [field, label] of Object.entries(sortFields)) {
+            for (const [field, label] of Object.entries(fields)) {
                 const btn = document.createElement('button');
                 btn.className = 'sort-btn';
                 btn.dataset.sort = field;
-                btn.innerHTML = `${label} <span class="sort-direction">↑</span>`;
+                btn.appendChild(document.createTextNode(`${label} `));
+                const direction = document.createElement('span');
+                direction.className = 'sort-direction';
+                direction.textContent = '↑';
+                btn.appendChild(direction);
                 group.appendChild(btn);
             }
             sortPanel.appendChild(group);
+            updateActiveButtons();
         }
 
         function getOrdering() {
@@ -160,6 +213,9 @@
 
         categorySelect.addEventListener('change', () => {
             currentPage = 1;
+            currentSort = 'name';
+            sortOrder = 'asc';
+            renderSortButtons(categorySelect.value);
             fetchCatalog();
         });
 
@@ -168,6 +224,7 @@
             fetchCatalog();
         });
 
+        renderSortButtons(categorySelect.value);
         updateActiveButtons();
         fetchCatalog();
     });

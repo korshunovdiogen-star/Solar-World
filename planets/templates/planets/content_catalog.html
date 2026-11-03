@@ -16,33 +16,62 @@
         'company': 'Компании'
     },
     sortFields: {
-        'name': 'Название',
-        'radius': 'Радиус',
-        'type': 'Тип'
+        'all': {
+            'name': 'Название'
+        },
+        'planet': {
+            'name': 'Название',
+            'radius': 'Радиус',
+            'type': 'Тип'
+        },
+        'satellite': {
+            'name': 'Название',
+            'radius': 'Радиус',
+            'type': 'Тип'
+        },
+        'mission': {
+            'name': 'Название',
+            'mission_type': 'Тип миссии',
+            'agency': 'Агентство'
+        },
+        'agency': {
+            'name': 'Название'
+        },
+        'company': {
+            'name': 'Название',
+            'revenue': 'Выручка',
+            'country': 'Страна'
+        }
     },
     renderCard: function(item) {
-        // Здесь можно использовать ту же логику, что была в старом catalog.html
-        let detailUrl = '';
-        if (item.model_type === 'planet') detailUrl = `/planet/${item.id}/`;
-        else if (item.model_type === 'satellite') detailUrl = `/satellite/${item.id}/`;
-        else if (item.model_type === 'mission') detailUrl = `/mission/${item.id}/`;
-        else if (item.model_type === 'spaceagency') detailUrl = `/spaceAgency/${item.id}/`;
-        else if (item.model_type === 'company') detailUrl = `/company/${item.id}/`;
+        const esc = window.catalogEscapeHtml;
+        const detailUrl = window.catalogSafeUrl(item.detail_url, '#');
+        const imageUrl = window.catalogSafeUrl(
+            item.image,
+            '/static/images/default.jpg'
+        );
 
-        const imageUrl = item.image ? item.image : '/static/images/default.jpg';
         let extraInfo = '';
         if (item.model_type === 'planet') {
-            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+            const type = esc(item.type_display || '—');
+            const radius = esc(item.radius ? item.radius + ' км' : '—');
+            extraInfo = `<div class="card-meta">${type} • ${radius}</div>`;
         } else if (item.model_type === 'satellite') {
-            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${item.radius ? item.radius + ' км' : '—'}</div>`;
+            const type = esc(item.type_display || '—');
+            const radius = esc(item.radius ? item.radius + ' км' : '—');
+            extraInfo = `<div class="card-meta">${type} • ${radius}</div>`;
         } else if (item.model_type === 'mission') {
-            const agencies = item.agency_names && item.agency_names.length ? item.agency_names.join(', ') : '—';
-            extraInfo = `<div class="card-meta">${item.type_display || '—'} • ${agencies}</div>`;
+            const agencies = item.agency_names && item.agency_names.length
+                ? item.agency_names.map(name => esc(name)).join(', ')
+                : '—';
+            extraInfo = `<div class="card-meta">${esc(item.type_display || '—')} • ${agencies}</div>`;
         } else if (item.model_type === 'spaceagency') {
-            extraInfo = `<div class="card-meta">${item.country || '—'}</div>`;
+            extraInfo = `<div class="card-meta">${esc(item.country || '—')}</div>`;
         } else if (item.model_type === 'company') {
-            let revenueText = item.revenue_2025 ? `${item.revenue_2025} млн USD` : '—';
-            extraInfo = `<div class="card-meta">${item.country || '—'} • Прибыль: ${revenueText}</div>`;
+            const revenueText = item.revenue_2025
+                ? `${esc(item.revenue_2025)} млн USD`
+                : '—';
+            extraInfo = `<div class="card-meta">${esc(item.country || '—')} • Прибыль: ${revenueText}</div>`;
         }
 
         let categoryName = '';
@@ -51,18 +80,18 @@
         else if (item.model_type === 'mission') categoryName = 'Миссия';
         else if (item.model_type === 'spaceagency') categoryName = 'Агентство';
         else if (item.model_type === 'company') categoryName = 'Компания';
-        else categoryName = item.model_type;
+        else categoryName = esc(item.model_type);
 
         return `<a href="${detailUrl}" class="catalog-card-link">
     <div class="catalog-card">
         <div class="card-category">${categoryName}</div>
         <div class="card-content">
-            <h3>${item.name}</h3>
-            <p>${item.first_line || item.model_type}</p>
+            <h3>${esc(item.name)}</h3>
+            <p>${esc(item.first_line || item.model_type)}</p>
             ${extraInfo}
         </div>
         <div class="card-image">
-            <img src="${imageUrl}" alt="${item.name}">
+            <img src="${imageUrl}" alt="${esc(item.name)}">
         </div>
     </div>
 </a>`;

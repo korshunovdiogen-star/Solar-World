@@ -1,7 +1,88 @@
 from rest_framework import serializers
 from planets.models import Planet, Satellite, Mission, SpaceAgency, Company
+from django.urls import reverse
 from django.utils import timezone
 from datetime import date
+
+
+_CATALOG_DETAIL_URLS = {
+    'planet': 'planet_detail',
+    'satellite': 'satellite_detail',
+    'mission': 'mission_detail',
+    'spaceagency': 'spaceagency_detail',
+    'company': 'company_detail',
+}
+
+
+def _first_line(text):
+    if not text:
+        return ''
+    lines = text.splitlines()
+    return lines[0] if lines else ''
+
+
+class CatalogCardSerializer(serializers.Serializer):
+    """
+    Лёгкая карточка каталога.
+
+    Отдаёт только то, что нужно карточке, и не тащит полный text,
+    remaining_text и вложенные объекты.
+    """
+
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    model_type = serializers.SerializerMethodField()
+    first_line = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    detail_url = serializers.SerializerMethodField()
+    type_display = serializers.SerializerMethodField()
+    radius = serializers.FloatField(read_only=True)
+    country = serializers.CharField(read_only=True)
+    revenue_2025 = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        read_only=True,
+    )
+    agency_names = serializers.SerializerMethodField()
+
+    def get_model_type(self, obj):
+        return obj._meta.model_name
+
+    def get_first_line(self, obj):
+        return _first_line(getattr(obj, 'text', None))
+
+    def get_image(self, obj):
+        image = getattr(obj, 'image', None)
+        if not image:
+            return None
+        try:
+            return image.url
+        except ValueError:
+            return None
+
+    def get_detail_url(self, obj):
+        url_name = _CATALOG_DETAIL_URLS.get(obj._meta.model_name)
+        if not url_name:
+            return None
+        return reverse(url_name, args=[obj.pk])
+
+    def get_type_display(self, obj):
+        for method_name in (
+            'get_planet_type_display',
+            'get_satellite_type_display',
+            'get_mission_type_display',
+        ):
+            method = getattr(obj, method_name, None)
+            if method is not None:
+                return method()
+        return ''
+
+    def get_agency_names(self, obj):
+        agencies = getattr(obj, 'space_agency', None)
+        if agencies is None:
+            return []
+        return [agency.name for agency in agencies.all()]
+
 
 class PlanetSerializer(serializers.ModelSerializer):
     first_line = serializers.SerializerMethodField()

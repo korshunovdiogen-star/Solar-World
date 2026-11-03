@@ -56,6 +56,19 @@ def test_catalog_api():
     radii = [item['radius'] for item in data['results']]
     assert radii == sorted(radii, reverse=True)
 
+    # 5. Некорректный номер страницы не должен ломать API
+    response = client.get(url, {'page': 'abc'})
+    assert response.status_code == 200
+    assert response.json()['current_page'] == 1
+
+    response = client.get(url, {'category': 'planet', 'page': 'abc'})
+    assert response.status_code == 200
+    assert response.json()['current_page'] == 1
+
+    response = client.get(url, {'category': 'planet', 'page': '-5'})
+    assert response.status_code == 200
+    assert response.json()['current_page'] == 1
+
 
 # API только для чтения: данные редактируются в админке, а не через API.
 READ_ONLY_ENDPOINTS = [

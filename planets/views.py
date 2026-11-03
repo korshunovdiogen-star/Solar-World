@@ -9,6 +9,7 @@ from .models import Planet, Satellite, Mission, SpaceAgency, Company
 from rest_framework import serializers
 from rest_framework import viewsets
 from solarWorld.serializers import (
+    CatalogCardSerializer,
     PlanetSerializer, SatelliteSerializer,
     MissionSerializer, SpaceAgencySerializer,
     CompanySerializer
@@ -31,6 +32,7 @@ from django.http import JsonResponse
 import logging
 import requests
 from django.conf import settings
+from solarWorld.utils import parse_page_number
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +242,7 @@ def catalog_api(request):
     q = request.GET.get('q', '').strip()
     category = request.GET.get('category', 'all')
     ordering = request.GET.get('ordering', 'name_asc')
-    page = int(request.GET.get('page', 1))
+    page = parse_page_number(request.GET.get('page', 1))
     per_page = 12
 
     page = max(1, page) # Защита от некорректного номера страницы
@@ -256,33 +258,33 @@ def catalog_api(request):
 
         try:
             planets = Planet.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
-            all_results += PlanetSerializer(planets, many=True).data
-        except Exception as e:
-            print(f"Ошибка в планетах: {e}")
+            all_results += CatalogCardSerializer(planets, many=True).data
+        except Exception:
+            logger.exception("Не удалось сериализовать планеты в общем каталоге")
 
         try:
             satellites = Satellite.objects.filter(name__icontains=q).select_related('planet')[:MAX_FOR_ALL]
-            all_results += SatelliteSerializer(satellites, many=True).data
-        except Exception as e:
-            print(f"Ошибка в спутниках: {e}")
+            all_results += CatalogCardSerializer(satellites, many=True).data
+        except Exception:
+            logger.exception("Не удалось сериализовать спутники в общем каталоге")
 
         try:
             missions = Mission.objects.filter(name__icontains=q).prefetch_related('space_agency')[:MAX_FOR_ALL]
-            all_results += MissionSerializer(missions, many=True).data
-        except Exception as e:
-            print(f"Ошибка в миссиях: {e}")
+            all_results += CatalogCardSerializer(missions, many=True).data
+        except Exception:
+            logger.exception("Не удалось сериализовать миссии в общем каталоге")
 
         try:
             agencies = SpaceAgency.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
-            all_results += SpaceAgencySerializer(agencies, many=True).data
-        except Exception as e:
-            print(f"Ошибка в агентствах: {e}")
+            all_results += CatalogCardSerializer(agencies, many=True).data
+        except Exception:
+            logger.exception("Не удалось сериализовать агентства в общем каталоге")
 
         try:
             companies = Company.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
-            all_results += CompanySerializer(companies, many=True).data
-        except Exception as e:
-            print(f"Ошибка в компаниях: {e}")
+            all_results += CatalogCardSerializer(companies, many=True).data
+        except Exception:
+            logger.exception("Не удалось сериализовать компании в общем каталоге")
 
         # Сортировка объединённого списка
         if ordering in ('name_asc', 'name_desc'):
@@ -295,15 +297,15 @@ def catalog_api(request):
         # ========== КОНКРЕТНАЯ КАТЕГОРИЯ ==========
     else:
         model_map = {
-            'planet': (Planet, PlanetSerializer, 'planet'),
-            'satellite': (Satellite, SatelliteSerializer, 'satellite'),
-            'mission': (Mission, MissionSerializer, 'mission'),
-            'agency': (SpaceAgency, SpaceAgencySerializer, 'agency'),
-            'company': (Company, CompanySerializer, 'company'),
+            'planet': Planet,
+            'satellite': Satellite,
+            'mission': Mission,
+            'agency': SpaceAgency,
+            'company': Company,
         }
 
         if category in model_map:
-            model, serializer_class, model_type = model_map[category]
+            model = model_map[category]
             try:
                 queryset = model.objects.filter(name__icontains=q)
 
@@ -322,10 +324,10 @@ def catalog_api(request):
                 offset = (page - 1) * per_page
 
                 items = queryset[offset:offset + per_page]
-                results = serializer_class(items, many=True).data
+                results = CatalogCardSerializer(items, many=True).data
 
-            except Exception as e:
-                print(f"Ошибка в {category}: {e}")
+            except Exception:
+                logger.exception("Ошибка при выборке категории %s", category)
                 results = []
                 total_pages = 1
         else:

@@ -15,17 +15,24 @@
         'stock': 'Остаток'
     },
     renderCard: function(item) {
-        const imageUrl = item.image_url ? item.image_url : '/static/images/default.jpg';
+        const esc = window.catalogEscapeHtml;
+        const imageUrl = window.catalogSafeUrl(
+            item.image_url,
+            '/static/images/default.jpg'
+        );
+        const description = item.description
+            ? item.description.substring(0, 100) + '...'
+            : '';
         return `<div class="catalog-card">
-    <div class="card-category">${item.category_name || 'Без категории'}</div>
+    <div class="card-category">${esc(item.category_name || 'Без категории')}</div>
     <div class="card-content">
-        <h3>${item.name}</h3>
-        <p>Цена: ${item.price} руб.</p>
-        <p>Остаток: ${item.stock} шт.</p>
-        <p>${item.description ? item.description.substring(0, 100) + '...' : ''}</p>
+        <h3>${esc(item.name)}</h3>
+        <p>Цена: ${esc(item.price)} руб.</p>
+        <p>Остаток: ${esc(item.stock)} шт.</p>
+        <p>${esc(description)}</p>
     </div>
     <div class="card-image">
-        <img src="${imageUrl}" alt="${item.name}">
+        <img src="${imageUrl}" alt="${esc(item.name)}">
     </div>
 </div>`;
     }

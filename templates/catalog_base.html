@@ -4,7 +4,7 @@
 {% block title %}{% block catalog_title %}Каталог{% endblock %} | Solar World{% endblock %}
 
 {% block css_additional %}
-<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20261104">
 {% block extra_css %}{% endblock %}
 {% endblock %}
 
@@ -52,19 +52,24 @@
         },
         renderCard: function(item) {
             // Базовая карточка – можно переопределить в дочернем шаблоне
+            const esc = window.catalogEscapeHtml;
+            const imageUrl = window.catalogSafeUrl(
+                item.image,
+                '/static/images/default.jpg'
+            );
             return `<div class="catalog-card">
-                <div class="card-category">${item.model_type}</div>
+                <div class="card-category">${esc(item.model_type)}</div>
                 <div class="card-content">
-                    <h3>${item.name}</h3>
-                    <p>${item.first_line || ''}</p>
+                    <h3>${esc(item.name)}</h3>
+                    <p>${esc(item.first_line || '')}</p>
                 </div>
                 <div class="card-image">
-                    <img src="${item.image ? item.image : '/static/images/default.jpg'}" alt="${item.name}">
+                    <img src="${imageUrl}" alt="${esc(item.name)}">
                 </div>
             </div>`;
         }
     }{% endblock %};
 </script>
 
-<script src="{% static 'js/catalog.js' %}"></script>
+<script src="{% static 'js/catalog.js' %}?v=20261104"></script>
 {% endblock %}

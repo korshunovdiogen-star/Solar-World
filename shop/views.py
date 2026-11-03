@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from .models import Product, Category
 from .serializers import ProductSerializer
+from solarWorld.utils import parse_page_number
 import logging
 import json
 
@@ -37,7 +38,7 @@ def shop_api(request):
         Category.objects.order_by('name').values_list('slug', 'name')
     )
     ordering = request.GET.get('ordering', 'name_asc')
-    page = int(request.GET.get('page', 1))
+    page = parse_page_number(request.GET.get('page', 1))
     per_page = 12
 
     page = max(1, page)
