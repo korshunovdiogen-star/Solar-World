@@ -347,7 +347,9 @@ def catalog_api(request):
 def planet_of_the_day(request):
     planet = get_daily_planet_from_microservice()
     if planet is None:
-        return redirect('planet_detail', pk=1)
+        # Микросервис недоступен — карточки планеты дня просто нет,
+        # поэтому ведём на главную, а не на несуществующую планету.
+        return redirect('main')
     return redirect('planet_detail', pk=planet.id)
 
 

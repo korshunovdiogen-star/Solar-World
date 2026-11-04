@@ -1,26 +1,44 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
 import hashlib
-from database import get_db, engine
-from models import Planet, Base
- 
+
+from database import get_db
+from models import Planet
+
+
 app = FastAPI()
- 
+
+
 def get_planet_index(today: date, total_count: int) -> int:
+    """
+    Возвращает индекс планеты дня для любого количества планет.
+
+    Раньше здесь было жёстко зашито 8 планет и ID начиная с 2.
+    Теперь количество берётся из базы, поэтому добавление или удаление
+    планеты не ломает выбор.
+    """
+    if total_count <= 0:
+        return 0
+
     date_str = today.isoformat()
     hash_bytes = hashlib.sha256(date_str.encode('utf-8')).digest()
     numeric_hash = int.from_bytes(hash_bytes[:4], 'big')
-    return numeric_hash % total_count
- 
+    day_of_year = today.timetuple().tm_yday
+
+    return (numeric_hash + day_of_year) % total_count
+
+
 @app.get("/planet/today")
-def get_todays_planet():
-    today = date.today()
-    day_of_year = today.timetuple().tm_yday  # число от 1 до 366
-    date_str = today.isoformat()
-    hash_bytes = hashlib.sha256(date_str.encode('utf-8')).digest()
-    numeric_hash = int.from_bytes(hash_bytes[:4], 'big')
-    # Добавляем день года, чтобы сдвигать результат
-    index = (numeric_hash + day_of_year) % 8
-    real_planet_id = index + 2  #костыль т.к. в бд индексы планет начинаются с 2
-    return {"planet_id": real_planet_id}
+def get_todays_planet(db: Session = Depends(get_db)):
+    # Берём реальные ID, а не «номер + 2»: в базе могут быть пропуски.
+    planet_ids = [
+        planet_id
+        for (planet_id,) in db.query(Planet.id).order_by(Planet.id).all()
+    ]
+
+    if not planet_ids:
+        raise HTTPException(status_code=404, detail="В базе нет планет")
+
+    index = get_planet_index(date.today(), len(planet_ids))
+    return {"planet_id": planet_ids[index]}

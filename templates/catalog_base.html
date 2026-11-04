@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static rich_text %}
 
 {% block title %}{% block catalog_title %}Каталог{% endblock %} | Solar World{% endblock %}
 
 {% block css_additional %}
-<link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20261104">
+<link rel="stylesheet" href="{% versioned_static 'css/catalog.css' %}">
 {% block extra_css %}{% endblock %}
 {% endblock %}
 
@@ -71,5 +71,5 @@
     }{% endblock %};
 </script>
 
-<script src="{% static 'js/catalog.js' %}?v=20261104"></script>
+<script src="{% versioned_static 'js/catalog.js' %}"></script>
 {% endblock %}
