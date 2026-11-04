@@ -1,9 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.contrib.contenttypes.models import ContentType
 from .models import Favorite, History
+from .forms import RemainingAttemptsAuthenticationForm
+from .rate_limit import (
+    LOGIN_IP_LIMIT,
+    LOGIN_USER_LIMIT,
+    LOGIN_WINDOW_SECONDS,
+    get_client_ip,
+    get_count,
+    is_limited,
+    register_failure,
+    reset,
+)
 from django.http import Http404, JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
@@ -39,6 +52,146 @@ def _safe_redirect(request):
     ):
         return redirect(referer)
     return redirect('main')
+
+
+def _login_keys(request):
+    """Возвращает IP посетителя и ключ «IP + логин» для счётчиков."""
+    username = request.POST.get('username', '').strip()
+    ip = get_client_ip(request)
+    user_key = f'{ip}|{username.lower()}' if username else None
+    return ip, user_key
+
+
+def _is_login_limited(ip, user_key):
+    """True, если хотя бы один из лимитов уже исчерпан."""
+    return is_limited('login-ip', ip, LOGIN_IP_LIMIT) or bool(
+        user_key and is_limited('login-ip-user', user_key, LOGIN_USER_LIMIT)
+    )
+
+
+def _register_login_failure(ip, user_key):
+    """Считает одну неудачную попытку по IP и по паре «IP + логин»."""
+    register_failure('login-ip', ip)
+    if user_key:
+        register_failure('login-ip-user', user_key)
+
+
+def _reset_login_failures(ip, user_key):
+    """Сбрасывает оба счётчика после успешного входа."""
+    reset('login-ip', ip)
+    if user_key:
+        reset('login-ip-user', user_key)
+
+
+def _too_many_attempts_message():
+    wait_minutes = LOGIN_WINDOW_SECONDS // 60
+    return (
+        'Слишком много неудачных попыток входа. '
+        f'Подождите {wait_minutes} минут и попробуйте снова.'
+    )
+
+
+class RateLimitedLoginView(LoginView):
+    """
+    Обычная страница входа Django, но с защитой от подбора пароля.
+
+    Неудачные попытки считаются по IP и по паре «IP + логин».
+    После каждой неудачи форма показывает, сколько попыток осталось.
+    """
+
+    authentication_form = RemainingAttemptsAuthenticationForm
+
+    def post(self, request, *args, **kwargs):
+        ip, user_key = _login_keys(request)
+
+        if _is_login_limited(ip, user_key):
+            form = self.get_form()
+            form.add_error(None, _too_many_attempts_message())
+            response = self.render_to_response(
+                self.get_context_data(form=form),
+                status=429,
+            )
+            response['Retry-After'] = str(LOGIN_WINDOW_SECONDS)
+            return response
+
+        return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method == 'POST':
+            kwargs['remaining'] = self._remaining_attempts()
+
+        return kwargs
+
+    def form_invalid(self, form):
+        ip, user_key = _login_keys(self.request)
+        _register_login_failure(ip, user_key)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        ip, user_key = _login_keys(self.request)
+        _reset_login_failures(ip, user_key)
+        return super().form_valid(form)
+
+    def _remaining_attempts(self):
+        ip, user_key = _login_keys(self.request)
+
+        ip_remaining = LOGIN_IP_LIMIT - (get_count('login-ip', ip) + 1)
+        if user_key:
+            user_remaining = LOGIN_USER_LIMIT - (
+                get_count('login-ip-user', user_key) + 1
+            )
+        else:
+            user_remaining = ip_remaining
+
+        # Показываем меньший остаток: именно он закончится первым.
+        return max(0, min(ip_remaining, user_remaining))
+
+
+def rate_limited_admin_login(request, extra_context=None):
+    """
+    Вход в админку с той же защитой от подбора пароля, что и обычный вход.
+
+    Админка использует собственный шаблон и форму, поэтому здесь мы
+    оборачиваем её стандартное представление, а не создаём своё.
+    """
+    if request.method == 'POST':
+        ip, user_key = _login_keys(request)
+
+        if _is_login_limited(ip, user_key):
+            # Показываем обычную страницу входа админки, но без проверки пароля.
+            original_method = request.method
+            request.method = 'GET'
+            try:
+                response = admin.site.login(request, extra_context)
+            finally:
+                request.method = original_method
+
+            if hasattr(response, 'context_data'):
+                form = response.context_data['form']
+                # Форма не привязана к данным (мы показываем её как GET),
+                # поэтому Django не создал cleaned_data. Для add_error он нужен.
+                form.cleaned_data = {}
+                form.add_error(None, _too_many_attempts_message())
+            response.status_code = 429
+            response['Retry-After'] = str(LOGIN_WINDOW_SECONDS)
+            return response
+
+    response = admin.site.login(request, extra_context)
+
+    if request.method == 'POST':
+        ip, user_key = _login_keys(request)
+        # Успешный вход в админку делает пользователя staff-пользователем.
+        # Обычный пользователь, который уже вошёл на сайт, не должен
+        # сбрасывать счётчики неудачных попыток входа в админку.
+        if request.user.is_authenticated and request.user.is_staff:
+            _reset_login_failures(ip, user_key)
+        else:
+            _register_login_failure(ip, user_key)
+
+    return response
+
 
 def register(request):
     if request.method == 'POST':
