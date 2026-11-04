@@ -1,7 +1,38 @@
-.env
-.vs/
-venv/
+# Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .coverage
+htmlcov/
+
+# Виртуальные окружения
+venv/
+env/
+.venv/
+
+# Секреты
+.env
+.env.*
+!.env.example
+
+# IDE и редакторы
+.vs/
+.idea/
+.vscode/
+*.suo
+*.user
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
+
+# Собранная статика
+staticfiles/
+
+# media/ намеренно НЕ игнорируется: это демо-контент проекта,
+# он должен быть в репозитории, чтобы сайт работал после клонирования.
+# demo_data/ тоже отслеживается осознанно — см. demo_data/README.md.
