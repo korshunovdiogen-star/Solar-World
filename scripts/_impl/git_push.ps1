@@ -337,8 +337,8 @@ try {
         exit 0
     }
 
-    # db.sqlite3 не проверяем: в этом проекте она оставлена в репозитории намеренно
-    # (демонстрационные данные, см. README).
+    # demo_data/ не проверяем: демо-база и фикстура оставлены в репозитории
+    # намеренно (см. demo_data/README.md и README.txt).
     $risky = @('venv', 'env', '__pycache__', '.pytest_cache', '.coverage', 'media')
     $notIgnored = @()
     $ignoredButTracked = @()

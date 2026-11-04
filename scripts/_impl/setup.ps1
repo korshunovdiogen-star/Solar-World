@@ -168,18 +168,18 @@ Write-Step '6/6' 'Загрузка демонстрационных данных
 $dbEmpty = ($LASTEXITCODE -ne 0)
 
 if ($dbEmpty) {
-    $fixture = Join-Path $Root 'data.json'
+    $fixture = Join-Path $Root 'demo_data\data.json'
     if (Test-Path $fixture) {
         & $python (Join-Path $Root 'manage.py') loaddata $fixture
         if ($LASTEXITCODE -ne 0) {
-            Write-Warn 'Не удалось загрузить data.json. База осталась без демо-данных.'
+            Write-Warn 'Не удалось загрузить demo_data\data.json. База осталась без демо-данных.'
         }
         else {
             Write-Ok 'Демо-данные загружены.'
         }
     }
     else {
-        Write-Warn 'Файл data.json не найден, демо-данные не загружены.'
+        Write-Warn 'Файл demo_data\data.json не найден, демо-данные не загружены.'
     }
 }
 else {

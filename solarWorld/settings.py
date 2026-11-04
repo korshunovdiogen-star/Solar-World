@@ -82,6 +82,10 @@ if USE_HTTPS:
     )
     SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', default=False)
 
+# На хостинге сайт работает за прокси, поэтому реальный IP посетителя
+# приходит в заголовке X-Forwarded-For. Локально заголовку не доверяем.
+TRUST_PROXY_HEADERS = env_bool('TRUST_PROXY_HEADERS', default=IS_PRODUCTION)
+
 
 # Application definition
 
@@ -141,12 +145,43 @@ WSGI_APPLICATION = 'solarWorld.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+def _is_running_tests():
+    """True, если код запущен тестами. Тесты всегда идут на SQLite."""
+    if 'pytest' in sys.modules:
+        return True
+    return len(sys.argv) > 1 and sys.argv[1] == 'test'
+
+
+# База выбирается через .env:
+# - DB_ENGINE не задан или равен sqlite3 — используется demo_data/db.sqlite3;
+# - DB_ENGINE=django.db.backends.postgresql — PostgreSQL из DB_* ниже.
+# Тесты всегда работают на SQLite, чтобы не трогать рабочую базу.
+DB_ENGINE = env_str('DB_ENGINE', 'django.db.backends.sqlite3')
+
+# Демо-база и фикстура лежат в demo_data/ — это данные учебного проекта,
+# а не рабочие данные. См. demo_data/README.md.
+SQLITE_DB_PATH = BASE_DIR / 'demo_data' / 'db.sqlite3'
+
+if _is_running_tests() or DB_ENGINE == 'django.db.backends.sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': SQLITE_DB_PATH,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': env_str('DB_NAME', 'solar_bd'),
+            'USER': env_str('DB_USER', 'postgres'),
+            'PASSWORD': env_str('DB_PASSWORD', ''),
+            'HOST': env_str('DB_HOST', 'localhost'),
+            'PORT': env_str('DB_PORT', '5432'),
+            'CONN_MAX_AGE': 60,
+            'CONN_HEALTH_CHECKS': True,
+        }
+    }
 
 
 # Кеширование с помощью Redis
