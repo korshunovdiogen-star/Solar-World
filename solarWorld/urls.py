@@ -17,6 +17,7 @@ router.register(r'missions', MissionViewSet)
 router.register(r'agencies', SpaceAgencyViewSet)
 router.register(r'companies', CompanyViewSet)
 urlpatterns = [
+    path('admin/login/', user_views.rate_limited_admin_login),
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
     path('planet-of-the-day/', views.planet_of_the_day, name='planet_of_the_day'),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('catalog/', views.catalog_page, name='catalog'),
     path('api/catalog/', views.catalog_api, name='catalog_api'),
+    path('accounts/login/', user_views.RateLimitedLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', user_views.register, name='register'),
     path('users/', include('users.urls')),

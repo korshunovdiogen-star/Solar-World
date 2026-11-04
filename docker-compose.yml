@@ -4,15 +4,16 @@ services:
     image: postgres:15
     container_name: solar_db
     environment:
-      POSTGRES_DB: solar_bd
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: solar26
+      POSTGRES_DB: ${DB_NAME:-solar_bd}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-solar26}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # На хосте 5433, чтобы не конфликтовать с локальным PostgreSQL на 5432.
+      - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-solar_bd}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,16 +43,21 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
+      # Значения по умолчанию нужны, чтобы `docker compose up` работал
+      # даже без файла .env. Это только для локального запуска.
+      - "SECRET_KEY=${SECRET_KEY:-docker-local-only-secret-key-change-me-9f3a7c1e5b2d8f4a6c0e}"
+      - "DEBUG=${DEBUG:-True}"
       - DB_ENGINE=django.db.backends.postgresql
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - "DB_NAME=${DB_NAME:-solar_bd}"
+      - "DB_USER=${DB_USER:-postgres}"
+      - "DB_PASSWORD=${DB_PASSWORD:-solar26}"
       - DB_HOST=db
       - DB_PORT=5432
       - FASTAPI_URL=http://fastapi:8001
       - REDIS_URL=redis://redis:6379/1
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -71,7 +77,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - DATABASE_URL=postgresql://postgres:solar26@db:5432/solar_bd
+      - "DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-solar26}@db:5432/${DB_NAME:-solar_bd}"
     depends_on:
       db:
         condition: service_healthy
