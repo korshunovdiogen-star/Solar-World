@@ -170,7 +170,10 @@ $dbEmpty = ($LASTEXITCODE -ne 0)
 if ($dbEmpty) {
     $fixture = Join-Path $Root 'demo_data\data.json'
     if (Test-Path $fixture) {
-        & $python (Join-Path $Root 'manage.py') loaddata $fixture
+        # Служебные таблицы Django уже созданы миграциями, поэтому из фикстуры
+        # берём только данные проекта: планеты, магазин и пользователей.
+        & $python (Join-Path $Root 'manage.py') loaddata $fixture `
+            -e contenttypes -e auth.permission -e admin.logentry -e sessions
         if ($LASTEXITCODE -ne 0) {
             Write-Warn 'Не удалось загрузить demo_data\data.json. База осталась без демо-данных.'
         }

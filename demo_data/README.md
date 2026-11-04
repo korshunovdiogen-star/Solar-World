@@ -25,8 +25,14 @@
   для первичного наполнения:
 
   ```bash
-  python manage.py loaddata demo_data/data.json
+  python manage.py loaddata demo_data/data.json \
+    -e contenttypes -e auth.permission -e admin.logentry -e sessions
   ```
+
+  Служебные таблицы Django (`contenttypes`, `auth.permission`, `admin.logentry`,
+  `sessions`) создаются миграциями, поэтому из фикстуры они исключены.
+  Файл `data.json` хранится в **UTF-8 без BOM**: `loaddata` не умеет читать
+  UTF-16 и падает с `UnicodeDecodeError`.
 
 - **SQLite (запасной режим).** Не задавайте `DB_ENGINE` — Django возьмёт
   `demo_data/db.sqlite3`. Тот же файл читает микросервис FastAPI,
