@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solar World</title>
-    <link rel="icon" href="/static/images/favicon.png" type="image/x-icon" />
+    <link rel="icon" href="{% static 'images/favicon.ico' %}?v=2" sizes="any">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}?v=2" sizes="512x512">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}?v=2">
     <link rel="preload" as="image" href="{% static 'images/solar_system_bg.webp' %}" fetchpriority="high">
     <link rel="preload" as="font" type="font/woff2" href="{% static 'fonts/goblin-one-400.woff2' %}" crossorigin>
     <link rel="stylesheet" href="{% static 'css/fonts.css' %}">

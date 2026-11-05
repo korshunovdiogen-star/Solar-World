@@ -7,6 +7,8 @@ from users import views as user_views
 from shop import views as shop_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.templatetags.static import static as static_url
+from django.views.generic import RedirectView
 from django.views.static import serve
 
 
@@ -18,6 +20,11 @@ router.register(r'missions', MissionViewSet)
 router.register(r'agencies', SpaceAgencyViewSet)
 router.register(r'companies', CompanyViewSet)
 urlpatterns = [
+    path(
+        'favicon.ico',
+        RedirectView.as_view(url=static_url('images/favicon.ico'), permanent=True),
+        name='favicon',
+    ),
     path('admin/login/', user_views.rate_limited_admin_login),
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
