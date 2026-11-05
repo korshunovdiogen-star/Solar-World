@@ -7,6 +7,7 @@ from users import views as user_views
 from shop import views as shop_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 
 
 # API
@@ -49,5 +50,12 @@ if settings.DEBUG:
             re_path(r'^__debug__/', include(debug_toolbar.urls)),
         ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # В продакшене DEBUG выключен, поэтому static() ничего не добавляет.
+    # На alwaysdata и в Docker медиа-файлы отдаёт сама Django: отдельного
+    # веб-сервера для /media/ там нет.
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
 
 

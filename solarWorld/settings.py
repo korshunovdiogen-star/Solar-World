@@ -252,6 +252,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_REDIRECT_URL = 'profile'   # после входа - в профиль
 LOGOUT_REDIRECT_URL = 'main'  # после выхода - на главную
 
+# WhiteNoise раздаёт статику, когда DEBUG выключен: на alwaysdata и в Docker
+# нет отдельного веб-сервера для /static/, поэтому без него сайт открывается
+# без CSS, JS и картинок.
+if not DEBUG and 'whitenoise.middleware.WhiteNoiseMiddleware' not in MIDDLEWARE:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+    }
+
 if 'test' in sys.argv or 'pytest' in sys.modules:
     CACHES = {
         'default': {
@@ -265,6 +275,6 @@ if 'RENDER' in os.environ:
         'default': dj_database_url.config(conn_max_age=600)
     }
 
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-    STATIC_ROOT = Path(__file__).resolve().parent.parent / 'staticfiles'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    if 'whitenoise.middleware.WhiteNoiseMiddleware' not in MIDDLEWARE:
+        MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
