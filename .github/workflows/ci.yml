@@ -1,6 +1,9 @@
 name: Django CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -52,3 +55,57 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+  # CD включается переменной репозитория ENABLE_DEPLOY=true.
+  # Секреты задаются в Settings -> Secrets and variables -> Actions.
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+
+    steps:
+      - name: Prepare SSH
+        env:
+          SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy over SSH
+        env:
+          SSH_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
+          SSH_USER: ${{ secrets.ALWAYSDATA_SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" 'bash -s' <<'DEPLOY'
+          set -eu
+          cd "$HOME/solar-world"
+          git fetch --depth 1 origin main
+          git reset --hard FETCH_HEAD
+          . "$HOME/venv/bin/activate"
+          pip install -r requirements.txt
+          python manage.py migrate --noinput
+          python manage.py collectstatic --noinput
+          DEPLOY
+
+      - name: Restart alwaysdata sites
+        env:
+          API_KEY: ${{ secrets.ALWAYSDATA_API_KEY }}
+          ACCOUNT: ${{ secrets.ALWAYSDATA_ACCOUNT }}
+          DJANGO_SITE_ID: ${{ secrets.ALWAYSDATA_DJANGO_SITE_ID }}
+          FASTAPI_SITE_ID: ${{ secrets.ALWAYSDATA_FASTAPI_SITE_ID }}
+        run: |
+          for site in "$DJANGO_SITE_ID" "$FASTAPI_SITE_ID"; do
+            curl -fsS -X POST \
+              --retry 3 --retry-delay 5 --retry-connrefused \
+              --basic --user "${API_KEY} account=${ACCOUNT}:" \
+              "https://api.alwaysdata.com/v1/site/${site}/restart/"
+            echo
+          done
