@@ -97,10 +97,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'planets',
     'users',
     'shop',
 ]
+
+REST_FRAMEWORK = {
+    # Схема OpenAPI для Swagger строится через drf-spectacular.
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Solar World API',
+    'DESCRIPTION': (
+        'REST API каталога Solar World: планеты, спутники, миссии, '
+        'агентства и компании. Основной эндпоинт каталога — /api/catalog/.'
+    ),
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

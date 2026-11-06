@@ -45,13 +45,13 @@ class CatalogCardSerializer(serializers.Serializer):
     )
     agency_names = serializers.SerializerMethodField()
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return obj._meta.model_name
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         return _first_line(getattr(obj, 'text', None))
 
-    def get_image(self, obj):
+    def get_image(self, obj) -> str | None:
         image = getattr(obj, 'image', None)
         if not image:
             return None
@@ -60,13 +60,13 @@ class CatalogCardSerializer(serializers.Serializer):
         except ValueError:
             return None
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str | None:
         url_name = _CATALOG_DETAIL_URLS.get(obj._meta.model_name)
         if not url_name:
             return None
         return reverse(url_name, args=[obj.pk])
 
-    def get_type_display(self, obj):
+    def get_type_display(self, obj) -> str:
         for method_name in (
             'get_planet_type_display',
             'get_satellite_type_display',
@@ -77,7 +77,7 @@ class CatalogCardSerializer(serializers.Serializer):
                 return method()
         return ''
 
-    def get_agency_names(self, obj):
+    def get_agency_names(self, obj) -> list[str]:
         agencies = getattr(obj, 'space_agency', None)
         if agencies is None:
             return []
@@ -100,21 +100,21 @@ class PlanetSerializer(serializers.ModelSerializer):
             'first_line', 'remaining_text', 'satellites', 'type_display'
         ]
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         if obj.text:
             return obj.text.splitlines()[0]
         return ""
 
-    def get_remaining_text(self, obj):
+    def get_remaining_text(self, obj) -> str:
         if obj.text:
             lines = obj.text.splitlines()
             return "\n".join(lines[1:])
         return ""
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return 'planet' 
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str:
         from django.urls import reverse
         return reverse('planet_detail', args=[obj.id]) 
 
@@ -134,21 +134,21 @@ class SatelliteSerializer(serializers.ModelSerializer):
             'first_line', 'remaining_text', 'model_type', 'type_display'
         ]
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         if obj.text:
             return obj.text.splitlines()[0]
         return ""
 
-    def get_remaining_text(self, obj):
+    def get_remaining_text(self, obj) -> str:
         if obj.text:
             lines = obj.text.splitlines()
             return "\n".join(lines[1:])
         return ""
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return 'satellite' 
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str:
         from django.urls import reverse
         return reverse('satellite_detail', args=[obj.id]) 
 
@@ -170,30 +170,30 @@ class MissionSerializer(serializers.ModelSerializer):
             'first_line', 'remaining_text', 'duration', 'model_type', 'type_display'
         ]
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         if obj.text:
             return obj.text.splitlines()[0]
         return ""
 
-    def get_remaining_text(self, obj):
+    def get_remaining_text(self, obj) -> str:
         if obj.text:
             lines = obj.text.splitlines()
             return "\n".join(lines[1:])
         return ""
 
-    def get_duration(self, obj):
+    def get_duration(self, obj) -> int | None:
         if obj.launch_date:
             return (timezone.now().date() - obj.launch_date).days
         return None
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return 'mission' 
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str:
         from django.urls import reverse
         return reverse('mission_detail', args=[obj.id]) 
 
-    def get_agency_names(self, obj):
+    def get_agency_names(self, obj) -> list[str]:
         return [agency.name for agency in obj.space_agency.all()]
 
 
@@ -212,26 +212,26 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
             'text', 'first_line', 'remaining_text', 'days_passed', 'model_type',
         ]
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         if obj.text:
             return obj.text.splitlines()[0]
         return ""
 
-    def get_remaining_text(self, obj):
+    def get_remaining_text(self, obj) -> str:
         if obj.text:
             lines = obj.text.splitlines()
             return "\n".join(lines[1:])
         return ""
 
-    def get_days_passed(self, obj):
+    def get_days_passed(self, obj) -> int | None:
         if obj.established_date:
             return (timezone.now().date() - obj.established_date).days
         return None
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return 'spaceagency' 
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str:
         from django.urls import reverse
         return reverse('spaceagency_detail', args=[obj.id]) 
 
@@ -250,20 +250,20 @@ class CompanySerializer(serializers.ModelSerializer):
             'first_line', 'remaining_text', 'model_type', 'detail_url'
         ]
 
-    def get_first_line(self, obj):
+    def get_first_line(self, obj) -> str:
         if obj.text:
             return obj.text.splitlines()[0]
         return ""
 
-    def get_remaining_text(self, obj):
+    def get_remaining_text(self, obj) -> str:
         if obj.text:
             lines = obj.text.splitlines()
             return "\n".join(lines[1:])
         return ""
 
-    def get_model_type(self, obj):
+    def get_model_type(self, obj) -> str:
         return 'company'
 
-    def get_detail_url(self, obj):
+    def get_detail_url(self, obj) -> str:
         from django.urls import reverse
         return reverse('company_detail', args=[obj.id])

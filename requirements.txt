@@ -5,6 +5,7 @@
 # Веб-фреймворк и API
 Django==5.2.2
 djangorestframework==3.17.1
+drf-spectacular==0.30.0
 
 # Конфигурация из .env и DATABASE_URL
 python-dotenv==1.2.2

@@ -10,6 +10,7 @@ from django.conf.urls.static import static
 from django.templatetags.static import static as static_url
 from django.views.generic import RedirectView
 from django.views.static import serve
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
 # API
@@ -36,6 +37,8 @@ urlpatterns = [
     path('mission/<int:pk>/', views.mission_detail, name='mission_detail'),
     path('spaceAgency/<int:pk>/', views.spaceAgency_detail, name='spaceagency_detail'),
     path('company/<int:pk>/', company_detail, name='company_detail'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger_ui'),
     path('api/', include(router.urls)),
     path('catalog/', views.catalog_page, name='catalog'),
     path('api/catalog/', views.catalog_api, name='catalog_api'),
