@@ -338,7 +338,7 @@ try {
     }
 
     # demo_data/ не проверяем: демо-база и фикстура оставлены в репозитории
-    # намеренно (см. demo_data/README.md и README.txt).
+    # намеренно (см. demo_data/README.md и README.md).
     $risky = @('venv', 'env', '__pycache__', '.pytest_cache', '.coverage', 'media')
     $notIgnored = @()
     $ignoredButTracked = @()
