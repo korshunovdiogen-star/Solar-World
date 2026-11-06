@@ -72,11 +72,19 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
         run: |
           mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # Секрет с known_hosts не обязателен: если его нет,
+          # ключ хоста получаем на раннере автоматически.
+          if [ -n "$KNOWN_HOSTS" ]; then
+            printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -t ed25519 "$SSH_HOST" > ~/.ssh/known_hosts
+          fi
           chmod 600 ~/.ssh/known_hosts
 
       - name: Deploy over SSH
