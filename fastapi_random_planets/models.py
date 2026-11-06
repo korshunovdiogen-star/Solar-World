@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey
-from sqlalchemy.orm import relationship
 from database import Base
+from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
+
 
 class Planet(Base):
     __tablename__ = "planets_planet"
@@ -13,7 +14,6 @@ class Planet(Base):
     text = Column(Text, nullable=True)
     image = Column(String, nullable=True)
     satellites = relationship("Satellite", back_populates="planet")
-
 
 
 class Satellite(Base):

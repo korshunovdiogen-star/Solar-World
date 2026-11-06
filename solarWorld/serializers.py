@@ -1,24 +1,23 @@
-from rest_framework import serializers
-from planets.models import Planet, Satellite, Mission, SpaceAgency, Company
 from django.urls import reverse
 from django.utils import timezone
-from datetime import date
+from rest_framework import serializers
 
+from planets.models import Company, Mission, Planet, Satellite, SpaceAgency
 
 _CATALOG_DETAIL_URLS = {
-    'planet': 'planet_detail',
-    'satellite': 'satellite_detail',
-    'mission': 'mission_detail',
-    'spaceagency': 'spaceagency_detail',
-    'company': 'company_detail',
+    "planet": "planet_detail",
+    "satellite": "satellite_detail",
+    "mission": "mission_detail",
+    "spaceagency": "spaceagency_detail",
+    "company": "company_detail",
 }
 
 
 def _first_line(text):
     if not text:
-        return ''
+        return ""
     lines = text.splitlines()
-    return lines[0] if lines else ''
+    return lines[0] if lines else ""
 
 
 class CatalogCardSerializer(serializers.Serializer):
@@ -49,10 +48,10 @@ class CatalogCardSerializer(serializers.Serializer):
         return obj._meta.model_name
 
     def get_first_line(self, obj) -> str:
-        return _first_line(getattr(obj, 'text', None))
+        return _first_line(getattr(obj, "text", None))
 
     def get_image(self, obj) -> str | None:
-        image = getattr(obj, 'image', None)
+        image = getattr(obj, "image", None)
         if not image:
             return None
         try:
@@ -68,17 +67,17 @@ class CatalogCardSerializer(serializers.Serializer):
 
     def get_type_display(self, obj) -> str:
         for method_name in (
-            'get_planet_type_display',
-            'get_satellite_type_display',
-            'get_mission_type_display',
+            "get_planet_type_display",
+            "get_satellite_type_display",
+            "get_mission_type_display",
         ):
             method = getattr(obj, method_name, None)
             if method is not None:
                 return method()
-        return ''
+        return ""
 
     def get_agency_names(self, obj) -> list[str]:
-        agencies = getattr(obj, 'space_agency', None)
+        agencies = getattr(obj, "space_agency", None)
         if agencies is None:
             return []
         return [agency.name for agency in agencies.all()]
@@ -90,14 +89,22 @@ class PlanetSerializer(serializers.ModelSerializer):
     satellites = serializers.StringRelatedField(many=True, read_only=True)
     model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
-    type_display = serializers.CharField(source='get_planet_type_display', read_only=True)
+    type_display = serializers.CharField(source="get_planet_type_display", read_only=True)
 
     class Meta:
         model = Planet
         fields = [
-            'id', 'name', 'radius',
-            'image', 'text', 'model_type', 'detail_url',
-            'first_line', 'remaining_text', 'satellites', 'type_display'
+            "id",
+            "name",
+            "radius",
+            "image",
+            "text",
+            "model_type",
+            "detail_url",
+            "first_line",
+            "remaining_text",
+            "satellites",
+            "type_display",
         ]
 
     def get_first_line(self, obj) -> str:
@@ -112,11 +119,12 @@ class PlanetSerializer(serializers.ModelSerializer):
         return ""
 
     def get_model_type(self, obj) -> str:
-        return 'planet' 
+        return "planet"
 
     def get_detail_url(self, obj) -> str:
         from django.urls import reverse
-        return reverse('planet_detail', args=[obj.id]) 
+
+        return reverse("planet_detail", args=[obj.id])
 
 
 class SatelliteSerializer(serializers.ModelSerializer):
@@ -124,14 +132,22 @@ class SatelliteSerializer(serializers.ModelSerializer):
     remaining_text = serializers.SerializerMethodField()
     model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
-    type_display = serializers.CharField(source='get_satellite_type_display', read_only=True)
+    type_display = serializers.CharField(source="get_satellite_type_display", read_only=True)
 
     class Meta:
         model = Satellite
         fields = [
-            'id', 'name', 'radius',
-            'image', 'text', 'planet', 'detail_url',
-            'first_line', 'remaining_text', 'model_type', 'type_display'
+            "id",
+            "name",
+            "radius",
+            "image",
+            "text",
+            "planet",
+            "detail_url",
+            "first_line",
+            "remaining_text",
+            "model_type",
+            "type_display",
         ]
 
     def get_first_line(self, obj) -> str:
@@ -146,11 +162,12 @@ class SatelliteSerializer(serializers.ModelSerializer):
         return ""
 
     def get_model_type(self, obj) -> str:
-        return 'satellite' 
+        return "satellite"
 
     def get_detail_url(self, obj) -> str:
         from django.urls import reverse
-        return reverse('satellite_detail', args=[obj.id]) 
+
+        return reverse("satellite_detail", args=[obj.id])
 
 
 class MissionSerializer(serializers.ModelSerializer):
@@ -159,15 +176,27 @@ class MissionSerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()
     model_type = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
-    type_display = serializers.CharField(source='get_mission_type_display', read_only=True)
+    type_display = serializers.CharField(source="get_mission_type_display", read_only=True)
     agency_names = serializers.SerializerMethodField()
 
     class Meta:
         model = Mission
         fields = [
-            'id', 'name', 'launch_date', 'image', 'detail_url',
-            'status', 'target_planets', 'target_satellites', 'text', 'agency_names',
-            'first_line', 'remaining_text', 'duration', 'model_type', 'type_display'
+            "id",
+            "name",
+            "launch_date",
+            "image",
+            "detail_url",
+            "status",
+            "target_planets",
+            "target_satellites",
+            "text",
+            "agency_names",
+            "first_line",
+            "remaining_text",
+            "duration",
+            "model_type",
+            "type_display",
         ]
 
     def get_first_line(self, obj) -> str:
@@ -187,11 +216,12 @@ class MissionSerializer(serializers.ModelSerializer):
         return None
 
     def get_model_type(self, obj) -> str:
-        return 'mission' 
+        return "mission"
 
     def get_detail_url(self, obj) -> str:
         from django.urls import reverse
-        return reverse('mission_detail', args=[obj.id]) 
+
+        return reverse("mission_detail", args=[obj.id])
 
     def get_agency_names(self, obj) -> list[str]:
         return [agency.name for agency in obj.space_agency.all()]
@@ -208,8 +238,17 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceAgency
         fields = [
-            'id', 'name', 'country', 'established_date', 'image', 'detail_url',
-            'text', 'first_line', 'remaining_text', 'days_passed', 'model_type',
+            "id",
+            "name",
+            "country",
+            "established_date",
+            "image",
+            "detail_url",
+            "text",
+            "first_line",
+            "remaining_text",
+            "days_passed",
+            "model_type",
         ]
 
     def get_first_line(self, obj) -> str:
@@ -229,11 +268,12 @@ class SpaceAgencySerializer(serializers.ModelSerializer):
         return None
 
     def get_model_type(self, obj) -> str:
-        return 'spaceagency' 
+        return "spaceagency"
 
     def get_detail_url(self, obj) -> str:
         from django.urls import reverse
-        return reverse('spaceagency_detail', args=[obj.id]) 
+
+        return reverse("spaceagency_detail", args=[obj.id])
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -245,9 +285,21 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
-            'id', 'name', 'country', 'established_date', 'founders', 'image', 'text',
-            'headquarters', 'employees', 'CEO', 'revenue_2025',
-            'first_line', 'remaining_text', 'model_type', 'detail_url'
+            "id",
+            "name",
+            "country",
+            "established_date",
+            "founders",
+            "image",
+            "text",
+            "headquarters",
+            "employees",
+            "CEO",
+            "revenue_2025",
+            "first_line",
+            "remaining_text",
+            "model_type",
+            "detail_url",
         ]
 
     def get_first_line(self, obj) -> str:
@@ -262,8 +314,9 @@ class CompanySerializer(serializers.ModelSerializer):
         return ""
 
     def get_model_type(self, obj) -> str:
-        return 'company'
+        return "company"
 
     def get_detail_url(self, obj) -> str:
         from django.urls import reverse
-        return reverse('company_detail', args=[obj.id])
+
+        return reverse("company_detail", args=[obj.id])

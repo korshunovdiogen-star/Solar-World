@@ -18,10 +18,10 @@ class RemainingAttemptsAuthenticationForm(AuthenticationForm):
             return super().get_invalid_login_error()
 
         return ValidationError(
-            'Неверный логин или пароль. Осталось попыток: %(remaining)s.',
-            code='invalid_login',
+            "Неверный логин или пароль. Осталось попыток: %(remaining)s.",
+            code="invalid_login",
             params={
-                'username': self.username_field.verbose_name,
-                'remaining': self.remaining,
+                "username": self.username_field.verbose_name,
+                "remaining": self.remaining,
             },
         )

@@ -139,6 +139,7 @@
   - pytest-django
   - coverage (измерение покрытия кода)
   - httpx (TestClient для FastAPI)
+  - ruff, black (линтер и форматтер, проверяются в CI)
 
 ## Установка и запуск
 
@@ -469,6 +470,7 @@ GET /api/catalog/?q=марс&category=planet&ordering=radius_desc&page=2
 - `requirements.txt` – зависимости для запуска, `requirements-dev.txt` – pytest, coverage, линтеры и другие инструменты разработки.
 - `demo_data/` – демонстрационная база SQLite (`db.sqlite3`) и фикстура `data.json` для `loaddata`. Подробнее – в `demo_data/README.md`.
 - `pytest.ini` – настройки pytest.
+- `pyproject.toml` – настройки ruff и black (линтер и форматтер).
 - `.env` (опционально) – переменные окружения (секретный ключ, режим отладки и т.п.).
 - `solarWorld/` (или `название_проекта/`) – папка с общепроектными настройками (`settings.py`, `urls.py`, `wsgi.py`).
 - `fastapi_random_planets/` – микросервис на FastAPI для генерации планеты дня; `wsgi.py` – точка входа для запуска под WSGI на хостинге.
@@ -503,7 +505,7 @@ coverage report
 coverage html
 ```
 
-**Примечание:** для тестов нужны dev-зависимости (`pytest`, `pytest-django`, `coverage`, `httpx`):
+**Примечание:** для тестов и линта нужны dev-зависимости (`pytest`, `pytest-django`, `coverage`, `httpx`, `ruff`, `black`):
 
 ```bash
 pip install -r requirements-dev.txt
@@ -533,9 +535,10 @@ pip install -r requirements-dev.txt
 Workflow: `.github/workflows/ci.yml`.
 
 **CI — на каждый push и pull request:**
-1. `python manage.py check`;
-2. миграции на PostgreSQL;
-3. `pytest` — 134 теста.
+1. `ruff check .` и `black --check .`;
+2. `python manage.py check`;
+3. миграции на PostgreSQL;
+4. `pytest` — 134 теста.
 
 **CD — автоматический деплой после зелёных тестов в ветке `main`:**
 1. обновляет код на сервере по SSH;

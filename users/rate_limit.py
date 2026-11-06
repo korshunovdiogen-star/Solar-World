@@ -3,7 +3,6 @@ import hashlib
 from django.conf import settings
 from django.core.cache import cache
 
-
 # Сколько неудачных попыток разрешено и на сколько минут блокируем.
 LOGIN_IP_LIMIT = 20
 LOGIN_USER_LIMIT = 5
@@ -18,18 +17,18 @@ def get_client_ip(request):
     в заголовке X-Forwarded-For. Локально этому заголовку не доверяем,
     чтобы его нельзя было подделать.
     """
-    if getattr(settings, 'TRUST_PROXY_HEADERS', False):
-        forwarded = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if getattr(settings, "TRUST_PROXY_HEADERS", False):
+        forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
         if forwarded:
-            return forwarded.split(',')[0].strip()
+            return forwarded.split(",")[0].strip()
 
-    return request.META.get('REMOTE_ADDR', 'unknown')
+    return request.META.get("REMOTE_ADDR", "unknown")
 
 
 def _key(scope, value):
     # В ключе не храним логин и IP открытым текстом.
-    digest = hashlib.sha256(value.encode('utf-8')).hexdigest()[:32]
-    return f'rate-limit:{scope}:{digest}'
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:32]
+    return f"rate-limit:{scope}:{digest}"
 
 
 def get_count(scope, value):

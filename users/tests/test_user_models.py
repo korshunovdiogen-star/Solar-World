@@ -1,16 +1,20 @@
 import pytest
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from users.models import Profile, Favorite, History
-from planets.models import Planet, Satellite 
+
+from planets.models import Planet, Satellite
+from users.models import Favorite, History, Profile
+
 
 @pytest.fixture
 def user():
     return User.objects.create_user(username="testuser", password="testpass")
 
+
 @pytest.fixture
 def planet():
     return Planet.objects.create(name="Марс", order=4, radius=3390, planet_type="TER")
+
 
 # --- Тесты для Profile ---
 @pytest.mark.django_db
@@ -20,26 +24,25 @@ def test_profile_created_with_user(user):
     assert profile.user == user
     assert str(profile) == f"Профиль пользователя {user.username}"
 
+
 # --- Тесты для Favorite ---
 @pytest.mark.django_db
 def test_favorite_creation(user, planet):
     ct = ContentType.objects.get_for_model(Planet)
-    favorite = Favorite.objects.create(
-        user=user,
-        content_type=ct,
-        object_id=planet.id
-    )
+    favorite = Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
     assert favorite.user == user
     assert favorite.content_object == planet
     assert str(favorite) == f"{user.username} -> {planet}"
+
 
 @pytest.mark.django_db
 def test_favorite_unique_constraint(user, planet):
     """Один пользователь не может добавить один и тот же объект дважды"""
     ct = ContentType.objects.get_for_model(Planet)
     Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
-    with pytest.raises(Exception):  
+    with pytest.raises(Exception):
         Favorite.objects.create(user=user, content_type=ct, object_id=planet.id)
+
 
 @pytest.mark.django_db
 def test_favorite_related_name(user, planet):
@@ -49,19 +52,17 @@ def test_favorite_related_name(user, planet):
     assert user.favorites.count() == 1
     assert user.favorites.first().content_object == planet
 
+
 # --- Тесты для History ---
 @pytest.mark.django_db
 def test_history_creation(user, planet):
     ct = ContentType.objects.get_for_model(Planet)
-    history = History.objects.create(
-        user=user,
-        content_type=ct,
-        object_id=planet.id
-    )
+    history = History.objects.create(user=user, content_type=ct, object_id=planet.id)
     assert history.user == user
     assert history.content_object == planet
     assert history.viewed_at is not None
     assert str(history) == f"{user.username} -> {planet} ({history.viewed_at})"
+
 
 @pytest.mark.django_db
 def test_history_unique_together(user, planet):
@@ -70,6 +71,7 @@ def test_history_unique_together(user, planet):
     History.objects.create(user=user, content_type=ct, object_id=planet.id)
     with pytest.raises(Exception):
         History.objects.create(user=user, content_type=ct, object_id=planet.id)
+
 
 @pytest.mark.django_db
 def test_history_ordering(user, planet):

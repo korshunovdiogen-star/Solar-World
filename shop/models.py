@@ -1,8 +1,9 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
+from django.db import models
 
 User = get_user_model()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название категории")
@@ -18,26 +19,15 @@ class Category(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='products',
-        verbose_name="Категория"
+        Category, on_delete=models.CASCADE, related_name="products", verbose_name="Категория"
     )
     name = models.CharField(max_length=200, verbose_name="Название товара")
     slug = models.SlugField(unique=True, verbose_name="Слаг (URL)")
     description = models.TextField(verbose_name="Описание")
     price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0)],
-        verbose_name="Цена"
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], verbose_name="Цена"
     )
-    image = models.ImageField(
-        upload_to='shop/',
-        blank=True,
-        null=True,
-        verbose_name="Изображение"
-    )
+    image = models.ImageField(upload_to="shop/", blank=True, null=True, verbose_name="Изображение")
     stock = models.PositiveIntegerField(default=0, verbose_name="Количество на складе")
     available = models.BooleanField(default=True, verbose_name="Доступен")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
@@ -53,18 +43,9 @@ class Product(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name="Пользователь"
+        User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Пользователь"
     )
-    session_key = models.CharField(
-        max_length=40,
-        null=True,
-        blank=True,
-        verbose_name="Ключ сессии"
-    )
+    session_key = models.CharField(max_length=40, null=True, blank=True, verbose_name="Ключ сессии")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     class Meta:
@@ -82,20 +63,11 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(
-        Cart,
-        on_delete=models.CASCADE,
-        related_name='items',
-        verbose_name="Корзина"
+        Cart, on_delete=models.CASCADE, related_name="items", verbose_name="Корзина"
     )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        verbose_name="Товар"
-    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
     quantity = models.PositiveIntegerField(
-        default=1,
-        validators=[MinValueValidator(1)],
-        verbose_name="Количество"
+        default=1, validators=[MinValueValidator(1)], verbose_name="Количество"
     )
 
     class Meta:
@@ -111,26 +83,17 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Ожидает оплаты'),
-        ('paid', 'Оплачен'),
-        ('shipped', 'Отправлен'),
-        ('delivered', 'Доставлен'),
-        ('cancelled', 'Отменён'),
+        ("pending", "Ожидает оплаты"),
+        ("paid", "Оплачен"),
+        ("shipped", "Отправлен"),
+        ("delivered", "Доставлен"),
+        ("cancelled", "Отменён"),
     )
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="Пользователь"
+        User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Пользователь"
     )
-    session_key = models.CharField(
-        max_length=40,
-        null=True,
-        blank=True,
-        verbose_name="Ключ сессии"
-    )
+    session_key = models.CharField(max_length=40, null=True, blank=True, verbose_name="Ключ сессии")
     first_name = models.CharField(max_length=100, verbose_name="Имя")
     last_name = models.CharField(max_length=100, verbose_name="Фамилия")
     email = models.EmailField(verbose_name="Email")
@@ -138,16 +101,10 @@ class Order(models.Model):
     address = models.TextField(verbose_name="Адрес доставки")
     total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Итоговая сумма")
     status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='pending',
-        verbose_name="Статус заказа"
+        max_length=20, choices=STATUS_CHOICES, default="pending", verbose_name="Статус заказа"
     )
     stripe_payment_intent_id = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name="ID платежа Stripe"
+        max_length=255, blank=True, null=True, verbose_name="ID платежа Stripe"
     )
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
@@ -162,18 +119,13 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name='items',
-        verbose_name="Заказ"
+        Order, on_delete=models.CASCADE, related_name="items", verbose_name="Заказ"
     )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        verbose_name="Товар"
-    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
     quantity = models.PositiveIntegerField(verbose_name="Количество")
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена на момент заказа")
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="Цена на момент заказа"
+    )
 
     class Meta:
         verbose_name = "Позиция заказа"

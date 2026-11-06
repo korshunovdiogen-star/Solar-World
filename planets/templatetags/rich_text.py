@@ -6,16 +6,15 @@ from django.templatetags.static import static
 
 from solarWorld.security import sanitize_rich_text
 
-
 register = template.Library()
 
 
-@register.filter(name='rich_text')
+@register.filter(name="rich_text")
 def rich_text(value):
     return sanitize_rich_text(value)
 
 
-@register.simple_tag(name='versioned_static')
+@register.simple_tag(name="versioned_static")
 def versioned_static(path):
     """
     Ссылка на статический файл с автоматической версией.
@@ -33,4 +32,4 @@ def versioned_static(path):
     except OSError:
         return url
 
-    return f'{url}?v={version}'
+    return f"{url}?v={version}"

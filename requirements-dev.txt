@@ -12,5 +12,5 @@ django-debug-toolbar==6.2.0
 httpx==0.28.1
 
 # Линтеры и форматирование
-ruff
-black
+ruff==0.17.4
+black==26.10.1

@@ -3,8 +3,7 @@ from html.parser import HTMLParser
 
 from django.utils.safestring import mark_safe
 
-
-ALLOWED_CLASSES = {'custom-style'}
+ALLOWED_CLASSES = {"custom-style"}
 
 
 class RichTextSanitizer(HTMLParser):
@@ -21,40 +20,40 @@ class RichTextSanitizer(HTMLParser):
         self._open_spans = 0
 
     def handle_starttag(self, tag, attrs):
-        if tag.lower() != 'span':
+        if tag.lower() != "span":
             return
 
         classes = set()
         for name, value in attrs:
-            if name.lower() == 'class' and value:
+            if name.lower() == "class" and value:
                 classes.update(value.split())
 
         if classes & ALLOWED_CLASSES:
             self._parts.append('<span class="custom-style">')
         else:
-            self._parts.append('<span>')
+            self._parts.append("<span>")
         self._open_spans += 1
 
     def handle_startendtag(self, tag, attrs):
-        if tag.lower() != 'span':
+        if tag.lower() != "span":
             return
         self.handle_starttag(tag, attrs)
-        self._parts.append('</span>')
+        self._parts.append("</span>")
         self._open_spans -= 1
 
     def handle_endtag(self, tag):
-        if tag.lower() == 'span' and self._open_spans > 0:
-            self._parts.append('</span>')
+        if tag.lower() == "span" and self._open_spans > 0:
+            self._parts.append("</span>")
             self._open_spans -= 1
 
     def handle_data(self, data):
         self._parts.append(html.escape(data, quote=False))
 
     def handle_entityref(self, name):
-        self._parts.append(f'&{name};')
+        self._parts.append(f"&{name};")
 
     def handle_charref(self, name):
-        self._parts.append(f'&#{name};')
+        self._parts.append(f"&#{name};")
 
     def handle_comment(self, data):
         pass
@@ -70,14 +69,14 @@ class RichTextSanitizer(HTMLParser):
 
     def get_html(self):
         # Если во входном тексте забыли закрыть span, закрываем его сами.
-        self._parts.append('</span>' * self._open_spans)
-        return ''.join(self._parts)
+        self._parts.append("</span>" * self._open_spans)
+        return "".join(self._parts)
 
 
 def sanitize_rich_text(value):
     """Возвращает безопасный HTML для текстов с разрешёнными span."""
     if not value:
-        return ''
+        return ""
 
     parser = RichTextSanitizer()
     parser.feed(str(value))
