@@ -66,6 +66,11 @@ jobs:
     concurrency:
       group: deploy-production
       cancel-in-progress: false
+    env:
+      API_KEY: ${{ secrets.ALWAYSDATA_API_KEY }}
+      ACCOUNT: ${{ secrets.ALWAYSDATA_ACCOUNT }}
+      DJANGO_SITE_ID: ${{ secrets.ALWAYSDATA_DJANGO_SITE_ID }}
+      FASTAPI_SITE_ID: ${{ secrets.ALWAYSDATA_FASTAPI_SITE_ID }}
 
     steps:
       - name: Prepare SSH
@@ -104,11 +109,7 @@ jobs:
           DEPLOY
 
       - name: Restart alwaysdata sites
-        env:
-          API_KEY: ${{ secrets.ALWAYSDATA_API_KEY }}
-          ACCOUNT: ${{ secrets.ALWAYSDATA_ACCOUNT }}
-          DJANGO_SITE_ID: ${{ secrets.ALWAYSDATA_DJANGO_SITE_ID }}
-          FASTAPI_SITE_ID: ${{ secrets.ALWAYSDATA_FASTAPI_SITE_ID }}
+        if: env.API_KEY != ''
         run: |
           for site in "$DJANGO_SITE_ID" "$FASTAPI_SITE_ID"; do
             curl -fsS -X POST \
@@ -117,3 +118,9 @@ jobs:
               "https://api.alwaysdata.com/v1/site/${site}/restart/"
             echo
           done
+
+      - name: Remind to restart manually
+        if: env.API_KEY == ''
+        run: |
+          echo "::warning::ALWAYSDATA_API_KEY не задан: код обновлён, но сайты не перезапущены. Перезапусти Django и FastAPI в панели alwaysdata."
+
