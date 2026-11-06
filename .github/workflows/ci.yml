@@ -75,14 +75,32 @@ jobs:
     steps:
       - name: Prepare SSH
         env:
+          SSH_KEY_B64: ${{ secrets.ALWAYSDATA_SSH_KEY_B64 }}
           SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
           SSH_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+
+          # Основной формат — ключ в base64 одной строкой: так он не
+          # ломается от переводов строк Windows. Обычный текст оставлен
+          # как запасной вариант.
+          if [ -n "$SSH_KEY_B64" ]; then
+            printf '%s' "$SSH_KEY_B64" | base64 -d > ~/.ssh/id_ed25519
+          else
+            printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          fi
           chmod 600 ~/.ssh/id_ed25519
+
+          if ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null 2>&1; then
+            echo "Приватный ключ читается: OK"
+          else
+            echo "::error::Приватный ключ в секрете повреждён. Пересоздай секрет ALWAYSDATA_SSH_KEY_B64 из файла solar_world_deploy."
+            echo "Строк: $(wc -l < ~/.ssh/id_ed25519), байт: $(wc -c < ~/.ssh/id_ed25519)"
+            exit 1
+          fi
+
           # Секрет с known_hosts не обязателен: если его нет,
           # ключ хоста получаем на раннере автоматически.
           if [ -n "$KNOWN_HOSTS" ]; then
