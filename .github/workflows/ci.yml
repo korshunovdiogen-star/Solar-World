@@ -24,7 +24,6 @@ jobs:
           --health-retries 5
 
     env:
-      DB_ENGINE: django.db.backends.postgresql
       DB_NAME: test_db
       DB_USER: postgres
       DB_PASSWORD: postgres
@@ -60,14 +59,7 @@ jobs:
           python manage.py upgrade_user_model
           python manage.py migrate --noinput
 
-      - name: Run tests (SQLite)
-        env:
-          TEST_ON_POSTGRES: 'False'
-        run: pytest -q
-
-      - name: Run tests (PostgreSQL)
-        env:
-          TEST_ON_POSTGRES: 'True'
+      - name: Run tests
         run: pytest -q
 
   # CD включается переменной репозитория ENABLE_DEPLOY=true.

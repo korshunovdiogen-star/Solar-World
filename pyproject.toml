@@ -14,10 +14,6 @@ extend-exclude = [
 select = ["E4", "E7", "E9", "F", "I"]
 ignore = ["E501"]
 
-[tool.ruff.lint.per-file-ignores]
-# Тестовые настройки намеренно подключают всё из основного settings.py.
-"solarWorld/test_settings.py" = ["F403", "F405"]
-
 [tool.black]
 line-length = 100
 target-version = ["py312"]

@@ -145,9 +145,20 @@ if (-not (Test-Path $envPath)) {
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     $chars = for ($i = 0; $i -lt 64; $i++) { $alphabet[(Get-Random -Maximum $alphabet.Length)] }
     $secret = -join $chars
-    $content = "SECRET_KEY=$secret`r`nDEBUG=True`r`nENVIRONMENT=local`r`n"
+    $content = @(
+        "SECRET_KEY=$secret"
+        'DEBUG=True'
+        'ENVIRONMENT=local'
+        'DB_NAME=solar_bd'
+        'DB_USER=postgres'
+        'DB_PASSWORD=postgres'
+        'DB_HOST=localhost'
+        'DB_PORT=5432'
+    ) -join "`r`n"
+    $content += "`r`n"
     [System.IO.File]::WriteAllText($envPath, $content, (New-Object System.Text.UTF8Encoding($false)))
     Write-Ok '.env создан, сгенерирован новый SECRET_KEY.'
+    Write-Warn 'Проверьте DB_PASSWORD и остальные DB_* в .env: они должны совпадать с вашей установкой PostgreSQL.'
 }
 else {
     Write-Ok '.env уже существует, оставляем без изменений.'
@@ -160,11 +171,11 @@ Write-Step '5/6' 'Применение миграций базы данных...
 # пользователей. На новой базе она ничего не делает.
 & $python (Join-Path $Root 'manage.py') upgrade_user_model
 if ($LASTEXITCODE -ne 0) {
-    Exit-WithError 'Не удалось перенести пользовательскую модель. Смотрите текст ошибки выше.'
+    Exit-WithError 'Не удалось перенести пользовательскую модель. Проверьте, что PostgreSQL запущен, база из DB_* существует, а логин и пароль в .env верные.'
 }
 & $python (Join-Path $Root 'manage.py') migrate --noinput
 if ($LASTEXITCODE -ne 0) {
-    Exit-WithError 'Миграции не применились. Смотрите текст ошибки выше.'
+    Exit-WithError 'Миграции не применились. Проверьте, что PostgreSQL запущен и параметры DB_* в .env верные. Смотрите текст ошибки выше.'
 }
 Write-Host ''
 

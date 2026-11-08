@@ -171,45 +171,21 @@ WSGI_APPLICATION = "solarWorld.wsgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-def _is_running_tests():
-    """True, если код запущен тестами. Тесты всегда идут на SQLite."""
-    if "pytest" in sys.modules:
-        return True
-    return len(sys.argv) > 1 and sys.argv[1] == "test"
-
-
-# База выбирается через .env:
-# - DB_ENGINE не задан или равен sqlite3 — используется demo_data/db.sqlite3;
-# - DB_ENGINE=django.db.backends.postgresql — PostgreSQL из DB_* ниже.
-# Тесты по умолчанию идут на SQLite, чтобы не трогать рабочую базу.
-# В CI переменная TEST_ON_POSTGRES=True прогоняет их на PostgreSQL.
-DB_ENGINE = env_str("DB_ENGINE", "django.db.backends.sqlite3")
-TEST_ON_POSTGRES = env_bool("TEST_ON_POSTGRES", default=False)
-
-# Демо-база и фикстура лежат в demo_data/ — это данные учебного проекта,
-# а не рабочие данные. См. demo_data/README.md.
-SQLITE_DB_PATH = BASE_DIR / "demo_data" / "db.sqlite3"
-
-if (_is_running_tests() and not TEST_ON_POSTGRES) or DB_ENGINE == "django.db.backends.sqlite3":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": SQLITE_DB_PATH,
-        }
+# Проект работает только с PostgreSQL. Параметры подключения берутся из
+# переменных окружения, а значения по умолчанию подходят для локальной
+# установки PostgreSQL.
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env_str("DB_NAME", "solar_bd"),
+        "USER": env_str("DB_USER", "postgres"),
+        "PASSWORD": env_str("DB_PASSWORD", ""),
+        "HOST": env_str("DB_HOST", "localhost"),
+        "PORT": env_str("DB_PORT", "5432"),
+        "CONN_MAX_AGE": 60,
+        "CONN_HEALTH_CHECKS": True,
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": DB_ENGINE,
-            "NAME": env_str("DB_NAME", "solar_bd"),
-            "USER": env_str("DB_USER", "postgres"),
-            "PASSWORD": env_str("DB_PASSWORD", ""),
-            "HOST": env_str("DB_HOST", "localhost"),
-            "PORT": env_str("DB_PORT", "5432"),
-            "CONN_MAX_AGE": 60,
-            "CONN_HEALTH_CHECKS": True,
-        }
-    }
+}
 
 
 # Кеширование с помощью Redis

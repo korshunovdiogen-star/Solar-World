@@ -1,24 +1,43 @@
+import uuid
 from datetime import date
 
 import pytest
-from database import Base, get_db
+from database import DATABASE_URL, Base, get_db
 from fastapi.testclient import TestClient
 from main import app, get_planet_index
 from models import Planet
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
 
-def make_client(planets):
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    Base.metadata.create_all(engine)
-    session_factory = sessionmaker(bind=engine)
+@pytest.fixture
+def session_factory():
+    """Создаёт временную схему в PostgreSQL и удаляет её после теста."""
+    schema = f"fastapi_test_{uuid.uuid4().hex}"
+    admin_engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
+    with admin_engine.begin() as connection:
+        connection.execute(text(f'CREATE SCHEMA "{schema}"'))
+
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
+    @event.listens_for(engine, "connect")
+    def _set_search_path(dbapi_connection, _connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute(f'SET search_path TO "{schema}"')
+        cursor.close()
+
+    try:
+        Base.metadata.create_all(engine)
+        yield sessionmaker(bind=engine)
+    finally:
+        engine.dispose()
+        with admin_engine.begin() as connection:
+            connection.execute(text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
+        admin_engine.dispose()
+
+
+def make_client(session_factory, planets):
     session = session_factory()
     session.add_all(planets)
     session.commit()
@@ -36,13 +55,14 @@ def make_client(planets):
 
 
 @pytest.fixture
-def fastapi_client():
+def fastapi_client(session_factory):
     client = make_client(
+        session_factory,
         [
             Planet(id=5, name="Планета A", order=1, planet_type="TER", radius=1.0),
             Planet(id=10, name="Планета B", order=2, planet_type="TER", radius=2.0),
             Planet(id=20, name="Планета C", order=3, planet_type="TER", radius=3.0),
-        ]
+        ],
     )
     with client:
         yield client
@@ -50,8 +70,8 @@ def fastapi_client():
 
 
 @pytest.fixture
-def empty_client():
-    client = make_client([])
+def empty_client(session_factory):
+    client = make_client(session_factory, [])
     with client:
         yield client
     app.dependency_overrides.clear()

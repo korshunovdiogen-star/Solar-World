@@ -47,7 +47,6 @@ services:
       # даже без файла .env. Это только для локального запуска.
       - "SECRET_KEY=${SECRET_KEY:-docker-local-only-secret-key-change-me-9f3a7c1e5b2d8f4a6c0e}"
       - "DEBUG=${DEBUG:-True}"
-      - DB_ENGINE=django.db.backends.postgresql
       - "DB_NAME=${DB_NAME:-solar_bd}"
       - "DB_USER=${DB_USER:-postgres}"
       - "DB_PASSWORD=${DB_PASSWORD:-solar26}"
