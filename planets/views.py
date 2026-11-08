@@ -45,7 +45,6 @@ def main(request):
     return render(request, "planets/main.html", context)
 
 
-# Список всех планет
 def planet_list(request):
     planets = Planet.objects.all()
     return render(request, "planets/planet_list.html", {"planets": planets})
@@ -74,7 +73,6 @@ def planet_detail(request, pk, is_favorite=False):
         "is_favorite": is_favorite,  # является ли избранным
         "content_type": "planet",  # используется в кнопке избранного
     }
-    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
 
@@ -104,7 +102,6 @@ def satellite_detail(request, pk, is_favorite=False):
         "is_favorite": is_favorite,
         "content_type": "satellite",
     }
-    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
 
@@ -137,7 +134,6 @@ def mission_detail(request, pk, is_favorite=False):
         "is_favorite": is_favorite,
         "content_type": "mission",
     }
-    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
 
@@ -169,7 +165,6 @@ def spaceAgency_detail(request, pk, is_favorite=False):
         "is_favorite": is_favorite,
         "content_type": "spaceAgency",
     }
-    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
 
@@ -362,8 +357,6 @@ def catalog_api(request):
 def planet_of_the_day(request):
     planet = get_daily_planet_from_microservice()
     if planet is None:
-        # Микросервис недоступен — карточки планеты дня просто нет,
-        # поэтому ведём на главную, а не на несуществующую планету.
         return redirect("main")
     return redirect("planet_detail", pk=planet.id)
 
@@ -383,7 +376,6 @@ def planet_of_the_day_thumbnail(request):
 
     data = get_daily_planet_thumbnail(planet)
     if data is None:
-        # Не смогли построить миниатюру — отдаём оригинал без поломки картинки
         return redirect(planet.image.url)
 
     response = HttpResponse(data, content_type="image/webp")
