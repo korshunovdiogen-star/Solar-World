@@ -3,15 +3,17 @@ import json
 from django.contrib import admin
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.prefetch import GenericPrefetch
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from .forms import RemainingAttemptsAuthenticationForm
+from planets.models import Company, Mission, Planet, Satellite, SpaceAgency
+
+from .forms import RegisterForm, RemainingAttemptsAuthenticationForm
 from .models import Favorite, History
 from .rate_limit import (
     LOGIN_IP_LIMIT,
@@ -42,6 +44,26 @@ def _get_favorite_target(content_type, object_id):
         raise Http404("Неизвестная модель")
     get_object_or_404(model, pk=object_id)
     return content_type_obj
+
+
+def _with_generic_objects(queryset):
+    """Подгружает избранное и историю пачкой: один запрос на каждую модель.
+
+    Без этого шаблон профиля обращается к content_object у каждой записи,
+    и Django делает отдельный запрос на каждую строку (N+1).
+    """
+    return queryset.prefetch_related(
+        GenericPrefetch(
+            "content_object",
+            [
+                Planet.objects.all(),
+                Satellite.objects.all(),
+                Mission.objects.all(),
+                SpaceAgency.objects.all(),
+                Company.objects.all(),
+            ],
+        )
+    )
 
 
 def _safe_redirect(request):
@@ -195,13 +217,13 @@ def rate_limited_admin_login(request, extra_context=None):
 
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # автоматический вход после регистрации
             return redirect("main")  # перенаправление на главную
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
     return render(request, "registration/register.html", {"form": form})
 
 
@@ -228,8 +250,12 @@ def remove_favorite(request, content_type, object_id):
 
 @login_required
 def profile(request):
-    favorites = Favorite.objects.filter(user=request.user).select_related("content_type")
-    history = History.objects.filter(user=request.user).select_related("content_type")[:20]
+    favorites = _with_generic_objects(
+        Favorite.objects.filter(user=request.user).select_related("content_type")
+    )
+    history = _with_generic_objects(
+        History.objects.filter(user=request.user).select_related("content_type")
+    )[:20]
     context = {
         "favorites": favorites,
         "history": history,

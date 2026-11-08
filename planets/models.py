@@ -9,7 +9,7 @@ class Planet(models.Model):
         ICE_GIANT = "ICE", "Ледяной гигант"
         DWARF = "DWA", "Карликовая планета"
 
-    name = models.TextField(max_length=20, verbose_name="Название планеты")
+    name = models.CharField(max_length=20, verbose_name="Название планеты")
     order = models.IntegerField(verbose_name="Порядок от солнца")
     planet_type = models.CharField(
         max_length=3,
@@ -33,7 +33,7 @@ class Satellite(models.Model):
         IRREGULAR = "IRR", "Нерегулярный (астероидный)"
         PROVISIONAL = "PRO", "Временный (захваченный)"
 
-    name = models.TextField(max_length=20, verbose_name="Название спутника")
+    name = models.CharField(max_length=20, verbose_name="Название спутника")
     planet = models.ForeignKey(
         "Planet", on_delete=models.PROTECT, related_name="satellites", verbose_name="Планета-хозяин"
     )
@@ -134,7 +134,7 @@ class Company(models.Model):
     established_date = models.DateField(verbose_name="Дата основания")
     founders = models.CharField(max_length=255, verbose_name="Основатель(и)", blank=True, null=True)
     image = models.ImageField(
-        upload_to="space_agencies/", blank=True, null=True, verbose_name="Изображение компании"
+        upload_to="companies/", blank=True, null=True, verbose_name="Изображение компании"
     )
     text = models.TextField(verbose_name="Описание компании", blank=True, null=True)
 
@@ -142,15 +142,15 @@ class Company(models.Model):
         max_length=255, verbose_name="Штаб-квартира", blank=True, null=True
     )
     employees = models.IntegerField(verbose_name="Количество сотрудников", blank=True, null=True)
-    CEO = models.CharField(
+    ceo = models.CharField(
         max_length=255, verbose_name="Генеральный директор", blank=True, null=True
     )
 
     # --- Финансы ---
-    revenue_2025 = models.DecimalField(
+    annual_revenue = models.DecimalField(
         max_digits=15,
         decimal_places=2,
-        verbose_name="Прибыль (2025, млн USD)",
+        verbose_name="Годовая выручка (млн USD)",
         blank=True,
         null=True,
         help_text="В миллионах долларов США",

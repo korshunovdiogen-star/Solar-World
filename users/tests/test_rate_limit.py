@@ -1,9 +1,11 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.cache.backends.locmem import LocMemCache
 from django.urls import reverse
 
 from users import rate_limit
+
+User = get_user_model()
 
 
 @pytest.fixture

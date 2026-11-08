@@ -1,47 +1,72 @@
+import logging
+
 from django.core.cache import cache
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
+from django.db.models.signals import m2m_changed, post_delete, post_save
 
 from .models import Company, Mission, Planet, Satellite, SpaceAgency
 
+logger = logging.getLogger(__name__)
 
-def invalidate_detail_cache(model_name, pk):
-    cache_key = f"{model_name}:{pk}:detail"
-    cache.delete(cache_key)
-
-
-def invalidate_catalog_and_main():
-    cache.delete_pattern("*catalog*")
-    cache.delete("main_page")
+MODELS_TO_WATCH = (Planet, Satellite, Mission, SpaceAgency, Company)
 
 
-def handle_model_change(sender, instance, **kwargs):
-    model_name = sender.__name__.lower()
-
-    invalidate_detail_cache(model_name, instance.pk)
-
-    if model_name == "satellite" and instance.planet:
-        invalidate_detail_cache("planet", instance.planet.pk)
-
-    if model_name == "mission":
-        for agency in instance.agencies.all():
-            invalidate_detail_cache("agency", agency.pk)
-        if hasattr(instance, "planet") and instance.planet:
-            invalidate_detail_cache("planet", instance.planet.pk)
-
-    invalidate_catalog_and_main()
-
-    print(f"Кеш {model_name} #{instance.pk}, каталога и главной сброшен.")
+def _delete_pattern(pattern):
+    """Удаляет ключи по маске; для бэкендов без delete_pattern чистит кеш."""
+    delete_pattern = getattr(cache, "delete_pattern", None)
+    if delete_pattern is None:
+        cache.clear()
+    else:
+        delete_pattern(pattern)
 
 
-MODELS_TO_WATCH = [Planet, Satellite, Mission, SpaceAgency, Company]
+def invalidate_detail_caches():
+    """Сбрасывает кеш детальных страниц всех объектов."""
+    _delete_pattern("*:detail")
 
 
-@receiver(post_save, sender=MODELS_TO_WATCH)
+def invalidate_catalog_cache():
+    """Сбрасывает ответы @cache_page, включая /api/catalog/."""
+    _delete_pattern("*cache_page*")
+
+
+def invalidate_caches():
+    logger.debug("Сброс кеша детальных страниц и каталога")
+    invalidate_detail_caches()
+    invalidate_catalog_cache()
+
+
 def on_model_save(sender, instance, **kwargs):
-    handle_model_change(sender, instance, **kwargs)
+    invalidate_caches()
 
 
-@receiver(post_delete, sender=MODELS_TO_WATCH)
 def on_model_delete(sender, instance, **kwargs):
-    handle_model_change(sender, instance, **kwargs)
+    invalidate_caches()
+
+
+def on_m2m_change(sender, instance, action, **kwargs):
+    if action in {"post_add", "post_remove", "post_clear"}:
+        invalidate_caches()
+
+
+for model in MODELS_TO_WATCH:
+    post_save.connect(
+        on_model_save,
+        sender=model,
+        dispatch_uid=f"cache-post-save-{model.__name__}",
+    )
+    post_delete.connect(
+        on_model_delete,
+        sender=model,
+        dispatch_uid=f"cache-post-delete-{model.__name__}",
+    )
+
+for through_model in (
+    Mission.space_agency.through,
+    Mission.target_planets.through,
+    Mission.target_satellites.through,
+):
+    m2m_changed.connect(
+        on_m2m_change,
+        sender=through_model,
+        dispatch_uid=f"cache-m2m-{through_model.__name__}",
+    )

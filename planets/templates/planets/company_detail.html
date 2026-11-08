@@ -52,8 +52,8 @@
                 {% if company.founders %}
                 <p>Основатель(и): <span class="custom-style">{{ company.founders }}</span></p>
                 {% endif %}
-                {% if company.CEO %}
-                <p>Генеральный директор: <span class="custom-style">{{ company.CEO }}</span></p>
+                {% if company.ceo %}
+                <p>Генеральный директор: <span class="custom-style">{{ company.ceo }}</span></p>
                 {% endif %}
                 <p>
                     Сотрудников:
@@ -71,9 +71,9 @@
             <div class="panel-header">Финансы</div>
             <div class="info-text">
                 <p>
-                    Прибыль (2025):
-                    {% if company.revenue_2025 %}
-                    <span class="custom-style">{{ company.revenue_2025 }} млн USD</span>
+                    Годовая выручка:
+                    {% if company.annual_revenue %}
+                    <span class="custom-style">{{ company.annual_revenue }} млн USD</span>
                     {% else %}
                     <span class="custom-style">информация не раскрывается</span>
                     {% endif %}

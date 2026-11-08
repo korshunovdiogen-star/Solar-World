@@ -243,8 +243,8 @@ SORT_MAP = {
     "company": {
         "name_asc": "name",
         "name_desc": "-name",
-        "revenue_asc": "revenue_2025",
-        "revenue_desc": "-revenue_2025",
+        "revenue_asc": "annual_revenue",
+        "revenue_desc": "-annual_revenue",
         "country_asc": "country",
         "country_desc": "-country",
     },

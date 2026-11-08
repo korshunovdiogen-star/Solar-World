@@ -1,9 +1,11 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
 from planets.models import Planet, Satellite
 from users.models import Favorite, History, Profile
+
+User = get_user_model()
 
 
 @pytest.fixture

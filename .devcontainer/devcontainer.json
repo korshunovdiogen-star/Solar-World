@@ -3,7 +3,7 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/workspaces/Solar-World",
-    "postCreateCommand": "pip install --user -r requirements.txt && python manage.py migrate",
+    "postCreateCommand": "pip install --user -r requirements.txt && python manage.py upgrade_user_model && python manage.py migrate",
     "postAttachCommand": {
         "server": "python manage.py runserver 0.0.0.0:8000"
     },

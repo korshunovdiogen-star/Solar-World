@@ -37,7 +37,7 @@ class CatalogCardSerializer(serializers.Serializer):
     type_display = serializers.SerializerMethodField()
     radius = serializers.FloatField(read_only=True)
     country = serializers.CharField(read_only=True)
-    revenue_2025 = serializers.DecimalField(
+    annual_revenue = serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
         read_only=True,
@@ -294,8 +294,8 @@ class CompanySerializer(serializers.ModelSerializer):
             "text",
             "headquarters",
             "employees",
-            "CEO",
-            "revenue_2025",
+            "ceo",
+            "annual_revenue",
             "first_line",
             "remaining_text",
             "model_type",

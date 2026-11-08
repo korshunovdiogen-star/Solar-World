@@ -113,8 +113,8 @@ def test_company_creation():
         established_date="2002-03-14",
         founders="Илон Маск",
         employees=13000,
-        CEO="Илон Маск",
-        revenue_2025=15500.00,
+        ceo="Илон Маск",
+        annual_revenue=15500.00,
     )
     assert company.name == "SpaceX"
     assert company.country == "США"
@@ -191,8 +191,8 @@ def test_company_detail_view(client):
         established_date="2002-03-14",
         founders="Илон Маск",
         employees=13000,
-        CEO="Илон Маск",
-        revenue_2025=15500.00,
+        ceo="Илон Маск",
+        annual_revenue=15500.00,
         text="Компания, основанная Илоном Маском.\nОписание...",
     )
     url = reverse("company_detail", args=[company.id])

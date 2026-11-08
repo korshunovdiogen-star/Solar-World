@@ -56,7 +56,8 @@ services:
       - FASTAPI_URL=http://fastapi:8001
       - REDIS_URL=redis://redis:6379/1
     command: >
-      sh -c "python manage.py migrate --noinput &&
+      sh -c "python manage.py upgrade_user_model &&
+             python manage.py migrate --noinput &&
              python manage.py runserver 0.0.0.0:8000"
     depends_on:
       db:

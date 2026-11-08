@@ -1,5 +1,20 @@
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
+
+User = get_user_model()
+
+
+class RegisterForm(UserCreationForm):
+    """Форма регистрации для текущей модели пользователя.
+
+    Стандартная UserCreationForm жёстко привязана к auth.User и падает,
+    когда AUTH_USER_MODEL указывает на accounts.User.
+    """
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("username",)
 
 
 class RemainingAttemptsAuthenticationForm(AuthenticationForm):

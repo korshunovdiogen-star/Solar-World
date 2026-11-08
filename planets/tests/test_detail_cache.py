@@ -1,13 +1,15 @@
 from datetime import date
 
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache.backends.locmem import LocMemCache
 from django.urls import reverse
 
 from planets.models import Company, Planet
 from users.models import Favorite
+
+User = get_user_model()
 
 
 @pytest.fixture

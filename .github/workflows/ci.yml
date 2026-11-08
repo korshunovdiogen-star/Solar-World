@@ -56,9 +56,18 @@ jobs:
         run: python manage.py check
 
       - name: Apply migrations to PostgreSQL
-        run: python manage.py migrate --noinput
+        run: |
+          python manage.py upgrade_user_model
+          python manage.py migrate --noinput
 
-      - name: Run tests
+      - name: Run tests (SQLite)
+        env:
+          TEST_ON_POSTGRES: 'False'
+        run: pytest -q
+
+      - name: Run tests (PostgreSQL)
+        env:
+          TEST_ON_POSTGRES: 'True'
         run: pytest -q
 
   # CD включается переменной репозитория ENABLE_DEPLOY=true.
@@ -127,6 +136,7 @@ jobs:
           git reset --hard FETCH_HEAD
           . "$HOME/venv/bin/activate"
           pip install -r requirements.txt
+          python manage.py upgrade_user_model
           python manage.py migrate --noinput
           python manage.py collectstatic --noinput
           DEPLOY

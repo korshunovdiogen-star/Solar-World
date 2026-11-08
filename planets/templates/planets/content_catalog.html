@@ -68,10 +68,10 @@
         } else if (item.model_type === 'spaceagency') {
             extraInfo = `<div class="card-meta">${esc(item.country || '—')}</div>`;
         } else if (item.model_type === 'company') {
-            const revenueText = item.revenue_2025
-                ? `${esc(item.revenue_2025)} млн USD`
+            const revenueText = item.annual_revenue
+                ? `${esc(item.annual_revenue)} млн USD`
                 : '—';
-            extraInfo = `<div class="card-meta">${esc(item.country || '—')} • Прибыль: ${revenueText}</div>`;
+            extraInfo = `<div class="card-meta">${esc(item.country || '—')} • Выручка: ${revenueText}</div>`;
         }
 
         let categoryName = '';

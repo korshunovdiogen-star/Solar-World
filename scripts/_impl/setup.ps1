@@ -156,6 +156,12 @@ Write-Host ''
 
 # --- Шаг 5. Миграции ---------------------------------------------------------
 Write-Step '5/6' 'Применение миграций базы данных...'
+# Если база создана до перехода на accounts.User, команда перенесёт таблицы
+# пользователей. На новой базе она ничего не делает.
+& $python (Join-Path $Root 'manage.py') upgrade_user_model
+if ($LASTEXITCODE -ne 0) {
+    Exit-WithError 'Не удалось перенести пользовательскую модель. Смотрите текст ошибки выше.'
+}
 & $python (Join-Path $Root 'manage.py') migrate --noinput
 if ($LASTEXITCODE -ne 0) {
     Exit-WithError 'Миграции не применились. Смотрите текст ошибки выше.'

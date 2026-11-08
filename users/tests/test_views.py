@@ -1,13 +1,15 @@
 import json
 
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.test import Client
 from django.urls import reverse
 
 from planets.models import Planet
 from users.models import Favorite, History, Profile
+
+User = get_user_model()
 
 
 # ---- Фикстуры ----
@@ -105,6 +107,20 @@ def test_profile_view_authenticated(client, user):
     assert response.status_code == 200
     assert "user" in response.context
     assert response.context["user"] == user
+
+
+@pytest.mark.django_db
+def test_profile_prefetches_favorite_objects(client, user, planet, django_assert_num_queries):
+    """Объекты избранного подгружаются заранее, без запроса на каждую строку."""
+    content_type = ContentType.objects.get_for_model(Planet)
+    Favorite.objects.create(user=user, content_type=content_type, object_id=planet.id)
+    client.login(username="testuser", password="testpass")
+
+    response = client.get(reverse("profile"))
+    favorites = list(response.context["favorites"])
+
+    with django_assert_num_queries(0):
+        assert [favorite.content_object.name for favorite in favorites] == [planet.name]
 
 
 # ---- Тесты избранного (toggle_favorite) ----

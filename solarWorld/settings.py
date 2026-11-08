@@ -99,9 +99,14 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "planets",
+    "accounts",
     "users",
     "shop",
 ]
+
+# Пользовательская модель создана до появления данных, поэтому её можно
+# расширять без замены встроенной auth.User.
+AUTH_USER_MODEL = "accounts.User"
 
 REST_FRAMEWORK = {
     # Схема OpenAPI для Swagger строится через drf-spectacular.
@@ -176,14 +181,16 @@ def _is_running_tests():
 # База выбирается через .env:
 # - DB_ENGINE не задан или равен sqlite3 — используется demo_data/db.sqlite3;
 # - DB_ENGINE=django.db.backends.postgresql — PostgreSQL из DB_* ниже.
-# Тесты всегда работают на SQLite, чтобы не трогать рабочую базу.
+# Тесты по умолчанию идут на SQLite, чтобы не трогать рабочую базу.
+# В CI переменная TEST_ON_POSTGRES=True прогоняет их на PostgreSQL.
 DB_ENGINE = env_str("DB_ENGINE", "django.db.backends.sqlite3")
+TEST_ON_POSTGRES = env_bool("TEST_ON_POSTGRES", default=False)
 
 # Демо-база и фикстура лежат в demo_data/ — это данные учебного проекта,
 # а не рабочие данные. См. demo_data/README.md.
 SQLITE_DB_PATH = BASE_DIR / "demo_data" / "db.sqlite3"
 
-if _is_running_tests() or DB_ENGINE == "django.db.backends.sqlite3":
+if (_is_running_tests() and not TEST_ON_POSTGRES) or DB_ENGINE == "django.db.backends.sqlite3":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",

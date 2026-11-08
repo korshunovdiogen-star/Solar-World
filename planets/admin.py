@@ -23,20 +23,16 @@ class MissionAdmin(admin.ModelAdmin):
         "get_targets_display",
     ]
     list_filter = ["mission_type", "success", "space_agency"]
-    search_fields = ["name", "description"]
+    search_fields = ["name", "text"]
     filter_horizontal = ["target_planets", "target_satellites", "space_agency"]
     form = MissionAdminForm
 
     def get_targets_display(self, obj):
         targets = []
         if obj.target_planets.exists():
-            targets.extend(
-                [f"Планета: {planet.planet_name}" for planet in obj.target_planets.all()]
-            )
+            targets.extend([f"Планета: {planet.name}" for planet in obj.target_planets.all()])
         if obj.target_satellites.exists():
-            targets.extend(
-                [f"Спутник: {sat.satellite_name}" for sat in obj.target_satellites.all()]
-            )
+            targets.extend([f"Спутник: {sat.name}" for sat in obj.target_satellites.all()])
         return ", ".join(targets) or "Цели не указаны"
 
     get_targets_display.short_description = "Цели"
@@ -48,7 +44,7 @@ class SpaceAgencyAdmin(admin.ModelAdmin):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ("name", "country", "established_date", "employees", "CEO")
+    list_display = ("name", "country", "established_date", "employees", "ceo")
     search_fields = ("name", "country")
     list_filter = ("country",)
 
