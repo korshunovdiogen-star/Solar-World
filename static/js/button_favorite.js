@@ -19,7 +19,6 @@ function getCsrfToken() {
     return meta ? meta.content : getCookie('csrftoken');
 }
 
-// Создаём элемент для динамического тултипа
 const tooltip = document.createElement('div');
 tooltip.className = 'dynamic-tooltip';
 tooltip.style.position = 'fixed';
@@ -85,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
             })
                 .then(response => {
-                    // @login_required перенаправляет анонимного пользователя на вход
+                    // @login_required перенаправляет анонимного пользователя на вход.
                     if (response.redirected) {
                         window.location.href = response.url;
                         return null;
@@ -104,7 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         this.classList.remove('active');
                     }
-                    // Обновляем текст тултипа, если он сейчас виден
                     if (tooltip.style.display === 'block') {
                         const newText = data.is_favorite ? 'Удалить из избранного' : 'Добавить в избранное';
                         tooltip.textContent = newText;

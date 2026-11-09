@@ -10,13 +10,6 @@ app = FastAPI()
 
 
 def get_planet_index(today: date, total_count: int) -> int:
-    """
-    Возвращает индекс планеты дня для любого количества планет.
-
-    Раньше здесь было жёстко зашито 8 планет и ID начиная с 2.
-    Теперь количество берётся из базы, поэтому добавление или удаление
-    планеты не ломает выбор.
-    """
     if total_count <= 0:
         return 0
 
@@ -30,7 +23,7 @@ def get_planet_index(today: date, total_count: int) -> int:
 
 @app.get("/planet/today")
 def get_todays_planet(db: Session = Depends(get_db)):
-    # Берём реальные ID, а не «номер + 2»: в базе могут быть пропуски.
+    # Берём реальные ID: в базе могут быть пропуски.
     planet_ids = [planet_id for (planet_id,) in db.query(Planet.id).order_by(Planet.id).all()]
 
     if not planet_ids:

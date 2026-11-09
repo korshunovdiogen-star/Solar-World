@@ -7,7 +7,6 @@ _PRODUCTION_MARKERS = ("RENDER", "RAILWAY_ENVIRONMENT", "DYNO")
 
 
 def env_str(name, default=None):
-    """Возвращает непустую строку из окружения или default."""
     value = os.getenv(name)
     if value is None:
         return default
@@ -16,7 +15,7 @@ def env_str(name, default=None):
 
 
 def env_bool(name, default=False):
-    """Читает булево значение: 1/true/yes/on считаются True."""
+    """1/true/yes/on считаются True."""
     value = os.getenv(name)
     if value is None or not value.strip():
         return default
@@ -24,7 +23,6 @@ def env_bool(name, default=False):
 
 
 def env_int(name, default=0):
-    """Читает целое число и понятно сообщает об ошибке."""
     value = env_str(name)
     if value is None:
         return default
@@ -35,7 +33,7 @@ def env_int(name, default=0):
 
 
 def env_list(name, default=()):
-    """Читает список через запятую, отбрасывая пустые элементы."""
+    """Список через запятую; пустые элементы отбрасываются."""
     value = os.getenv(name)
     if not value or not value.strip():
         return list(default)
@@ -43,7 +41,7 @@ def env_list(name, default=()):
 
 
 def detect_environment():
-    """Определяет окружение: ENVIRONMENT важнее автоматических признаков."""
+    """ENVIRONMENT важнее автоматических признаков хостингов."""
     explicit = env_str("ENVIRONMENT")
     if explicit:
         return explicit.lower()

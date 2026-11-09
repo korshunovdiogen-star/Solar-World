@@ -1,15 +1,4 @@
-"""Одноразовый переход со встроенной auth.User на accounts.User.
-
-Django не позволяет менять AUTH_USER_MODEL на базе, где уже применены
-миграции: запись admin.0001_initial оказывается «старше» своей новой
-зависимости accounts.0001_initial, и migrate падает с
-InconsistentMigrationHistory.
-
-Команда решает это без потери данных: таблицы auth_user* переименовываются
-в accounts_user* (структура у моделей одинаковая), а миграция
-accounts.0001_initial отмечается применённой. Дальше обычный migrate
-работает как обычно. На новой базе команда ничего не делает.
-"""
+"""Переносит пользователей со старой auth.User на accounts.User без потери данных."""
 
 from django.core.management.base import BaseCommand
 from django.db import connection, transaction
@@ -38,7 +27,6 @@ class Command(BaseCommand):
             return
 
         if not recorder.has_table():
-            # Совсем чистая база: обычный migrate создаст всё с нуля.
             self.stdout.write("База пустая, перенос не нужен.")
             return
 
@@ -46,8 +34,7 @@ class Command(BaseCommand):
         quote = connection.ops.quote_name
 
         if "accounts_user" in tables:
-            # Таблица уже создана, но запись о миграции потерялась.
-            # Достаточно отметить миграцию применённой.
+            # Таблица уже есть, но запись о миграции потерялась.
             recorder.record_applied(APP_LABEL, MIGRATION_NAME)
             self.stdout.write(
                 self.style.SUCCESS("Таблица accounts_user уже есть, миграция отмечена применённой.")

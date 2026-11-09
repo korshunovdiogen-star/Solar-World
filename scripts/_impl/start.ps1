@@ -127,7 +127,6 @@ if (Test-Port $FastApiPort) {
     exit 1
 }
 
-# --- Шаг 1. Миграции ---------------------------------------------------------
 Write-Step '1/4' 'Применение миграций...'
 & $python (Join-Path $Root 'manage.py') migrate --noinput 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
@@ -138,7 +137,6 @@ else {
 }
 Write-Host ''
 
-# --- Шаг 2. Redis ------------------------------------------------------------
 Write-Step '2/4' 'Проверка Redis (кэш)...'
 $redisReady = Test-Redis $python
 
@@ -192,7 +190,6 @@ else {
 }
 Write-Host ''
 
-# --- Шаг 3. FastAPI ----------------------------------------------------------
 Write-Step '3/4' "Запуск FastAPI (планета дня, порт $FastApiPort)..."
 $fastapi = $null
 try {
@@ -207,7 +204,6 @@ catch {
 }
 Write-Host ''
 
-# --- Шаг 4. Django -----------------------------------------------------------
 Write-Step '4/4' "Запуск Django (сайт, порт $DjangoPort)..."
 $django = $null
 try {

@@ -21,7 +21,7 @@
         return escapeHtml(fallback || '');
     }
 
-    // Эти функции используют renderCard в шаблонах.
+    // Используются в renderCard из шаблонов.
     window.catalogEscapeHtml = escapeHtml;
     window.catalogSafeUrl = safeUrl;
 
@@ -70,7 +70,6 @@
 
             if (Object.keys(fields).length === 0) return;
 
-            // Если у новой категории нет выбранного поля, возвращаемся к первому.
             if (!Object.prototype.hasOwnProperty.call(fields, currentSort)) {
                 currentSort = Object.keys(fields)[0];
                 sortOrder = 'asc';
@@ -98,7 +97,6 @@
             if (currentSort === 'name') {
                 return sortOrder === 'asc' ? 'name_asc' : 'name_desc';
             }
-            // Если поле не name, строим "поле_asc/desc"
             return sortOrder === 'asc' ? currentSort + '_asc' : currentSort + '_desc';
         }
 

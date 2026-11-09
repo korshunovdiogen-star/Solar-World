@@ -8,12 +8,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# FastAPI запускается из папки fastapi_random_planets, а .env лежит в корне.
+# .env лежит в корне проекта, а FastAPI запускается из этой папки.
 load_dotenv(BASE_DIR / ".env")
 
 
 def _database_url():
-    """Возвращает адрес PostgreSQL: DATABASE_URL или строку из DB_*."""
+    """Возвращает адрес PostgreSQL из DATABASE_URL или DB_*."""
     url = (os.getenv("DATABASE_URL") or "").strip()
     if url:
         return url

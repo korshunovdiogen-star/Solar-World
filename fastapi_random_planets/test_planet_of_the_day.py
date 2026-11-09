@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 
 @pytest.fixture
 def session_factory():
-    """Создаёт временную схему в PostgreSQL и удаляет её после теста."""
+    """Создаёт временную схему PostgreSQL для одного теста."""
     schema = f"fastapi_test_{uuid.uuid4().hex}"
     admin_engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 

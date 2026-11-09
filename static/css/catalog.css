@@ -1,4 +1,3 @@
-/* Контейнер каталога (центрирование и ограничение ширины) */
 .catalog-container {
     max-width: 1200px;
     margin-left: auto;
@@ -9,9 +8,6 @@
         text-align: center;
     }
 
-/* ============================================================
-   ПАНЕЛЬ ФИЛЬТРОВ (поиск + категории)
-   ============================================================ */
 .filter-panel {
     display: flex;
     gap: 1rem;
@@ -44,9 +40,6 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-/* ============================================================
-   СЕТКА КАРТОЧЕК РЕЗУЛЬТАТОВ
-   ============================================================ */
 .results-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(280px, 1fr));
@@ -62,9 +55,6 @@
         filter: blur(1px);
     }
 
-/* ============================================================
-   КАРТОЧКА (обёртка-ссылка)
-   ============================================================ */
 .catalog-card-link {
     display: block;
     text-decoration: none;
@@ -87,9 +77,6 @@
     }
 }
 
-/* ============================================================
-   КАРТОЧКА (внутренний блок)
-   ============================================================ */
 .catalog-card {
     position: relative;
     border: 1px solid var(--neon-blue-faded);
@@ -101,10 +88,9 @@
     align-items: center;
     gap: 1rem;
     transition: transform 0.2s, box-shadow 0.2s;
-    height: 150px; /* фиксированная высота карточки */
+    height: 150px;
 }
 
-    /* Уголки (sci-fi стиль) */
     .catalog-card::before,
     .catalog-card::after {
         content: '';
@@ -128,14 +114,12 @@
         border-top: 0;
     }
 
-/* Эффект при наведении на ссылку (меняется сама карточка) */
 .catalog-card-link:hover .catalog-card {
     transform: translateY(-5px);
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
     border-color: var(--neon-blue);
 }
 
-/* Заголовок карточки */
 .catalog-card h3 {
     font-family: var(--font-mono);
     font-size: 1.3rem;
@@ -148,7 +132,6 @@
     text-overflow: ellipsis;
 }
 
-/* Описание (первая строка текста) */
 .catalog-card p {
     font-family: var(--font-mono);
     font-size: 0.85rem;
@@ -157,9 +140,6 @@
     text-transform: uppercase;
 }
 
-/* ============================================================
-   БЛОК ИЗОБРАЖЕНИЯ (справа)
-   ============================================================ */
 .card-image {
     flex: 0 0 80px;
     width: 80px;
@@ -176,13 +156,10 @@
         display: block;
     }
 
-/* ============================================================
-   ТЕКСТОВЫЙ БЛОК КАРТОЧКИ (слева)
-   ============================================================ */
 .card-content {
     order: 1;
     flex: 1;
-    overflow: hidden; /* предотвращает вылезание содержимого */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -196,9 +173,6 @@
         max-height: 2.8rem;
     }
 
-/* ============================================================
-   ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ (тип, радиус, агентство и т.д.)
-   ============================================================ */
 .card-meta {
     font-family: var(--font-mono);
     font-size: 0.7rem;
@@ -228,14 +202,12 @@
     text-transform: uppercase;
     z-index: 2;
 }
-/* ============================================================
-   СООБЩЕНИЕ "НИЧЕГО НЕ НАЙДЕНО"
-   ============================================================ */
+
 .results-grid:has(.no-results) {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 60vh; /* или любое значение, например 500px */
+    min-height: 60vh;
 }
 
 .no-results {
@@ -248,9 +220,7 @@
     max-width: 400px;
     margin: 0 auto;
 }
-/* ============================================================
-   ПАГИНАЦИЯ (кнопки страниц)
-   ============================================================ */
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -296,9 +266,6 @@
             box-shadow: none;
         }
 
-/* ============================================================
-   ПАНЕЛЬ СОРТИРОВКИ
-   ============================================================ */
 .sort-panel {
     display: flex;
     justify-content: flex-end;
@@ -332,7 +299,6 @@
             border-color: var(--neon-blue);
         }
 
-/* Группы кнопок сортировки (для разных категорий) */
 .sort-buttons {
     display: flex;
     gap: 0.5rem;
@@ -343,7 +309,6 @@
     gap: 0.5rem;
 }
 
-/* Кнопка сортировки */
 .sort-btn {
     background: rgba(0, 20, 30, 0.6);
     backdrop-filter: blur(5px);
@@ -374,32 +339,28 @@
     margin-left: 0.2rem;
 }
 
-/* ============================================================
-   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
-   ============================================================ */
 @media (max-width: 768px) {
     .catalog-card {
-        height: auto; /* на мобильных высота автоматическая */
+        height: auto;
         min-height: 340px;
     }
 
         .catalog-card h3 {
-            white-space: normal; /* заголовок может переноситься */
+            white-space: normal;
             overflow: visible;
         }
 
     .card-meta {
-        white-space: normal; /* мета-информация может переноситься */
+        white-space: normal;
     }
 }
 
 @media (max-width: 768px) {
-    /* Контейнер каталога */
+
     .catalog-container {
         padding: 15px;
     }
 
-    /* Панель фильтров – вертикальное расположение */
     .filter-panel {
         flex-direction: column;
         align-items: stretch;
@@ -412,13 +373,11 @@
             box-sizing: border-box;
         }
 
-    /* Сетка карточек – одна колонка */
     .results-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
 
-    /* Карточка – уже есть height: auto, но добавим отступы */
     .catalog-card {
         padding: 1rem;
         min-height: auto;
@@ -435,14 +394,12 @@
             margin-bottom: 0.5rem;
         }
 
-    /* Изображение в карточке – уменьшаем размер */
     .card-image {
         flex: 0 0 60px;
         width: 60px;
         height: 60px;
     }
 
-    /* Панель сортировки – переносим на новую строку, выравниваем по левому краю */
     .sort-panel {
         flex-direction: column;
         align-items: stretch;
@@ -464,7 +421,6 @@
         font-size: 0.75rem;
     }
 
-    /* Пагинация – уменьшаем отступы и кнопки */
     .pagination {
         gap: 0.5rem;
         margin-top: 1.5rem;
@@ -475,7 +431,6 @@
             font-size: 0.8rem;
         }
 
-    /* Сообщение "ничего не найдено" */
     .results-grid:has(.no-results) {
         min-height: 40vh;
     }

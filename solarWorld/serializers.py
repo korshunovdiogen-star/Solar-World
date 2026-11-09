@@ -21,12 +21,7 @@ def _first_line(text):
 
 
 class CatalogCardSerializer(serializers.Serializer):
-    """
-    Лёгкая карточка каталога.
-
-    Отдаёт только то, что нужно карточке, и не тащит полный text,
-    remaining_text и вложенные объекты.
-    """
+    """Лёгкая карточка каталога без полного text и вложенных объектов."""
 
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)

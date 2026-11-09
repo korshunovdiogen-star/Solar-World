@@ -15,26 +15,20 @@
         <p>{% block catalog_subheading %}Выберите категорию и начните исследование{% endblock %}</p>
     </div>
 
-    <!-- Панель фильтрации -->
     <div class="filter-panel">
         <input type="text" id="search-input" placeholder="Поиск по названию...">
         <select id="category-select">
             <option value="all">Все категории</option>
-            <!-- остальные опции добавляются через JS -->
         </select>
     </div>
 
-    <!-- Панель сортировки -->
     <div class="sort-panel">
         <span>Сортировать:</span>
-        <!-- кнопки сортировки будут добавлены через JS -->
     </div>
 
-    <!-- Результаты -->
     <div id="results-container" class="results-grid"></div>
 </div>
 
-<!-- Настройки для JavaScript -->
 <script>
     window.catalogConfig = {% block catalog_config %}{
         apiUrl: '/api/catalog/',
@@ -51,7 +45,6 @@
             'type': 'Тип'
         },
         renderCard: function(item) {
-            // Базовая карточка – можно переопределить в дочернем шаблоне
             const esc = window.catalogEscapeHtml;
             const imageUrl = window.catalogSafeUrl(
                 item.image,

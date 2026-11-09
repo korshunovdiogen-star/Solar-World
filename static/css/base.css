@@ -1,6 +1,3 @@
-/* ==========================================================================
-   1. ПЕРЕМЕННЫЕ (Цветовая схема и шрифты)
-   ========================================================================== */
 :root {
     --dark-bg-center: #0a111a;
     --dark-bg-edge: #020203;
@@ -12,26 +9,23 @@
     --font-header: 'Orbitron', sans-serif;
 }
 
-/* ==========================================================================
-   2. ОСНОВНЫЕ НАСТРОЙКИ (Body & Scroll)
-   ========================================================================== */
 body {
     margin: 0;
     padding: 20px 40px 40px 40px;
     box-sizing: border-box;
-    min-height: 100vh; /* Позволяет фону растягиваться */
+    min-height: 100vh;
     color: #b0f2ff;
     font-family: var(--font-main);
-    /* Фон: сетка + радиальный градиент */
+
     background: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px), radial-gradient(circle at center, var(--dark-bg-center) 0%, var(--dark-bg-edge) 100%);
     background-size: 60px 60px, 60px 60px, 100% 100%;
-    background-attachment: fixed; /* Сетка не движется при скролле */
-    /* Сетка страницы */
+    background-attachment: fixed;
+
     display: grid;
-    grid-template-rows: auto 1fr; /* 1-я строка меню, 2-я контент */
+    grid-template-rows: auto 1fr;
     grid-gap: 20px;
-    /* Скрытие скроллбара для всех браузеров */
-    scrollbar-width: none; /* Firefox */
+
+    scrollbar-width: none;
 }
 
     body::-webkit-scrollbar {
@@ -40,8 +34,8 @@ body {
     }
 
 html {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE и Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
     html::-webkit-scrollbar {
@@ -49,12 +43,9 @@ html {
         background: transparent;
     }
 
-/* ==========================================================================
-   3. НАВИГАЦИЯ (Top Menu)
-   ========================================================================== */
 .top-nav {
     display: flex;
-    justify-content: space-between; /* Размещает .nav-links слева, .nav-profile справа */
+    justify-content: space-between;
     align-items: center;
     gap: 15px;
     padding: 20px 0;
@@ -74,21 +65,21 @@ html {
 }
 
 .profile-icon {
-    /* Меняем на flex, чтобы иконка и текст были в ряд и центрировались */
+
     display: inline-flex;
     align-items: center;
-    gap: 10px; /* Расстояние между человечком и именем */
+    gap: 10px;
 
     background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3); /* Тонкая рамка в стиле Sci-Fi */
+    border: 1px solid rgba(0, 212, 255, 0.3);
     border-radius: 30px;
-    padding: 6px 18px; /* Увеличил боковые отступы для красоты */
+    padding: 6px 18px;
     transition: all 0.3s;
-    /* ГЛАВНОЕ: Убираем фиксированную ширину */
+
     width: auto;
     max-width: none;
     flex-shrink: 0;
-    text-decoration: none; /* Убираем подчеркивание, если это ссылка */
+    text-decoration: none;
     color: var(--neon-blue);
 }
 
@@ -99,14 +90,11 @@ html {
         transform: translateY(-2px);
     }
 
-    /* Стили для самого текста имени внутри кнопки */
     .profile-icon span {
         font-family: var(--font-mono);
         font-size: 0.9rem;
-        white-space: nowrap; /* Чтобы имя не разрывалось на две строки */
+        white-space: nowrap;
     }
-
-
 
 .nav-item {
     position: relative;
@@ -135,7 +123,6 @@ html {
         font-weight: bold;
     }
 
-    /* Уголки на кнопках навигации */
     .nav-item::before {
         content: '';
         position: absolute;
@@ -155,17 +142,15 @@ html {
         background-size: 15px 15px;
     }
 
-/* Контейнер для позиционирования под меню */
 .back-container {
     grid-column: 1 / -1;
-    justify-content: flex-start; /* Кнопка будет слева */
-    margin-top: -10px; /* Прижимаем чуть ближе к линии меню */
+    justify-content: flex-start;
+    margin-top: -10px;
     text-align: left;
 }
 
-/* Специфические стили для кнопки назад */
 .back-button {
-    font-size: 0.9rem; /* Чуть меньше основных пунктов */
+    font-size: 0.9rem;
     padding: 5px 15px;
     border-color: rgba(0, 212, 255, 0.2);
     opacity: 0.8;
@@ -176,12 +161,9 @@ html {
 
     .back-button:hover {
         opacity: 1;
-        transform: translateX(-5px); /* Эффект смещения влево при наведении */
+        transform: translateX(-5px);
     }
 
-/* ==========================================================================
-   4. ТИПОГРАФИКА (Заголовки)
-   ========================================================================== */
 h1 {
     font-family: var(--font-header);
     font-size: 48px;
@@ -189,20 +171,16 @@ h1 {
     text-transform: uppercase;
     letter-spacing: 8px;
     margin-bottom: 20px;
-    text-align: center; /* Центрирование для красоты каталога */
-    /* Эффект неонового текста с градиентом */
+    text-align: center;
+
     background: linear-gradient(to bottom, #fff 50%, #00f3ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    /* Свечение */
+
     filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.8));
     text-align: left
 }
 
-
-/* ============================================================
-   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ширина до 768px)
-   ============================================================ */
 @media (max-width: 768px) {
     .top-nav {
         flex-direction: row;

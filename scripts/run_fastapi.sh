@@ -1,5 +1,4 @@
 #!/bin/sh
-# Запуск FastAPI на alwaysdata (тип сайта «User program»).
 # alwaysdata передаёт IP и PORT через переменные окружения.
 set -eu
 

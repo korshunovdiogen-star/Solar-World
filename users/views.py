@@ -28,7 +28,6 @@ from .rate_limit import (
 
 
 def _get_content_type(content_type):
-    """Находит ContentType модели из приложения planets."""
     return get_object_or_404(
         ContentType,
         app_label="planets",
@@ -37,7 +36,6 @@ def _get_content_type(content_type):
 
 
 def _get_favorite_target(content_type, object_id):
-    """Проверяет, что тип и объект существуют, и возвращает ContentType."""
     content_type_obj = _get_content_type(content_type)
     model = content_type_obj.model_class()
     if model is None:
@@ -67,7 +65,6 @@ def _with_generic_objects(queryset):
 
 
 def _safe_redirect(request):
-    """Возвращает назад, но только на страницу этого же сайта."""
     referer = request.META.get("HTTP_REFERER", "")
     if referer and url_has_allowed_host_and_scheme(
         referer,
@@ -79,7 +76,6 @@ def _safe_redirect(request):
 
 
 def _login_keys(request):
-    """Возвращает IP посетителя и ключ «IP + логин» для счётчиков."""
     username = request.POST.get("username", "").strip()
     ip = get_client_ip(request)
     user_key = f"{ip}|{username.lower()}" if username else None
@@ -87,21 +83,18 @@ def _login_keys(request):
 
 
 def _is_login_limited(ip, user_key):
-    """True, если хотя бы один из лимитов уже исчерпан."""
     return is_limited("login-ip", ip, LOGIN_IP_LIMIT) or bool(
         user_key and is_limited("login-ip-user", user_key, LOGIN_USER_LIMIT)
     )
 
 
 def _register_login_failure(ip, user_key):
-    """Считает одну неудачную попытку по IP и по паре «IP + логин»."""
     register_failure("login-ip", ip)
     if user_key:
         register_failure("login-ip-user", user_key)
 
 
 def _reset_login_failures(ip, user_key):
-    """Сбрасывает оба счётчика после успешного входа."""
     reset("login-ip", ip)
     if user_key:
         reset("login-ip-user", user_key)
@@ -116,12 +109,7 @@ def _too_many_attempts_message():
 
 
 class RateLimitedLoginView(LoginView):
-    """
-    Обычная страница входа Django, но с защитой от подбора пароля.
-
-    Неудачные попытки считаются по IP и по паре «IP + логин».
-    После каждой неудачи форма показывает, сколько попыток осталось.
-    """
+    """Страница входа с ограничением попыток по IP и по паре IP + логин."""
 
     authentication_form = RemainingAttemptsAuthenticationForm
 
@@ -172,17 +160,11 @@ class RateLimitedLoginView(LoginView):
 
 
 def rate_limited_admin_login(request, extra_context=None):
-    """
-    Вход в админку с той же защитой от подбора пароля, что и обычный вход.
-
-    Админка использует собственный шаблон и форму, поэтому здесь мы
-    оборачиваем её стандартное представление, а не создаём своё.
-    """
     if request.method == "POST":
         ip, user_key = _login_keys(request)
 
         if _is_login_limited(ip, user_key):
-            # Показываем обычную страницу входа админки, но без проверки пароля.
+            # Показываем страницу входа админки, но без проверки пароля.
             original_method = request.method
             request.method = "GET"
             try:
@@ -192,8 +174,7 @@ def rate_limited_admin_login(request, extra_context=None):
 
             if hasattr(response, "context_data"):
                 form = response.context_data["form"]
-                # Форма не привязана к данным (мы показываем её как GET),
-                # поэтому Django не создал cleaned_data. Для add_error он нужен.
+                # Форма не привязана к данным, поэтому cleaned_data нужно создать вручную.
                 form.cleaned_data = {}
                 form.add_error(None, _too_many_attempts_message())
             response.status_code = 429
@@ -204,9 +185,7 @@ def rate_limited_admin_login(request, extra_context=None):
 
     if request.method == "POST":
         ip, user_key = _login_keys(request)
-        # Успешный вход в админку делает пользователя staff-пользователем.
-        # Обычный пользователь, который уже вошёл на сайт, не должен
-        # сбрасывать счётчики неудачных попыток входа в админку.
+        # Счётчик сбрасывает только успешный вход staff-пользователя.
         if request.user.is_authenticated and request.user.is_staff:
             _reset_login_failures(ip, user_key)
         else:
@@ -220,8 +199,8 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # автоматический вход после регистрации
-            return redirect("main")  # перенаправление на главную
+            login(request, user)
+            return redirect("main")
     else:
         form = RegisterForm()
     return render(request, "registration/register.html", {"form": form})
@@ -234,7 +213,6 @@ def add_favorite(request, content_type, object_id):
     Favorite.objects.get_or_create(
         user=request.user, content_type=content_type_obj, object_id=object_id
     )
-    # Перенаправляет обратно на страницу, с которой пришли
     return _safe_redirect(request)
 
 

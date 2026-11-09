@@ -1,5 +1,4 @@
 services:
-  # Сервис базы данных PostgreSQL
   db:
     image: postgres:15
     container_name: solar_db
@@ -20,7 +19,6 @@ services:
     networks:
       - solar_network
 
-  # Сервис Redis
   redis:
     image: redis:7-alpine
     container_name: solar_redis
@@ -34,7 +32,6 @@ services:
     networks:
       - solar_network
 
-  # Сервис Django
   django:
     build:
       context: .
@@ -68,7 +65,6 @@ services:
     networks:
       - solar_network
 
-  # Сервис FastAPI
   fastapi:
     build:
       context: .

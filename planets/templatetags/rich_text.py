@@ -16,12 +16,7 @@ def rich_text(value):
 
 @register.simple_tag(name="versioned_static")
 def versioned_static(path):
-    """
-    Ссылка на статический файл с автоматической версией.
-
-    Версия — время последнего изменения файла. Браузер не держит
-    старую копию после правок, а цифру в шаблоне менять не нужно.
-    """
+    """Добавляет к URL время изменения файла, чтобы браузер не держал старую копию."""
     url = static(path)
     absolute_path = finders.find(path)
     if not absolute_path:

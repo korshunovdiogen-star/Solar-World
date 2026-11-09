@@ -1,63 +1,48 @@
-/* ============================================================
-   1. ОСНОВНЫЕ СТИЛИ BODY (с параллакс-фоном)
-   ============================================================ */
 body {
     background-image: url('../images/solar_system_bg.webp');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    transition: background-position 0.05s linear; /* быстрая реакция на движение мыши */
-    background: none; 
+    transition: background-position 0.05s linear;
+    background: none;
     margin: 0;
     position: relative;
     z-index: 1;
 }
 
-/* ============================================================
-   2. ПАРАЛЛАКС-СЛОЙ (отдельный элемент для эффекта движения)
-   ============================================================ */
 .parallax-bg {
     position: fixed;
-    top: -5%; /* смещение вверх на 5% */
-    left: -5%; /* смещение влево на 5% */
-    width: 110%; /* ширина на 10% больше окна */
-    height: 110%; /* высота на 10% больше окна */
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
     background-image: url('../images/solar_system_bg.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: -1; /* уходит под основной контент */
+    z-index: -1;
     transition: transform 0.1s ease-out;
 }
 
-/* ============================================================
-   3. КОЛОНКА КНОПОК (правый край)
-   ============================================================ */
 .hero-buttons-column {
     display: flex;
-    flex-direction: column; /* вертикальное расположение */
-    align-items: flex-end; /* прижаты к правому краю */
+    flex-direction: column;
+    align-items: flex-end;
     gap: 15px;
     margin-top: 30px;
 }
 
-/* ============================================================
-   4. ОВЕРЛЕЙ (текст поверх картинки)
-   ============================================================ */
 .hero-overlay {
     position: relative;
-    z-index: 2; 
+    z-index: 2;
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: flex-end; 
+    justify-content: flex-end;
     align-items: center;
     background: linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%);
 }
 
-/* ============================================================
-   5. ОСНОВНОЙ КОНТЕЙНЕР ТЕКСТА
-   ============================================================ */
 .hero-content {
     margin-right: 10%;
     text-align: right;
@@ -67,7 +52,7 @@ body {
 
 .hero-title {
     font-family: 'Goblin One', serif;
-    font-size: clamp(2.35rem, 6.25vw, 4.5rem); 
+    font-size: clamp(2.35rem, 6.25vw, 4.5rem);
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
@@ -93,7 +78,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     width: 0;
-    border-right: 3px solid transparent; 
+    border-right: 3px solid transparent;
 }
 
 .line-1 {
@@ -104,9 +89,6 @@ body {
     animation: typing 2s steps(20, end) 2.2s forwards, blink-caret .75s step-end infinite 2.2s;
 }
 
-/* ============================================================
-   6. АНИМАЦИИ ТЕКСТА (печать и курсор)
-   ============================================================ */
 @keyframes typing {
     from {
         width: 0;
@@ -127,9 +109,6 @@ body {
     }
 }
 
-/* ============================================================
-   7. ГЛАВНАЯ КНОПКА (универсальная)
-   ============================================================ */
 .space-btn {
     display: inline-block;
     margin-top: 30px;
@@ -148,14 +127,12 @@ body {
     overflow: hidden;
 }
 
-    /* Основная кнопка (с пульсацией) */
     .space-btn.primary {
         background: linear-gradient(45deg, #ff8c00, #ffcc33);
         box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
         animation: pulse-orange 2s infinite;
     }
 
-    /* Второстепенная кнопка (контурный стиль) */
     .space-btn.secondary {
         background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
@@ -176,7 +153,6 @@ body {
         z-index: 2;
     }
 
-    /* Эффекты при наведении */
     .space-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
@@ -187,7 +163,6 @@ body {
         box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
     }
 
-    /* Бегущий блик (эффект стекла) */
     .space-btn::before {
         content: '';
         position: absolute;
@@ -204,9 +179,6 @@ body {
         left: 150%;
     }
 
-/* ============================================================
-   8. АНИМАЦИЯ ПУЛЬСАЦИИ (оранжевое свечение)
-   ============================================================ */
 @keyframes pulse-orange {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7);
@@ -221,9 +193,6 @@ body {
     }
 }
 
-/* ============================================================
-   БЛОК "ПЛАНЕТА ДНЯ" (в стиле secondary кнопки)
-   ============================================================ */
 .daily-planet-card {
     display: flex;
     align-items: center;
@@ -253,7 +222,6 @@ body {
     box-shadow: 0 8px 25px rgba(255, 204, 51, 0.6);
 }
 
-/* Картинка планеты */
 .daily-planet-image {
     flex-shrink: 0;
     width: 56px;
@@ -269,7 +237,6 @@ body {
     transform: scale(1.05) rotate(-3deg);
 }
 
-/* Текстовая часть */
 .daily-planet-info {
     flex: 1;
     text-align: right;
@@ -279,13 +246,13 @@ body {
 
 .daily-planet-label {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9rem; /* увеличен */
-    font-weight: 700; /* жирный */
+    font-size: 0.9rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
     color: #ff8c00;
-    opacity: 1; /* полностью непрозрачный */
-    text-shadow: 0 0 8px rgba(255, 140, 0, 0.4); /* лёгкое свечение */
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
     margin-bottom: 4px;
 }
 
@@ -293,7 +260,7 @@ body {
     font-family: 'Goblin One', serif;
     font-size: 1.4rem;
     line-height: 1.2;
-    color: inherit; /* наследует цвет от родителя (при наведении становится белым) */
+    color: inherit;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
     margin: 0;
     white-space: nowrap;
@@ -312,7 +279,6 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     .daily-planet-card {
         flex-direction: row;
@@ -375,9 +341,6 @@ body {
     }
 }
 
-/* ============================================================
-   АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ И МОБИЛЬНЫХ 
-   ============================================================ */
 @media (max-width: 768px) {
     .daily-planet-card {
         flex-direction: row;

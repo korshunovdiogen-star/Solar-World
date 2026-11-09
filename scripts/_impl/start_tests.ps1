@@ -69,7 +69,6 @@ if (-not $python) {
     exit 1
 }
 
-# --- Шаг 1. Проверка конфигурации -------------------------------------------
 Write-Step '1/2' 'Проверка конфигурации Django...'
 & $python (Join-Path $Root 'manage.py') check
 if ($LASTEXITCODE -ne 0) {
@@ -80,7 +79,6 @@ else {
 }
 Write-Host ''
 
-# --- Шаг 2. pytest -----------------------------------------------------------
 Write-Step '2/2' 'Запуск pytest...'
 & $python -m pytest -v
 $testCode = $LASTEXITCODE

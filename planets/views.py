@@ -66,12 +66,12 @@ def planet_detail(request, pk, is_favorite=False):
     satellites = planet.satellites.all().order_by("satellite_type", "name")
 
     context = {
-        "planet": planet,  # сам объект
-        "satellites": satellites,  # список объектов спутников
-        "first_line": first_line,  # Первая строка описания (подзаголовок)
-        "remaining_text": remaining_text,  # текст описания без первой строки
-        "is_favorite": is_favorite,  # является ли избранным
-        "content_type": "planet",  # используется в кнопке избранного
+        "planet": planet,
+        "satellites": satellites,
+        "first_line": first_line,
+        "remaining_text": remaining_text,
+        "is_favorite": is_favorite,
+        "content_type": "planet",
     }
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
@@ -192,10 +192,10 @@ def company_detail(request, pk, is_favorite=False):
         "company": company,
         "first_line": first_line,
         "remaining_text": remaining_text,
-        "days_passed": days_passed.days,  # сколько дней прошло со дня основания
+        "days_passed": days_passed.days,
         "content_type": "company",
     }
-    # is_favorite у каждого пользователя свой, поэтому в общий кеш его не кладём.
+    # is_favorite зависит от пользователя, поэтому в общий кеш его не кладём.
     context.pop("is_favorite", None)
     cache.set(cache_key, context, timeout=60 * 15)
 
@@ -254,7 +254,7 @@ def catalog_api(request):
     page = parse_page_number(request.GET.get("page", 1))
     per_page = 12
 
-    page = max(1, page)  # Защита от некорректного номера страницы
+    page = max(1, page)
     results = []
     total_pages = 1
 
@@ -296,7 +296,6 @@ def catalog_api(request):
         except Exception:
             logger.exception("Не удалось сериализовать компании в общем каталоге")
 
-        # Сортировка объединённого списка
         if ordering in ("name_asc", "name_desc"):
             all_results.sort(key=lambda x: x.get("name", ""), reverse=(ordering == "name_desc"))
 
@@ -304,7 +303,6 @@ def catalog_api(request):
         page_obj = paginator.get_page(page)
         results = page_obj.object_list
         total_pages = paginator.num_pages
-        # ========== КОНКРЕТНАЯ КАТЕГОРИЯ ==========
     else:
         model_map = {
             "planet": Planet,
@@ -319,7 +317,6 @@ def catalog_api(request):
             try:
                 queryset = model.objects.filter(name__icontains=q)
 
-                # Оптимизации для связанных полей
                 if category == "satellite":
                     queryset = queryset.select_related("planet")
                 elif category == "mission":
@@ -341,7 +338,6 @@ def catalog_api(request):
                 results = []
                 total_pages = 1
         else:
-            # Неизвестная категория
             results = []
             total_pages = 1
 
@@ -362,13 +358,6 @@ def planet_of_the_day(request):
 
 
 def planet_of_the_day_thumbnail(request):
-    """
-    Отдаёт уменьшенную картинку планеты дня.
-
-    Миниатюра генерируется один раз в сутки и лежит в кеше до полуночи,
-    поэтому карточка на главной не тянет полноразмерный файл (сотни КБ),
-    а новые файлы на диске не создаются. При ошибке — отдаём оригинал.
-    """
     planet = get_daily_planet_from_microservice()
 
     if planet is None or not planet.image:
@@ -384,7 +373,6 @@ def planet_of_the_day_thumbnail(request):
     return response
 
 
-# API
 class PlanetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Planet.objects.all()
     serializer_class = PlanetSerializer

@@ -19,7 +19,6 @@ from planets.views import (
 )
 from users import views as user_views
 
-# API
 router = DefaultRouter()
 router.register(r"planets", PlanetViewSet)
 router.register(r"satellites", SatelliteViewSet)
@@ -60,9 +59,6 @@ urlpatterns = [
     path("shop/", include("shop.urls")),
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 if settings.DEBUG:
     if getattr(settings, "ENABLE_DEBUG_TOOLBAR", False):
         import debug_toolbar
@@ -72,9 +68,7 @@ if settings.DEBUG:
         ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
-    # В продакшене DEBUG выключен, поэтому static() ничего не добавляет.
-    # На alwaysdata и в Docker медиа-файлы отдаёт сама Django: отдельного
-    # веб-сервера для /media/ там нет.
+    # На alwaysdata и в Docker медиа отдаёт сама Django: отдельного сервера нет.
     urlpatterns += [
         re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     ]

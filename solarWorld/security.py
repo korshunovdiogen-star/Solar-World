@@ -7,12 +7,7 @@ ALLOWED_CLASSES = {"custom-style"}
 
 
 class RichTextSanitizer(HTMLParser):
-    """
-    Оставляет только <span> и <span class="custom-style">.
-
-    Всё остальное удаляется, а текст экранируется. Поэтому даже если
-    в базе окажется <script>, он не выполнится.
-    """
+    """Пропускает только <span>, остальной HTML вырезается, текст экранируется."""
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -74,7 +69,6 @@ class RichTextSanitizer(HTMLParser):
 
 
 def sanitize_rich_text(value):
-    """Возвращает безопасный HTML для текстов с разрешёнными span."""
     if not value:
         return ""
 

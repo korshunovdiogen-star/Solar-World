@@ -10,7 +10,6 @@
 {% block content %}
 <div class="detail-content">
     {% include 'includes/button_favorite.html' with content_type='company' object_id=company.id is_favorite=is_favorite %}
-    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
     <main class="main-content">
         <article class="sci-fi-panel" style="position: relative;">
             <div class="text-block">
@@ -25,10 +24,8 @@
         </article>
     </main>
 
-    <!-- ПРАВАЯ КОЛОНКА: Фото и данные -->
     <aside class="side-column">
 
-        <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
             {% if company.image %}
             <img src="{{ company.image.url }}" alt="{{ company.name }}" />
@@ -37,7 +34,6 @@
             {% endif %}
         </div>
 
-        <!-- Блок 1: Основные сведения -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Основные сведения</div>
             <div class="info-text">
@@ -66,7 +62,6 @@
             </div>
         </div>
 
-        <!-- Блок 2: Финансы -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Финансы</div>
             <div class="info-text">
@@ -81,7 +76,6 @@
             </div>
         </div>
 
-        <!-- Блок 3: Участие в миссиях (если есть) -->
         {% if company.missions.all %}
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Участие в миссиях</div>

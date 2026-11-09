@@ -12,7 +12,6 @@ from users.models import Favorite, History, Profile
 User = get_user_model()
 
 
-# ---- Фикстуры ----
 @pytest.fixture
 def client():
     return Client()
@@ -34,7 +33,6 @@ def planet():
     )
 
 
-# ---- Тесты регистрации ----
 @pytest.mark.django_db
 def test_register_view_get(client):
     url = reverse("register")
@@ -52,12 +50,9 @@ def test_register_view_post_success(client):
         "password2": "complex_password_123",
     }
     response = client.post(url, data)
-    # Должен быть редирект на главную
     assert response.status_code == 302
     assert response.url == reverse("main")
-    # Проверяем, что пользователь создан
     assert User.objects.filter(username="newuser").exists()
-    # Проверяем, что профиль создан автоматически (сигнал)
     new_user = User.objects.get(username="newuser")
     assert Profile.objects.filter(user=new_user).exists()
 
@@ -123,7 +118,6 @@ def test_profile_prefetches_favorite_objects(client, user, planet, django_assert
         assert [favorite.content_object.name for favorite in favorites] == [planet.name]
 
 
-# ---- Тесты избранного (toggle_favorite) ----
 @pytest.mark.django_db
 def test_toggle_favorite_add(client, user, planet):
     client.login(username="testuser", password="testpass")
@@ -266,11 +260,9 @@ def test_profile_remove_favorite_uses_post_form(client, user, planet):
     assert "csrfmiddlewaretoken" in content
 
 
-# ---- Тесты истории (автоматическое сохранение при просмотре) ----
 @pytest.mark.django_db
 def test_history_saved_on_planet_detail(client, user, planet):
     client.login(username="testuser", password="testpass")
-    print(client.login(username="testuser", password="testpass"))
     url = reverse("planet_detail", args=[planet.id])
     response = client.get(url)
     assert response.status_code == 200
@@ -278,7 +270,6 @@ def test_history_saved_on_planet_detail(client, user, planet):
     assert History.objects.filter(user=user, content_type=ct, object_id=planet.id).exists()
 
 
-# ---- проверка, что история не дублируется при повторном просмотре ----
 @pytest.mark.django_db
 def test_history_does_not_duplicate(client, user, planet):
     client.login(username="testuser", password="testpass")

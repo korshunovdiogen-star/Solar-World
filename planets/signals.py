@@ -11,7 +11,7 @@ MODELS_TO_WATCH = (Planet, Satellite, Mission, SpaceAgency, Company)
 
 
 def _delete_pattern(pattern):
-    """Удаляет ключи по маске; для бэкендов без delete_pattern чистит кеш."""
+    """Удаляет ключи по маске или чистит весь кеш, если бэкенд не умеет маски."""
     delete_pattern = getattr(cache, "delete_pattern", None)
     if delete_pattern is None:
         cache.clear()
@@ -20,12 +20,10 @@ def _delete_pattern(pattern):
 
 
 def invalidate_detail_caches():
-    """Сбрасывает кеш детальных страниц всех объектов."""
     _delete_pattern("*:detail")
 
 
 def invalidate_catalog_cache():
-    """Сбрасывает ответы @cache_page, включая /api/catalog/."""
     _delete_pattern("*cache_page*")
 
 

@@ -10,7 +10,6 @@
 {% block content %}
 <div class="detail-content">
     {% include 'includes/button_favorite.html' with content_type='mission' object_id=mission.id is_favorite=is_favorite %}
-    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
     <main class="main-content">
         <article class="sci-fi-panel" style="position: relative;">
             <div class="text-block">
@@ -25,10 +24,8 @@
         </article>
     </main>
 
-    <!-- ПРАВАЯ КОЛОНКА: Фото и данные -->
     <aside class="side-column">
 
-        <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
             {% if mission.image %}
             <img src="{{ mission.image.url }}" alt="{{ mission.name }}" />
@@ -37,7 +34,6 @@
             {% endif %}
         </div>
 
-        <!-- Основные характеристики миссии -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Данные миссии</div>
             <div class="info-text">
@@ -68,7 +64,6 @@
             </div>
         </div>
 
-        <!-- Цели миссии (планеты и/или спутники) -->
         {% if mission.target_planets.all or mission.target_satellites.all %}
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Цели</div>

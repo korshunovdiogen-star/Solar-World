@@ -95,7 +95,6 @@ def test_mission_types(name, mtype, success):
     assert mission.success == success
 
 
-# --- Тесты для SpaceAgency ---
 @pytest.mark.django_db
 def test_agency_creation():
     agency = SpaceAgency.objects.create(name="NASA", country="США", established_date="1958-07-29")
@@ -104,7 +103,6 @@ def test_agency_creation():
     assert str(agency) == "NASA"
 
 
-# --- Тесты для Company ---
 @pytest.mark.django_db
 def test_company_creation():
     company = Company.objects.create(

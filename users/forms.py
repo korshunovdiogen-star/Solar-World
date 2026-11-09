@@ -6,11 +6,7 @@ User = get_user_model()
 
 
 class RegisterForm(UserCreationForm):
-    """Форма регистрации для текущей модели пользователя.
-
-    Стандартная UserCreationForm жёстко привязана к auth.User и падает,
-    когда AUTH_USER_MODEL указывает на accounts.User.
-    """
+    """UserCreationForm жёстко привязана к auth.User, поэтому модель задаём явно."""
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -18,11 +14,7 @@ class RegisterForm(UserCreationForm):
 
 
 class RemainingAttemptsAuthenticationForm(AuthenticationForm):
-    """
-    Форма входа, которая после неудачи пишет, сколько попыток осталось.
-
-    Число попыток передаёт страница входа, сама форма ничего не считает.
-    """
+    """Показывает, сколько попыток осталось; число передаёт страница входа."""
 
     def __init__(self, *args, remaining=None, **kwargs):
         self.remaining = remaining

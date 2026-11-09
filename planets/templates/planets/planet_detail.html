@@ -10,7 +10,6 @@
 {% block content %}
 <div class="detail-content">
     {% include 'includes/button_favorite.html' with content_type='planet' object_id=planet.id is_favorite=is_favorite %}
-    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
     <main class="main-content">
         <article class="sci-fi-panel" style="position: relative;">
             <div class="text-block">
@@ -25,10 +24,8 @@
         </article>
     </main>
 
-    <!-- ПРАВАЯ КОЛОНКА: Фото и данные (фиксированная ширина) -->
     <aside class="side-column">
 
-        <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
             {% if planet.image %}
             <img src="{{ planet.image.url }}" alt="{{ planet.name }}" />
@@ -37,7 +34,6 @@
             {% endif %}
         </div>
 
-        <!-- Характеристики -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Характеристики</div>
             <div class="info-text">
@@ -47,7 +43,6 @@
             </div>
         </div>
 
-        <!-- Спутники (скрывается, если их нет) -->
         {% if satellites %}
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Спутники</div>
@@ -69,7 +64,6 @@
         </div>
         {% endif %}
 
-        <!-- Миссии (скрывается, если их нет) -->
         {% if planet.mission_set.exists %}
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Архив миссий</div>

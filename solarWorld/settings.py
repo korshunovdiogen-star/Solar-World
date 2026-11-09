@@ -8,15 +8,10 @@ from dotenv import load_dotenv
 
 from solarWorld.env import detect_environment, env_bool, env_int, env_list, env_str
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-# Окружение определяется автоматически:
-# - ENVIRONMENT из .env или переменных окружения имеет приоритет;
-# - на Render/Railway/Heroku окружение считается production;
-# - во всех остальных случаях — local.
 ENVIRONMENT = detect_environment()
 IS_PRODUCTION = ENVIRONMENT in {"prod", "production"}
 
@@ -37,13 +32,10 @@ if not SECRET_KEY:
         "или в переменные окружения на хостинге."
     )
 
-# Локально DEBUG включён, на хостинге — выключен.
-# Явное значение DEBUG в .env или окружении имеет приоритет.
 DEBUG = env_bool("DEBUG", default=not IS_PRODUCTION)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Домены: локальные по умолчанию, на Render внешний домен добавляется сам.
 RENDER_EXTERNAL_HOSTNAME = env_str("RENDER_EXTERNAL_HOSTNAME")
 
 ALLOWED_HOSTS = env_list(
@@ -59,12 +51,8 @@ if RENDER_EXTERNAL_HOSTNAME:
     if render_origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(render_origin)
 
-# HTTPS включается автоматически в production. Локально остаётся http.
-# При необходимости можно переопределить через USE_HTTPS.
 USE_HTTPS = env_bool("USE_HTTPS", default=IS_PRODUCTION)
 
-# Безопасные заголовки. Django включает часть из них по умолчанию,
-# но явные настройки понятнее и не зависят от версии.
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "same-origin"
@@ -82,8 +70,7 @@ if USE_HTTPS:
     )
     SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", default=False)
 
-# На хостинге сайт работает за прокси, поэтому реальный IP посетителя
-# приходит в заголовке X-Forwarded-For. Локально заголовку не доверяем.
+# За прокси реальный IP приходит в X-Forwarded-For; локально заголовку не доверяем.
 TRUST_PROXY_HEADERS = env_bool("TRUST_PROXY_HEADERS", default=IS_PRODUCTION)
 
 
@@ -104,12 +91,9 @@ INSTALLED_APPS = [
     "shop",
 ]
 
-# Пользовательская модель создана до появления данных, поэтому её можно
-# расширять без замены встроенной auth.User.
 AUTH_USER_MODEL = "accounts.User"
 
 REST_FRAMEWORK = {
-    # Схема OpenAPI для Swagger строится через drf-spectacular.
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
@@ -135,7 +119,7 @@ MIDDLEWARE = [
 
 INTERNAL_IPS = ["127.0.0.1"]
 
-# Debug Toolbar выключен по умолчанию. Включить: ENABLE_DEBUG_TOOLBAR=1 в .env или окружении.
+# Включить: ENABLE_DEBUG_TOOLBAR=1.
 ENABLE_DEBUG_TOOLBAR = os.getenv("ENABLE_DEBUG_TOOLBAR", "False").strip().lower() in (
     "1",
     "true",
@@ -167,13 +151,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "solarWorld.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-
-# Проект работает только с PostgreSQL. Параметры подключения берутся из
-# переменных окружения, а значения по умолчанию подходят для локальной
-# установки PostgreSQL.
+# Проект работает только с PostgreSQL.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -191,8 +169,7 @@ DATABASES = {
 # Кеширование с помощью Redis
 REDIS_CACHE_OPTIONS = {
     "CLIENT_CLASS": "django_redis.client.DefaultClient",
-    # Если Redis недоступен, сайт продолжает работать без кеша,
-    # а не падает с ConnectionError.
+    # Без этого при недоступном Redis сайт падает с ConnectionError.
     "IGNORE_EXCEPTIONS": True,
     "SOCKET_CONNECT_TIMEOUT": 1,
     "SOCKET_TIMEOUT": 1,
@@ -210,7 +187,6 @@ CACHES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -229,7 +205,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = "ru-ru"
 
@@ -241,7 +216,6 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -251,12 +225,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
-LOGIN_REDIRECT_URL = "profile"  # после входа - в профиль
-LOGOUT_REDIRECT_URL = "main"  # после выхода - на главную
+LOGIN_REDIRECT_URL = "profile"
+LOGOUT_REDIRECT_URL = "main"
 
-# WhiteNoise раздаёт статику, когда DEBUG выключен: на alwaysdata и в Docker
-# нет отдельного веб-сервера для /static/, поэтому без него сайт открывается
-# без CSS, JS и картинок.
+# На alwaysdata и в Docker нет отдельного веб-сервера для /static/.
 if not DEBUG and "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:
     MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
     STORAGES = {
@@ -265,13 +237,13 @@ if not DEBUG and "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:
     }
 
 if "test" in sys.argv or "pytest" in sys.modules:
+    # В тестах Redis не нужен.
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
         }
     }
 
-# Настройки для Render (применяются, только если проект запущен в облаке)
 if "RENDER" in os.environ:
     DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
 

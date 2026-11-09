@@ -10,16 +10,13 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %}</title>
-    <!-- подключение шрифтов -->
     <link rel="preload" as="font" type="font/woff2" href="{% static 'fonts/orbitron-variable.woff2' %}" crossorigin>
     <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
-    <!-- подключение css -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/button_favorite.css' %}">
     {% block css_additional %} {% endblock %}
 </head>
 <body>
-    <!-- Меню идет первым и занимает верхнюю строку -->
     <nav class="top-nav">
         <div class="nav-links">
 
@@ -41,7 +38,6 @@
         </div>
     </nav>
 
-    <!-- Кнопка "Назад" под меню -->
     <div class="back-container">
         <a href="javascript:history.back()" class="nav-item sound-hover back-button">
             ← Назад
@@ -49,9 +45,7 @@
     </div>
 
 
-    <!-- добавление звука при наведении на кнопку -->
     <script>
-        // Передаём путь к звуку в глобальную переменную
         window.soundUrl = "{% static 'sounds/hover-button.mp3' %}";
     </script>
     <script src="{% static 'js/button.js' %}"></script>

@@ -1,10 +1,4 @@
-"""WSGI-обёртка для FastAPI.
-
-alwaysdata запускает Python-приложения через WSGI, а FastAPI работает по
-ASGI. a2wsgi превращает ASGI-приложение в WSGI, поэтому микросервис можно
-подключить как обычный сайт типа «Python WSGI» — без отдельного процесса
-uvicorn и без переменных IP/PORT.
-"""
+"""WSGI-обёртка для запуска FastAPI на alwaysdata через a2wsgi."""
 
 import os
 import sys
@@ -20,7 +14,6 @@ PREFIX = "/fastapi"
 
 
 def application(environ, start_response):
-    """Точка входа WSGI для alwaysdata."""
     path = environ.get("PATH_INFO", "")
 
     # Если alwaysdata не включил Path trim, убираем префикс сами.

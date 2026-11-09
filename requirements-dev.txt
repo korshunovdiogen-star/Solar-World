@@ -1,16 +1,9 @@
-# Зависимости для разработки и тестов.
-# Устанавливать так: pip install -r requirements-dev.txt
-
 -r requirements.txt
 
 pytest==9.0.3
 pytest-django==4.12.0
 coverage==7.13.5
 django-debug-toolbar==6.2.0
-
-# Нужен fastapi.testclient.TestClient в тестах микросервиса
 httpx==0.28.1
-
-# Линтеры и форматирование
 ruff==0.17.4
 black==26.10.1

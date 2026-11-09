@@ -89,7 +89,6 @@ function Exit-WithError {
 
 Write-Header
 
-# --- Шаг 1. Виртуальное окружение -------------------------------------------
 Write-Step '1/6' 'Подготовка виртуального окружения...'
 
 $python = Find-ProjectPython
@@ -118,7 +117,6 @@ else {
 }
 Write-Host ''
 
-# --- Шаг 2. pip --------------------------------------------------------------
 Write-Step '2/6' 'Обновление pip...'
 & $python -m pip install --upgrade pip --disable-pip-version-check
 if ($LASTEXITCODE -ne 0) {
@@ -126,7 +124,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host ''
 
-# --- Шаг 3. Зависимости ------------------------------------------------------
 Write-Step '3/6' 'Установка зависимостей из requirements.txt...'
 $requirements = Join-Path $Root 'requirements.txt'
 if (-not (Test-Path $requirements)) {
@@ -138,7 +135,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host ''
 
-# --- Шаг 4. .env -------------------------------------------------------------
 Write-Step '4/6' 'Проверка файла .env...'
 $envPath = Join-Path $Root '.env'
 if (-not (Test-Path $envPath)) {
@@ -165,7 +161,6 @@ else {
 }
 Write-Host ''
 
-# --- Шаг 5. Миграции ---------------------------------------------------------
 Write-Step '5/6' 'Применение миграций базы данных...'
 # Если база создана до перехода на accounts.User, команда перенесёт таблицы
 # пользователей. На новой базе она ничего не делает.
@@ -179,7 +174,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host ''
 
-# --- Шаг 6. Демо-данные + проверка ------------------------------------------
 Write-Step '6/6' 'Загрузка демонстрационных данных...'
 & $python (Join-Path $Root 'manage.py') shell -c "from planets.models import Planet; raise SystemExit(0 if Planet.objects.exists() else 1)" 2>$null | Out-Null
 $dbEmpty = ($LASTEXITCODE -ne 0)

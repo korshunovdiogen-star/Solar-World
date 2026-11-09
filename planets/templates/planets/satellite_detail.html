@@ -10,7 +10,6 @@
 {% block content %}
 <div class="detail-content">
     {% include 'includes/button_favorite.html' with content_type='satellite' object_id=satellite.id is_favorite=is_favorite %}
-    <!-- ЛЕВАЯ КОЛОНКА: Основной текст статьи в рамке -->
     <main class="main-content">
         <article class="sci-fi-panel" style="position: relative;">
             <div class="text-block">
@@ -25,10 +24,8 @@
         </article>
     </main>
 
-    <!-- ПРАВАЯ КОЛОНКА: Фото и данные (фиксированная ширина) -->
     <aside class="side-column">
 
-        <!-- Блок изображения в рамке -->
         <div class="image-container sci-fi-panel">
             {% if satellite.image %}
             <img src="{{ satellite.image.url }}" alt="{{ satellite.name }}" />
@@ -37,7 +34,6 @@
             {% endif %}
         </div>
 
-        <!-- Характеристики спутника -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Характеристики</div>
             <div class="info-text">
@@ -46,7 +42,6 @@
             </div>
         </div>
 
-        <!-- Хозяин (планета, вокруг которой вращается спутник) -->
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Хозяин</div>
             <div class="info-text">
@@ -60,7 +55,6 @@
             </div>
         </div>
 
-        <!-- Миссии, связанные со спутником (если есть) -->
         {% if satellite.mission_set.exists %}
         <div class="column-container sci-fi-panel">
             <div class="panel-header">Исследовательские миссии</div>

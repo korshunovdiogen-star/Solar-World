@@ -21,14 +21,12 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Создаёт профиль сразу после регистрации пользователя"""
     if created:
         Profile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    """Сохраняет профиль вместе с пользователем"""
     instance.profile.save()
 
 
@@ -42,11 +40,7 @@ class Favorite(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (
-            "user",
-            "content_type",
-            "object_id",
-        )  # один пользователь не может добавить один объект дважды
+        unique_together = ("user", "content_type", "object_id")
 
     def __str__(self):
         return f"{self.user.username} -> {self.content_object}"
@@ -62,8 +56,8 @@ class History(models.Model):
     viewed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-viewed_at"]  # сначала новые
-        unique_together = ("user", "content_type", "object_id")  # чтобы не дублировать записи
+        ordering = ["-viewed_at"]
+        unique_together = ("user", "content_type", "object_id")
 
     def __str__(self):
         return f"{self.user.username} -> {self.content_object} ({self.viewed_at})"

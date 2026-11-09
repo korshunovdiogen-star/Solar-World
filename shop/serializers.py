@@ -41,7 +41,6 @@ class ProductSerializer(serializers.ModelSerializer):
         return None
 
     def get_first_line(self, obj):
-        """Первая строка описания товара для карточки."""
         if not obj.description:
             return ""
         lines = obj.description.splitlines()

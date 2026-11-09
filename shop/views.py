@@ -25,7 +25,6 @@ def shop_page(request):
     )
 
 
-# Карта сортировки для товаров
 SORT_MAP = {
     "name_asc": "name",
     "name_desc": "-name",
@@ -50,11 +49,9 @@ def shop_api(request):
 
     queryset = Product.objects.filter(available=True)
 
-    # Поиск по названию
     if q:
         queryset = queryset.filter(name__icontains=q)
 
-    # Фильтрация по категории (если не 'all')
     if category_slug != "all":
         try:
             category = Category.objects.get(slug=category_slug)
@@ -68,18 +65,15 @@ def shop_api(request):
                 }
             )
 
-    # Сортировка
     sort_field = SORT_MAP.get(ordering, "name")
     queryset = queryset.order_by(sort_field)
 
-    # Пагинация
     paginator = Paginator(queryset, per_page)
     total_pages = paginator.num_pages
     page = min(page, total_pages) if total_pages > 0 else 1
     page_obj = paginator.get_page(page)
     items = page_obj.object_list
 
-    # Сериализация
     serializer = ProductSerializer(items, many=True, context={"request": request})
 
     return JsonResponse(

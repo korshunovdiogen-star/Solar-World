@@ -1,29 +1,23 @@
 :root {
     --neon-blue: #00d4ff;
 }
-/* ==========================================================================
-   1. ПЕРЕИСПОЛЬЗУЕМЫЕ КОМПОНЕНТЫ (Эффект стекла и уголки)
-   ========================================================================== */
-/* Базовый класс для всех Sci-Fi блоков (панели, инфобоксы, контейнеры фото) */
-/* Базовый класс для всех панелей с рамками */
-/* Состояние по умолчанию (видны всегда) */
+
 .sci-fi-panel {
     background: rgba(30, 20, 50, 0.2);
     backdrop-filter: blur(1px);
     position: relative;
     padding: 25px;
-    transition: all 0.4s ease; /* Плавный переход для ховера */
+    transition: all 0.4s ease;
 }
 
-/* Уголки (видны всегда) */
 .sci-fi-panel::before,
 .sci-fi-panel::after {
     content: '';
     position: absolute;
     width: 15px;
     height: 15px;
-    border: 2px solid var(--neon-blue); /* Яркий цвет уголков */
-    opacity: 0.6; /* Делаем чуть тусклее в обычном состоянии */
+    border: 2px solid var(--neon-blue);
+    opacity: 0.6;
     transition: all 0.4s ease;
 }
 
@@ -41,33 +35,27 @@
     border-top: none;
 }
 
-/* Эффект ПРИ НАВЕДЕНИИ (усиливаем то, что уже есть) */
 .sci-fi-panel:hover {
-    border-color: var(--neon-blue); /* Рамка становится ярче */
+    border-color: var(--neon-blue);
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
     transform: translateY(-2px);
 }
 
     .sci-fi-panel:hover::before,
     .sci-fi-panel:hover::after {
-        opacity: 1; /* Уголки загораются на полную */
-        width: 25px; /* Уголки немного удлиняются (эффект "активации") */
+        opacity: 1;
+        width: 25px;
         height: 25px;
     }
-
 
 body {
     overflow-x: hidden;
     width: 100vw;
 }
 
-/* ==========================================================================
-   2. СТРУКТУРА СТРАНИЦЫ (Layout)
-   ========================================================================== */
-
 .detail-content {
     display: flex;
-    flex-direction: row; /* Текст слева, фото справа */
+    flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
     gap: 40px;
@@ -77,7 +65,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Центральный блок контента */
 .main-content {
     flex: 1;
     display: flex;
@@ -86,16 +73,11 @@ body {
     text-align: center;
 }
 
-/* Боковая колонка (инфобокс) */
 .column-container {
     width: 350px;
     padding: 30px;
     box-sizing: border-box;
 }
-
-/* ==========================================================================
-   3. ТЕКСТОВЫЕ БЛОКИ
-   ========================================================================== */
 
 .panel-header {
     font-family: var(--font-mono);
@@ -109,13 +91,12 @@ body {
     opacity: 0.8;
 }
 
-/* Согласование с base.css: используем Orbitron для заголовков */
 .text-block h1 {
-    font-family: var(--font-header); /* Из base.css */
+    font-family: var(--font-header);
     font-size: 3rem;
     margin: 0 0 15px 0;
     letter-spacing: 10px;
-    /* Эффект из base.css (градиент + прозрачность) */
+
     background: linear-gradient(to bottom, #fff 50%, #00f3ff 100%);
     background-clip: text;
     -webkit-background-clip: text;
@@ -128,11 +109,10 @@ body {
     line-height: 1.9;
     margin-bottom: 30px;
     max-width: 600px;
-    color: #D1F5D3; /* Твой специфический цвет */
+    color: #D1F5D3;
     opacity: 0.85;
 }
 
-/* Стилизованный инфо-текст в боковой панели */
 .info-text {
     font-family: var(--font-header);
     font-size: 16px;
@@ -145,7 +125,7 @@ body {
 }
 
 .side-column {
-    flex: 0 0 450px; /* Фиксированная ширина для фото и инфобоксов */
+    flex: 0 0 450px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -159,10 +139,6 @@ body {
     text-shadow: 0 0 2px rgba(0, 160, 255, 0.3);
 }
 
-/* ==========================================================================
-   4. ИЗОБРАЖЕНИЯ
-   ========================================================================== */
-
 .image-container {
     width: 100%;
     max-height: 500px;
@@ -170,13 +146,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0; 
+    padding: 0;
 }
 
     .image-container img {
-        width: 100%; /* Занимает всю ширину */
-        height: 100%; /* Занимает всю высоту */
-        object-fit: cover; /* Ключевое свойство: обрезает лишнее, сохраняя пропорции */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         display: block;
         object-fit: contain;
     }

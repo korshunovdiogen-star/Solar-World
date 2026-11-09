@@ -1,15 +1,7 @@
-/* ============================================================
-   1. ПОДКЛЮЧЕНИЕ ШРИФТОВ
-   Шрифты подключаются локально в static/css/fonts.css
-   ============================================================ */
-
-/* ============================================================
-   2. ГЛОБАЛЬНЫЕ СТИЛИ (BODY)
-   ============================================================ */
 body {
 	margin: 0;
 	padding: 0;
-	/* Фон: сетка координат + радиальный градиент глубокого космоса */
+
 	background: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px), radial-gradient(circle at center, #0a111a 0%, #020203 100%);
 	background-size: 60px 60px, 60px 60px, 100% 100%;
 	color: #b0f2ff;
@@ -18,14 +10,11 @@ body {
 	min-height: 100vh;
 }
 
-/* ============================================================
-   3. КОНТЕЙНЕР ИНТЕРАКТИВНОЙ КАРТЫ
-   ============================================================ */
 .space-container {
-	position: relative; /* Для абсолютного позиционирования SVG */
-	grid-column: 2; /* Размещение во второй колонке сетки */
+	position: relative;
+	grid-column: 2;
 	width: 100%;
-	min-height: 200px; /* Минимальная высота до загрузки изображения */
+	min-height: 200px;
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
@@ -44,7 +33,6 @@ body {
 	z-index: 1;
 }
 
-/* Слой SVG поверх изображения */
 svg {
 	position: absolute;
 	top: 0;
@@ -52,18 +40,16 @@ svg {
 	width: 100%;
 	height: 100%;
 	z-index: 2;
-	pointer-events: none; /* Отключаем события по умолчанию */
+	pointer-events: none;
 }
 
-/* Интерактивные зоны планет (круги, эллипсы) */
 .planet-zone {
-	pointer-events: all; /* Включаем события именно для зон */
+	pointer-events: all;
 	fill: transparent;
 	stroke: transparent;
 	cursor: pointer;
 }
 
-	/* Эффект при наведении на планету */
 	.planet-zone:hover {
 		fill: rgba(0, 212, 255, 0.15);
 		stroke: #00d4ff;
@@ -73,9 +59,6 @@ svg {
 		cursor: crosshair;
 	}
 
-/* ============================================================
-   4. ВСПЛЫВАЮЩАЯ ПОДСКАЗКА (ТУЛТИП)
-   ============================================================ */
 .custom-tooltip {
 	position: fixed;
 	background: rgba(0, 20, 30, 0.85);
@@ -98,9 +81,6 @@ svg {
 		opacity: 1;
 	}
 
-/* ============================================================
-   5. СЕТКА ГЛАВНОГО МАКЕТА (3 КОЛОНКИ)
-   ============================================================ */
 .main-layout {
 	display: grid;
 	grid-template-columns: 350px minmax(500px, 1fr) 350px;
@@ -118,13 +98,10 @@ svg {
 	gap: 25px;
 }
 
-/* ============================================================
-   6. СТИЛИ БОКОВЫХ ПАНЕЛЕЙ (SCI-FI)
-   ============================================================ */
 .side-panel {
 	position: relative;
 	background: rgba(0, 20, 30, 0.7);
-	/* Эффект скошенных углов */
+
 	clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
 	border-left: 4px solid #00d4ff;
 	padding: 25px;
@@ -143,7 +120,6 @@ svg {
 		box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
 	}
 
-	/* Декоративный текст в углу */
 	.side-panel::before {
 		content: "SYS-DATA";
 		position: absolute;
@@ -153,7 +129,6 @@ svg {
 		opacity: 0.5;
 	}
 
-	/* Анимация сканирующей линии */
 	.side-panel::after {
 		content: "";
 		position: absolute;
@@ -166,7 +141,6 @@ svg {
 		pointer-events: none;
 	}
 
-/* Строка данных внутри панели */
 .data-line {
 	margin-bottom: 12px;
 	border-bottom: 1px solid rgba(0, 212, 255, 0.1);
@@ -175,16 +149,12 @@ svg {
 	padding: 8px 0;
 }
 
-/* Статус "ОК" */
 .status-ok {
 	color: #00ff88;
 	text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
 	font-weight: bold;
 }
 
-/* ============================================================
-   7. АНИМАЦИИ
-   ============================================================ */
 @keyframes scan {
 	0% {
 		transform: translateY(-100%);
@@ -195,9 +165,6 @@ svg {
 	}
 }
 
-/* ============================================================
-   8. КНОПКА "НАЗАД" / ЦЕНТРИРОВАНИЕ
-   ============================================================ */
 .nav-button {
 	display: block;
 	margin-left: auto;
@@ -206,11 +173,8 @@ svg {
 	width: fit-content;
 }
 
-/* ============================================================
-   9. ЗАГОЛОВКИ
-   ============================================================ */
 h1, .header-title {
-	grid-column: 1 / -1; /* Растягиваем на всю ширину сетки */
+	grid-column: 1 / -1;
 	font-family: 'Orbitron', sans-serif;
 	text-align: center;
 	text-transform: uppercase;
@@ -220,12 +184,8 @@ h1, .header-title {
 	margin: 30px 0;
 }
 
-
-/* ============================================================
-   АДАПТАЦИЯ СТРАНИЦЫ КАРТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
-   ============================================================ */
 @media (max-width: 768px) {
-	/* Скрываем боковые колонки и все информационные панели */
+
 	.side-panel,
 	.column-container,
 	.info-panel,
@@ -236,7 +196,6 @@ h1, .header-title {
 		display: none !important;
 	}
 
-	/* Контейнер карты на всю ширину */
 	.space-container {
 		width: 100%;
 		min-height: 500px;
@@ -247,20 +206,17 @@ h1, .header-title {
 		background: transparent;
 	}
 
-	/* Фоновое изображение карты */
 	#bg-map {
 		width: 100%;
 		height: auto;
 		display: block;
 	}
 
-	/* SVG-слой карты */
 	svg {
 		width: 100%;
 		height: 100%;
 	}
 
-	/* Интерактивные зоны планет – делаем их более заметными для пальца */
 	.planet-zone {
 		stroke-width: 1;
 		stroke: rgba(0, 212, 255, 0.3);
@@ -272,7 +228,6 @@ h1, .header-title {
 			fill: rgba(0, 212, 255, 0.2);
 		}
 
-	/* Кнопка "Назад" центрируем и увеличиваем */
 	.back-container {
 		display: flex;
 		justify-content: center;
@@ -280,7 +235,6 @@ h1, .header-title {
 		text-align: center;
 	}
 
-	/* Если есть заголовок h1 на странице карты */
 	.main-layout h1,
 	.header-title,
 	h1 {
@@ -290,14 +244,12 @@ h1, .header-title {
 		text-align: center;
 	}
 
-	/* Основной контейнер макета – убираем сетку */
 	.main-layout {
 		display: block;
 		padding: 10px;
 		margin: 0;
 	}
 
-	/* Убираем лишние отступы у body на этой странице (если нужно) */
 	body {
 		padding: 10px;
 	}

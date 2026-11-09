@@ -72,7 +72,6 @@ class Mission(models.Model):
         verbose_name="Тип миссии",
     )
     launch_date = models.DateField(verbose_name="Дата запуска")
-    # массивы с планетами и спутниками которые являются целями
     target_planets = models.ManyToManyField("Planet", blank=True, verbose_name="Цели (планеты)")
     target_satellites = models.ManyToManyField(
         "Satellite", blank=True, verbose_name="Цели (спутники)"
@@ -91,7 +90,6 @@ class Mission(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # автоматический расчет
         if self.status == self.StatusChoices.ACTIVE and self.launch_date:
             delta = timezone.now().date() - self.launch_date
             self.duration_days = delta.days
@@ -146,7 +144,6 @@ class Company(models.Model):
         max_length=255, verbose_name="Генеральный директор", blank=True, null=True
     )
 
-    # --- Финансы ---
     annual_revenue = models.DecimalField(
         max_digits=15,
         decimal_places=2,

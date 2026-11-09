@@ -19,21 +19,13 @@ THUMBNAIL_SIZE = (128, 128)
 
 
 def _mark_microservice_unavailable():
-    """Не дёргаем упавший FastAPI на каждой загрузке страницы."""
     cache.set(NEGATIVE_CACHE_KEY, True, timeout=NEGATIVE_CACHE_TIMEOUT)
 
 
 def get_daily_planet_from_microservice():
-    """
-    Получает ID планеты дня от микросервиса,
-    возвращает объект Planet.
-    Если микросервис недоступен или планета не найдена — возвращает None.
-    """
-    # 0. Недавно была ошибка — не повторяем запрос слишком часто
     if cache.get(NEGATIVE_CACHE_KEY):
         return None
 
-    # 1. Проверяем кеш
     planet_id = cache.get(CACHE_KEY)
 
     if planet_id is not None:
@@ -42,7 +34,6 @@ def get_daily_planet_from_microservice():
             return planet
         cache.delete(CACHE_KEY)
 
-    # 2. Запрос к FastAPI
     try:
         url = f"{settings.FASTAPI_URL}/planet/today"
         response = requests.get(url, timeout=2)
@@ -80,20 +71,12 @@ def get_daily_planet_from_microservice():
 
 
 def seconds_until_midnight():
-    """Сколько секунд осталось до ближайшей полуночи (по локальному времени)."""
     now = timezone.localtime()
     tomorrow = datetime.combine(now.date() + timedelta(days=1), time.min, tzinfo=now.tzinfo)
     return max(60, int((tomorrow - now).total_seconds()))
 
 
 def get_daily_planet_thumbnail(planet):
-    """
-    Возвращает байты квадратной WebP-миниатюры планеты дня.
-
-    Миниатюра создаётся один раз за сутки и хранится в кеше (Redis)
-    до полуночи, поэтому новые файлы на диске не появляются.
-    Оригинальная картинка не изменяется.
-    """
     if planet is None or not planet.image:
         return None
 
