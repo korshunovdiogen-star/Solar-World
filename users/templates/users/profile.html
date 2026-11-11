@@ -18,13 +18,13 @@
     <div class="profile-container">
         <div class="accordion">
             <div class="accordion-header">
-                <h2>Избранное <span class="count">{{ favorites|length }}</span></h2>
+                <h2>Избранные статьи <span class="count">{{ article_favorites|length }}</span></h2>
                 <i class="fas fa-chevron-down accordion-icon"></i>
             </div>
             <div class="accordion-content">
-                {% if favorites %}
+                {% if article_favorites %}
                 <ul class="scrollable-list">
-                    {% for fav in favorites %}
+                    {% for fav in article_favorites %}
                     <li>
                         <a href="{% url fav.content_type.model|add:'_detail' pk=fav.object_id %}">
                             {{ fav.content_object.name }}
@@ -37,7 +37,34 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p>У вас пока нет избранного.</p>
+                <p>У вас пока нет избранных статей.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="accordion">
+            <div class="accordion-header">
+                <h2>Избранные товары <span class="count">{{ product_favorites|length }}</span></h2>
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-content">
+                {% if product_favorites %}
+                <ul class="scrollable-list">
+                    {% for fav in product_favorites %}
+                    <li>
+                        <a href="{% url 'shop:product_detail' pk=fav.object_id %}">
+                            {{ fav.content_object.name }}
+                        </a>
+                        <span class="date">{{ fav.content_object.price }} руб.</span>
+                        <form method="post" action="{% url 'remove_favorite' content_type=fav.content_type.model object_id=fav.object_id %}" class="remove-fav-form">
+                            {% csrf_token %}
+                            <button type="submit" class="remove-fav" title="Удалить из избранного" aria-label="Удалить из избранного">🗑️</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>У вас пока нет избранных товаров.</p>
                 {% endif %}
             </div>
         </div>

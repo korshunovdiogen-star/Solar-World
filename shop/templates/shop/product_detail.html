@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static rich_text %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block title %}{{ product.name }} | Solar World{% endblock %}
+
+{% block content %}
+<div class="detail-content">
+    {% include 'includes/button_favorite.html' with content_type='product' object_id=product.id is_favorite=is_favorite %}
+
+    <main class="main-content">
+        <article class="sci-fi-panel" style="position: relative;">
+            <div class="text-block">
+                <h1>{{ product.name }}</h1>
+                <div style="text-align: left;">
+                    <h2 class="panel-header" style="margin-top: 20px;">{{ product.category.name }}</h2>
+                    <p>{{ product.description|rich_text|linebreaks }}</p>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'shop:cart_add' product.pk %}" class="product-buy-form">
+                {% csrf_token %}
+                <label for="quantity">Количество:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" {% if product.stock < 1 %}disabled{% endif %}>
+                <button type="submit" class="product-buy-btn" {% if product.stock < 1 %}disabled{% endif %}>
+                    Добавить в корзину
+                </button>
+            </form>
+            {% if product.stock < 1 %}
+            <p class="product-unavailable">Товара нет в наличии.</p>
+            {% endif %}
+        </article>
+    </main>
+
+    <aside class="side-column">
+        <div class="image-container sci-fi-panel">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="Нет изображения" />
+            {% endif %}
+        </div>
+
+        <div class="column-container sci-fi-panel">
+            <div class="panel-header">Информация о товаре</div>
+            <div class="info-text">
+                <p>Категория: <span class="custom-style">{{ product.category.name }}</span></p>
+                <p>Цена: <span class="custom-style">{{ product.price }} руб.</span></p>
+                <p>Остаток: <span class="custom-style">{{ product.stock }} шт.</span></p>
+                <p>Добавлен: <span class="custom-style">{{ product.created|date:"d.m.Y" }}</span></p>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework import serializers
 
 from .models import Category, Product
@@ -14,6 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category_slug = serializers.CharField(source="category.slug", read_only=True)
     image_url = serializers.SerializerMethodField()
     first_line = serializers.SerializerMethodField()
+    detail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -23,6 +25,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "slug",
             "description",
             "first_line",
+            "detail_url",
             "price",
             "image",
             "image_url",
@@ -45,3 +48,6 @@ class ProductSerializer(serializers.ModelSerializer):
             return ""
         lines = obj.description.splitlines()
         return lines[0] if lines else ""
+
+    def get_detail_url(self, obj):
+        return reverse("shop:product_detail", args=[obj.pk])

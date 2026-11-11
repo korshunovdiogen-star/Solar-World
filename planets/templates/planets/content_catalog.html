@@ -45,7 +45,6 @@
     },
     renderCard: function(item) {
         const esc = window.catalogEscapeHtml;
-        const detailUrl = window.catalogSafeUrl(item.detail_url, '#');
         const imageUrl = window.catalogSafeUrl(
             item.image,
             '/static/images/default.jpg'
@@ -82,8 +81,7 @@
         else if (item.model_type === 'company') categoryName = 'Компания';
         else categoryName = esc(item.model_type);
 
-        return `<a href="${detailUrl}" class="catalog-card-link">
-    <div class="catalog-card">
+        return `<div class="catalog-card">
         <div class="card-category">${categoryName}</div>
         <div class="card-content">
             <h3>${esc(item.name)}</h3>
@@ -93,8 +91,7 @@
         <div class="card-image">
             <img src="${imageUrl}" alt="${esc(item.name)}">
         </div>
-    </div>
-</a>`;
+    </div>`;
     }
 }
 {% endblock %}

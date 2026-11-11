@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block title %}Корзина | Solar World{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="text-block" style="text-align: center; margin-bottom: 2rem;">
+        <h1>Корзина</h1>
+    </div>
+
+    {% if items %}
+    <div class="cart-table sci-fi-panel">
+        {% for item in items %}
+        <div class="cart-row">
+            <div class="cart-product">
+                <a href="{% url 'shop:product_detail' item.product.pk %}">{{ item.product.name }}</a>
+                <span class="cart-price">{{ item.product.price }} руб. за шт.</span>
+            </div>
+
+            <form method="post" action="{% url 'shop:cart_update' item.pk %}" class="cart-quantity-form">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" aria-label="Количество">
+                <button type="submit">Обновить</button>
+            </form>
+
+            <div class="cart-sum">{{ item.total_price }} руб.</div>
+
+            <form method="post" action="{% url 'shop:cart_remove' item.pk %}" class="cart-remove-form">
+                {% csrf_token %}
+                <button type="submit" class="cart-remove-btn" title="Удалить товар" aria-label="Удалить товар">🗑️</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="cart-total sci-fi-panel">
+        <span>Итого:</span>
+        <strong>{{ total }} руб.</strong>
+    </div>
+
+    <form method="post" action="{% url 'shop:checkout' %}" class="cart-checkout-form">
+        {% csrf_token %}
+        <button type="submit" class="product-buy-btn">Оплатить</button>
+    </form>
+    {% else %}
+    <div class="sci-fi-panel cart-empty">
+        <p>Корзина пуста.</p>
+        <a href="{% url 'shop:shop_catalog' %}" class="cart-back-link">Перейти в магазин</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

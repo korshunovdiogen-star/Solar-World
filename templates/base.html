@@ -24,6 +24,7 @@
             <a href="{% url 'planet_list' %}" class="nav-item sound-hover"><i class="fas fa-map"></i> КАРТА</a>
             <a href="{% url 'catalog' %}" class="nav-item sound-hover"><i class="fas fa-search"></i> ПОИСК</a>
             <a href="{% url 'shop:shop_catalog' %}" class="nav-item sound-hover"><i class="fas fa-search"></i> МАГАЗИН</a>
+            <a href="{% url 'shop:cart' %}" class="nav-item sound-hover"><i class="fas fa-shopping-cart"></i> КОРЗИНА</a>
         </div>
         <div class="nav-profile">
             {% if user.is_authenticated %}

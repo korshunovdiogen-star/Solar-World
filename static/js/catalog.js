@@ -10,15 +10,17 @@
             .replace(/'/g, '&#039;');
     }
 
-    function safeUrl(value, fallback) {
+    function isSafeHref(value) {
         const url = String(value == null ? '' : value).trim();
-        if (
+        return (
             (url.startsWith('/') && !url.startsWith('//')) ||
             /^https?:\/\//i.test(url)
-        ) {
-            return escapeHtml(url);
-        }
-        return escapeHtml(fallback || '');
+        );
+    }
+
+    function safeUrl(value, fallback) {
+        const url = String(value == null ? '' : value).trim();
+        return escapeHtml(isSafeHref(url) ? url : fallback || '');
     }
 
     // Используются в renderCard из шаблонов.
@@ -148,6 +150,24 @@
                 });
         }
 
+        function buildCard(item) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = renderCard(item);
+            let card = wrapper.firstElementChild;
+            if (!card) return null;
+
+            // Ссылку на детальную страницу добавляет общий рендер,
+            // чтобы карточки каталога и магазина работали одинаково.
+            if (!card.closest('a') && isSafeHref(item.detail_url)) {
+                const link = document.createElement('a');
+                link.href = String(item.detail_url).trim();
+                link.className = 'catalog-card-link';
+                link.appendChild(card);
+                card = link;
+            }
+            return card;
+        }
+
         function renderResults(items) {
             resultsContainer.innerHTML = '';
             if (items.length === 0) {
@@ -155,10 +175,10 @@
                 return;
             }
             items.forEach(item => {
-                const cardHTML = renderCard(item);
-                const div = document.createElement('div');
-                div.innerHTML = cardHTML;
-                resultsContainer.appendChild(div.firstElementChild);
+                const card = buildCard(item);
+                if (card) {
+                    resultsContainer.appendChild(card);
+                }
             });
         }
 

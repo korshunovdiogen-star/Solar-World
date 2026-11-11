@@ -51,6 +51,26 @@ def test_catalog_api():
     assert response.json()["current_page"] == 1
 
 
+@pytest.mark.django_db
+def test_catalog_api_returns_all_items_without_limit():
+    for index in range(30):
+        Planet.objects.create(
+            name=f"Планета {index}",
+            radius=1000 + index,
+            planet_type="TER",
+            order=index,
+        )
+
+    client = Client()
+    url = reverse("catalog_api")
+
+    response = client.get(url)
+    assert len(response.json()["results"]) == 30
+
+    response = client.get(url, {"category": "planet"})
+    assert len(response.json()["results"]) == 30
+
+
 # API только для чтения: данные редактируются в админке, а не через API.
 READ_ONLY_ENDPOINTS = [
     "/api/planets/",

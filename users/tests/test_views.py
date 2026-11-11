@@ -112,7 +112,7 @@ def test_profile_prefetches_favorite_objects(client, user, planet, django_assert
     client.login(username="testuser", password="testpass")
 
     response = client.get(reverse("profile"))
-    favorites = list(response.context["favorites"])
+    favorites = list(response.context["article_favorites"])
 
     with django_assert_num_queries(0):
         assert [favorite.content_object.name for favorite in favorites] == [planet.name]

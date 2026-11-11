@@ -2,7 +2,6 @@ import logging
 from datetime import date
 
 from django.core.cache import cache
-from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -17,7 +16,6 @@ from solarWorld.serializers import (
     SatelliteSerializer,
     SpaceAgencySerializer,
 )
-from solarWorld.utils import parse_page_number
 from users.decorators import track_user_activity
 
 from .models import Company, Mission, Planet, Satellite, SpaceAgency
@@ -251,47 +249,37 @@ def catalog_api(request):
     q = request.GET.get("q", "").strip()
     category = request.GET.get("category", "all")
     ordering = request.GET.get("ordering", "name_asc")
-    page = parse_page_number(request.GET.get("page", 1))
-    per_page = 12
-
-    page = max(1, page)
     results = []
-    total_pages = 1
 
     if category == "all":
-        MAX_FOR_ALL = 25
         all_results = []
 
         try:
-            planets = Planet.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
+            planets = Planet.objects.filter(name__icontains=q)
             all_results += CatalogCardSerializer(planets, many=True).data
         except Exception:
             logger.exception("Не удалось сериализовать планеты в общем каталоге")
 
         try:
-            satellites = Satellite.objects.filter(name__icontains=q).select_related("planet")[
-                :MAX_FOR_ALL
-            ]
+            satellites = Satellite.objects.filter(name__icontains=q).select_related("planet")
             all_results += CatalogCardSerializer(satellites, many=True).data
         except Exception:
             logger.exception("Не удалось сериализовать спутники в общем каталоге")
 
         try:
-            missions = Mission.objects.filter(name__icontains=q).prefetch_related("space_agency")[
-                :MAX_FOR_ALL
-            ]
+            missions = Mission.objects.filter(name__icontains=q).prefetch_related("space_agency")
             all_results += CatalogCardSerializer(missions, many=True).data
         except Exception:
             logger.exception("Не удалось сериализовать миссии в общем каталоге")
 
         try:
-            agencies = SpaceAgency.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
+            agencies = SpaceAgency.objects.filter(name__icontains=q)
             all_results += CatalogCardSerializer(agencies, many=True).data
         except Exception:
             logger.exception("Не удалось сериализовать агентства в общем каталоге")
 
         try:
-            companies = Company.objects.filter(name__icontains=q)[:MAX_FOR_ALL]
+            companies = Company.objects.filter(name__icontains=q)
             all_results += CatalogCardSerializer(companies, many=True).data
         except Exception:
             logger.exception("Не удалось сериализовать компании в общем каталоге")
@@ -299,10 +287,7 @@ def catalog_api(request):
         if ordering in ("name_asc", "name_desc"):
             all_results.sort(key=lambda x: x.get("name", ""), reverse=(ordering == "name_desc"))
 
-        paginator = Paginator(all_results, per_page)
-        page_obj = paginator.get_page(page)
-        results = page_obj.object_list
-        total_pages = paginator.num_pages
+        results = all_results
     else:
         model_map = {
             "planet": Planet,
@@ -325,27 +310,17 @@ def catalog_api(request):
                 sort_field = SORT_MAP.get(category, {}).get(ordering, "id")
                 queryset = queryset.order_by(sort_field)
 
-                total_count = queryset.count()
-                total_pages = (total_count + per_page - 1) // per_page if total_count > 0 else 1
-                page = min(page, total_pages)
-                offset = (page - 1) * per_page
-
-                items = queryset[offset : offset + per_page]
-                results = CatalogCardSerializer(items, many=True).data
+                results = CatalogCardSerializer(queryset, many=True).data
 
             except Exception:
                 logger.exception("Ошибка при выборке категории %s", category)
                 results = []
-                total_pages = 1
-        else:
-            results = []
-            total_pages = 1
 
     return JsonResponse(
         {
             "results": results,
-            "total_pages": total_pages,
-            "current_page": page,
+            "total_pages": 1,
+            "current_page": 1,
         }
     )
 

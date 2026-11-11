@@ -12,6 +12,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from planets.models import Company, Mission, Planet, Satellite, SpaceAgency
+from shop.models import Product
 
 from .forms import RegisterForm, RemainingAttemptsAuthenticationForm
 from .models import Favorite, History
@@ -26,12 +27,26 @@ from .rate_limit import (
     reset,
 )
 
+_FAVORITE_MODELS = {
+    "planet": "planets",
+    "satellite": "planets",
+    "mission": "planets",
+    "spaceagency": "planets",
+    "company": "planets",
+    "product": "shop",
+}
+
 
 def _get_content_type(content_type):
+    model_name = content_type.lower()
+    app_label = _FAVORITE_MODELS.get(model_name)
+    if app_label is None:
+        raise Http404("Неизвестный тип объекта")
+
     return get_object_or_404(
         ContentType,
-        app_label="planets",
-        model=content_type.lower(),
+        app_label=app_label,
+        model=model_name,
     )
 
 
@@ -59,6 +74,7 @@ def _with_generic_objects(queryset):
                 Mission.objects.all(),
                 SpaceAgency.objects.all(),
                 Company.objects.all(),
+                Product.objects.all(),
             ],
         )
     )
@@ -228,14 +244,22 @@ def remove_favorite(request, content_type, object_id):
 
 @login_required
 def profile(request):
-    favorites = _with_generic_objects(
-        Favorite.objects.filter(user=request.user).select_related("content_type")
+    favorites = list(
+        _with_generic_objects(
+            Favorite.objects.filter(user=request.user)
+            .select_related("content_type")
+            .order_by("-added_at")
+        )
     )
+    article_favorites = [item for item in favorites if item.content_type.app_label == "planets"]
+    product_favorites = [item for item in favorites if item.content_type.app_label == "shop"]
+
     history = _with_generic_objects(
         History.objects.filter(user=request.user).select_related("content_type")
     )[:20]
     context = {
-        "favorites": favorites,
+        "article_favorites": article_favorites,
+        "product_favorites": product_favorites,
         "history": history,
     }
     return render(request, "users/profile.html", context)
