@@ -44,23 +44,7 @@
             'radius': 'Радиус',
             'type': 'Тип'
         },
-        renderCard: function(item) {
-            const esc = window.catalogEscapeHtml;
-            const imageUrl = window.catalogSafeUrl(
-                item.image,
-                '/static/images/default.jpg'
-            );
-            return `<div class="catalog-card">
-                <div class="card-category">${esc(item.model_type)}</div>
-                <div class="card-content">
-                    <h3>${esc(item.name)}</h3>
-                    <p>${esc(item.first_line || '')}</p>
-                </div>
-                <div class="card-image">
-                    <img src="${imageUrl}" alt="${esc(item.name)}">
-                </div>
-            </div>`;
-        }
+        cardType: 'article'
     }{% endblock %};
 </script>
 

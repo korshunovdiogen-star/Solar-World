@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 
+from solarWorld.utils import paginated_json_response, parse_page_number, search_and_sort
 from users.models import Favorite
 
 from .models import Cart, CartItem, Category, Product
@@ -43,36 +44,24 @@ def shop_api(request):
     q = request.GET.get("q", "").strip()
     category_slug = request.GET.get("category", "all")
     ordering = request.GET.get("ordering", "name_asc")
+    page = parse_page_number(request.GET.get("page", 1))
 
     queryset = Product.objects.filter(available=True)
-
-    if q:
-        queryset = queryset.filter(name__icontains=q)
 
     if category_slug != "all":
         try:
             category = Category.objects.get(slug=category_slug)
-            queryset = queryset.filter(category=category)
         except Category.DoesNotExist:
-            return JsonResponse(
-                {
-                    "results": [],
-                    "total_pages": 1,
-                    "current_page": 1,
-                }
-            )
+            queryset = queryset.none()
+        else:
+            queryset = queryset.filter(category=category)
 
-    sort_field = SORT_MAP.get(ordering, "name")
-    queryset = queryset.order_by(sort_field)
+    queryset = search_and_sort(queryset, q, SORT_MAP, ordering)
 
-    serializer = ProductSerializer(queryset, many=True, context={"request": request})
-
-    return JsonResponse(
-        {
-            "results": serializer.data,
-            "total_pages": 1,
-            "current_page": 1,
-        }
+    return paginated_json_response(
+        queryset,
+        page,
+        lambda products: ProductSerializer(products, many=True, context={"request": request}).data,
     )
 
 

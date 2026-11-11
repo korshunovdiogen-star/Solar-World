@@ -23,7 +23,89 @@
         return escapeHtml(isSafeHref(url) ? url : fallback || '');
     }
 
-    // Используются в renderCard из шаблонов.
+    function buildCard(item, options) {
+        options = options || {};
+        const title = options.title || item.name || '';
+        const category = options.category || '';
+        const description = options.description || '';
+        const meta = options.meta || '';
+        const imageUrl = safeUrl(
+            item.image || item.image_url,
+            '/static/images/default.jpg'
+        );
+        const categoryHtml = category
+            ? `<div class="card-category">${escapeHtml(category)}</div>`
+            : '';
+        const descriptionHtml = description
+            ? `<p>${escapeHtml(description)}</p>`
+            : '';
+
+        return `<div class="catalog-card">
+    ${categoryHtml}
+    <div class="card-content">
+        <h3>${escapeHtml(title)}</h3>
+        ${descriptionHtml}
+        ${meta}
+    </div>
+    <div class="card-image">
+        <img src="${imageUrl}" alt="${escapeHtml(title)}">
+    </div>
+</div>`;
+    }
+
+    function articleCard(item) {
+        const type = item.model_type;
+        let extraInfo = '';
+
+        if (type === 'planet' || type === 'satellite') {
+            const typeText = escapeHtml(item.type_display || '—');
+            const radius = escapeHtml(item.radius ? item.radius + ' км' : '—');
+            extraInfo = `<div class="card-meta">${typeText} • ${radius}</div>`;
+        } else if (type === 'mission') {
+            const agencies = item.agency_names && item.agency_names.length
+                ? item.agency_names.map(name => escapeHtml(name)).join(', ')
+                : '—';
+            extraInfo = `<div class="card-meta">${escapeHtml(item.type_display || '—')} • ${agencies}</div>`;
+        } else if (type === 'spaceagency') {
+            extraInfo = `<div class="card-meta">${escapeHtml(item.country || '—')}</div>`;
+        } else if (type === 'company') {
+            const revenueText = item.annual_revenue
+                ? `${escapeHtml(item.annual_revenue)} млн USD`
+                : '—';
+            extraInfo = `<div class="card-meta">${escapeHtml(item.country || '—')} • Выручка: ${revenueText}</div>`;
+        }
+
+        const categoryNames = {
+            planet: 'Планета',
+            satellite: 'Спутник',
+            mission: 'Миссия',
+            spaceagency: 'Агентство',
+            company: 'Компания'
+        };
+
+        return buildCard(item, {
+            category: categoryNames[type] || type,
+            description: item.first_line || type,
+            meta: extraInfo
+        });
+    }
+
+    function productCard(item) {
+        const meta = `<div class="card-meta">Цена: ${escapeHtml(item.price)} руб. • Остаток: ${escapeHtml(item.stock)} шт.</div>`;
+
+        return buildCard(item, {
+            category: item.category_name || 'Без категории',
+            description: item.first_line || item.description || '',
+            meta: meta
+        });
+    }
+
+    const cardRenderers = {
+        article: articleCard,
+        product: productCard
+    };
+
+    // Оставлено для совместимости с внешними renderCard.
     window.catalogEscapeHtml = escapeHtml;
     window.catalogSafeUrl = safeUrl;
 
@@ -34,7 +116,10 @@
         const sortFieldsConfig = config.sortFields || {};
         const sortFieldsArePerCategory = Object.values(sortFieldsConfig)
             .some(value => value && typeof value === 'object');
-        const renderCard = config.renderCard || function (item) { return ''; };
+        const renderCard =
+            config.renderCard ||
+            cardRenderers[config.cardType] ||
+            articleCard;
 
         const searchInput = document.getElementById('search-input');
         const categorySelect = document.getElementById('category-select');
@@ -140,7 +225,8 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    totalPages = data.total_pages;
+                    totalPages = data.total_pages || 1;
+                    currentPage = data.current_page || currentPage;
                     renderResults(data.results);
                     renderPagination();
                 })

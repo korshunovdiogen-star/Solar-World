@@ -14,25 +14,6 @@
         'price': 'Цена',
         'stock': 'Остаток'
     },
-    renderCard: function(item) {
-        const esc = window.catalogEscapeHtml;
-        const imageUrl = window.catalogSafeUrl(
-            item.image_url,
-            '/static/images/default.jpg'
-        );
-        const firstLine = item.first_line || item.description || '';
-        return `<div class="catalog-card">
-    <div class="card-category">${esc(item.category_name || 'Без категории')}</div>
-    <div class="card-content">
-        <h3>${esc(item.name)}</h3>
-        <p>Цена: ${esc(item.price)} руб.</p>
-        <p>Остаток: ${esc(item.stock)} шт.</p>
-        <p>${esc(firstLine)}</p>
-    </div>
-    <div class="card-image">
-        <img src="${imageUrl}" alt="${esc(item.name)}">
-    </div>
-</div>`;
-    }
+    cardType: 'product'
 }
 {% endblock %}

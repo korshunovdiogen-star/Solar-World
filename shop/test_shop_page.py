@@ -43,7 +43,7 @@ def product(category):
 
 
 @pytest.mark.django_db
-def test_shop_api_returns_all_products(category):
+def test_shop_api_paginates_products(category):
     for index in range(15):
         Product.objects.create(
             category=category,
@@ -57,9 +57,14 @@ def test_shop_api_returns_all_products(category):
     response = Client().get(reverse("shop:shop_api"))
 
     data = response.json()
-    assert len(data["results"]) == 15
-    assert data["total_pages"] == 1
+    assert len(data["results"]) == 12
+    assert data["total_pages"] == 2
     assert data["current_page"] == 1
+
+    response = Client().get(reverse("shop:shop_api"), {"page": 2})
+    data = response.json()
+    assert len(data["results"]) == 3
+    assert data["current_page"] == 2
 
 
 @pytest.mark.django_db

@@ -52,7 +52,7 @@ def test_catalog_api():
 
 
 @pytest.mark.django_db
-def test_catalog_api_returns_all_items_without_limit():
+def test_catalog_api_paginates_items():
     for index in range(30):
         Planet.objects.create(
             name=f"Планета {index}",
@@ -65,10 +65,20 @@ def test_catalog_api_returns_all_items_without_limit():
     url = reverse("catalog_api")
 
     response = client.get(url)
-    assert len(response.json()["results"]) == 30
+    data = response.json()
+    assert len(data["results"]) == 12
+    assert data["total_pages"] == 3
+    assert data["current_page"] == 1
 
-    response = client.get(url, {"category": "planet"})
-    assert len(response.json()["results"]) == 30
+    response = client.get(url, {"page": 3})
+    data = response.json()
+    assert len(data["results"]) == 6
+    assert data["current_page"] == 3
+
+    response = client.get(url, {"category": "planet", "page": 2})
+    data = response.json()
+    assert len(data["results"]) == 12
+    assert data["current_page"] == 2
 
 
 # API только для чтения: данные редактируются в админке, а не через API.

@@ -2,7 +2,7 @@ import logging
 from datetime import date
 
 from django.core.cache import cache
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -16,6 +16,7 @@ from solarWorld.serializers import (
     SatelliteSerializer,
     SpaceAgencySerializer,
 )
+from solarWorld.utils import paginated_json_response, parse_page_number, search_and_sort
 from users.decorators import track_user_activity
 
 from .models import Company, Mission, Planet, Satellite, SpaceAgency
@@ -249,79 +250,66 @@ def catalog_api(request):
     q = request.GET.get("q", "").strip()
     category = request.GET.get("category", "all")
     ordering = request.GET.get("ordering", "name_asc")
-    results = []
+    page = parse_page_number(request.GET.get("page", 1))
 
     if category == "all":
         all_results = []
+        catalog_sources = (
+            ("планеты", Planet.objects.filter(name__icontains=q)),
+            ("спутники", Satellite.objects.filter(name__icontains=q).select_related("planet")),
+            (
+                "миссии",
+                Mission.objects.filter(name__icontains=q).prefetch_related("space_agency"),
+            ),
+            ("агентства", SpaceAgency.objects.filter(name__icontains=q)),
+            ("компании", Company.objects.filter(name__icontains=q)),
+        )
 
-        try:
-            planets = Planet.objects.filter(name__icontains=q)
-            all_results += CatalogCardSerializer(planets, many=True).data
-        except Exception:
-            logger.exception("Не удалось сериализовать планеты в общем каталоге")
-
-        try:
-            satellites = Satellite.objects.filter(name__icontains=q).select_related("planet")
-            all_results += CatalogCardSerializer(satellites, many=True).data
-        except Exception:
-            logger.exception("Не удалось сериализовать спутники в общем каталоге")
-
-        try:
-            missions = Mission.objects.filter(name__icontains=q).prefetch_related("space_agency")
-            all_results += CatalogCardSerializer(missions, many=True).data
-        except Exception:
-            logger.exception("Не удалось сериализовать миссии в общем каталоге")
-
-        try:
-            agencies = SpaceAgency.objects.filter(name__icontains=q)
-            all_results += CatalogCardSerializer(agencies, many=True).data
-        except Exception:
-            logger.exception("Не удалось сериализовать агентства в общем каталоге")
-
-        try:
-            companies = Company.objects.filter(name__icontains=q)
-            all_results += CatalogCardSerializer(companies, many=True).data
-        except Exception:
-            logger.exception("Не удалось сериализовать компании в общем каталоге")
+        for label, queryset in catalog_sources:
+            try:
+                all_results += CatalogCardSerializer(queryset, many=True).data
+            except Exception:
+                logger.exception("Не удалось сериализовать %s в общем каталоге", label)
 
         if ordering in ("name_asc", "name_desc"):
             all_results.sort(key=lambda x: x.get("name", ""), reverse=(ordering == "name_desc"))
 
-        results = all_results
-    else:
-        model_map = {
-            "planet": Planet,
-            "satellite": Satellite,
-            "mission": Mission,
-            "agency": SpaceAgency,
-            "company": Company,
-        }
+        return paginated_json_response(all_results, page, lambda objects: objects)
 
-        if category in model_map:
-            model = model_map[category]
-            try:
-                queryset = model.objects.filter(name__icontains=q)
+    model_map = {
+        "planet": Planet,
+        "satellite": Satellite,
+        "mission": Mission,
+        "agency": SpaceAgency,
+        "company": Company,
+    }
+    items = []
 
-                if category == "satellite":
-                    queryset = queryset.select_related("planet")
-                elif category == "mission":
-                    queryset = queryset.prefetch_related("space_agency")
+    if category in model_map:
+        model = model_map[category]
+        try:
+            queryset = model.objects.all()
 
-                sort_field = SORT_MAP.get(category, {}).get(ordering, "id")
-                queryset = queryset.order_by(sort_field)
+            if category == "satellite":
+                queryset = queryset.select_related("planet")
+            elif category == "mission":
+                queryset = queryset.prefetch_related("space_agency")
 
-                results = CatalogCardSerializer(queryset, many=True).data
+            items = search_and_sort(
+                queryset,
+                q,
+                SORT_MAP.get(category, {}),
+                ordering,
+                default="id",
+            )
+        except Exception:
+            logger.exception("Ошибка при выборке категории %s", category)
+            items = []
 
-            except Exception:
-                logger.exception("Ошибка при выборке категории %s", category)
-                results = []
-
-    return JsonResponse(
-        {
-            "results": results,
-            "total_pages": 1,
-            "current_page": 1,
-        }
+    return paginated_json_response(
+        items,
+        page,
+        lambda objects: CatalogCardSerializer(objects, many=True).data,
     )
 
 

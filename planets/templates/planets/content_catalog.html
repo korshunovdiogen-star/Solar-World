@@ -43,55 +43,6 @@
             'country': 'Страна'
         }
     },
-    renderCard: function(item) {
-        const esc = window.catalogEscapeHtml;
-        const imageUrl = window.catalogSafeUrl(
-            item.image,
-            '/static/images/default.jpg'
-        );
-
-        let extraInfo = '';
-        if (item.model_type === 'planet') {
-            const type = esc(item.type_display || '—');
-            const radius = esc(item.radius ? item.radius + ' км' : '—');
-            extraInfo = `<div class="card-meta">${type} • ${radius}</div>`;
-        } else if (item.model_type === 'satellite') {
-            const type = esc(item.type_display || '—');
-            const radius = esc(item.radius ? item.radius + ' км' : '—');
-            extraInfo = `<div class="card-meta">${type} • ${radius}</div>`;
-        } else if (item.model_type === 'mission') {
-            const agencies = item.agency_names && item.agency_names.length
-                ? item.agency_names.map(name => esc(name)).join(', ')
-                : '—';
-            extraInfo = `<div class="card-meta">${esc(item.type_display || '—')} • ${agencies}</div>`;
-        } else if (item.model_type === 'spaceagency') {
-            extraInfo = `<div class="card-meta">${esc(item.country || '—')}</div>`;
-        } else if (item.model_type === 'company') {
-            const revenueText = item.annual_revenue
-                ? `${esc(item.annual_revenue)} млн USD`
-                : '—';
-            extraInfo = `<div class="card-meta">${esc(item.country || '—')} • Выручка: ${revenueText}</div>`;
-        }
-
-        let categoryName = '';
-        if (item.model_type === 'planet') categoryName = 'Планета';
-        else if (item.model_type === 'satellite') categoryName = 'Спутник';
-        else if (item.model_type === 'mission') categoryName = 'Миссия';
-        else if (item.model_type === 'spaceagency') categoryName = 'Агентство';
-        else if (item.model_type === 'company') categoryName = 'Компания';
-        else categoryName = esc(item.model_type);
-
-        return `<div class="catalog-card">
-        <div class="card-category">${categoryName}</div>
-        <div class="card-content">
-            <h3>${esc(item.name)}</h3>
-            <p>${esc(item.first_line || item.model_type)}</p>
-            ${extraInfo}
-        </div>
-        <div class="card-image">
-            <img src="${imageUrl}" alt="${esc(item.name)}">
-        </div>
-    </div>`;
-    }
+    cardType: 'article'
 }
 {% endblock %}
