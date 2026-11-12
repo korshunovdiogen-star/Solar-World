@@ -155,6 +155,17 @@ def test_cart_set_quantity_rejects_invalid_value(product):
 
 
 @pytest.mark.django_db
+def test_cart_set_quantity_rejects_negative_value(product):
+    response = Client().post(
+        reverse("shop:cart_set_quantity", args=[product.pk]),
+        {"quantity": -1},
+    )
+
+    assert response.status_code == 400
+    assert not CartItem.objects.filter(product=product).exists()
+
+
+@pytest.mark.django_db
 def test_cart_set_quantity_requires_post(product):
     response = Client().get(reverse("shop:cart_set_quantity", args=[product.pk]))
 

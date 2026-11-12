@@ -275,6 +275,20 @@
     font-size: 0.85rem;
 }
 
+.cart-row.is-pending-removal .cart-product a,
+.cart-row.is-pending-removal .cart-price,
+.cart-row.is-pending-removal .cart-sum {
+    opacity: 0.45;
+}
+
+.cart-removal-hint {
+    grid-column: 1 / -1;
+    color: #ffb35c;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
 .cart-sum {
     color: var(--neon-blue);
     font-family: var(--font-mono);
