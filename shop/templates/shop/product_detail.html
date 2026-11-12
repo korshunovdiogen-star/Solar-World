@@ -9,7 +9,7 @@
 {% block title %}{{ product.name }} | Solar World{% endblock %}
 
 {% block content %}
-<div class="detail-content">
+<div class="detail-content product-detail">
     {% include 'includes/button_favorite.html' with content_type='product' object_id=product.id is_favorite=is_favorite %}
 
     <main class="main-content">
@@ -22,13 +22,28 @@
                 </div>
             </div>
 
-            <form method="post" action="{% url 'shop:cart_add' product.pk %}" class="product-buy-form">
+            <form method="post"
+                  action="{% url 'shop:cart_add' product.pk %}"
+                  class="product-cart-controls"
+                  data-add-url="{% url 'shop:cart_set_quantity' product.pk %}"
+                  data-cart-url="{% url 'shop:cart' %}"
+                  data-stock="{{ product.stock }}"
+                  data-quantity="{{ cart_item.quantity|default:0 }}">
                 {% csrf_token %}
-                <label for="quantity">Количество:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" {% if product.stock < 1 %}disabled{% endif %}>
-                <button type="submit" class="product-buy-btn" {% if product.stock < 1 %}disabled{% endif %}>
-                    Добавить в корзину
+                <button type="submit"
+                        class="product-cart-toggle{% if cart_item %} is-in-cart{% endif %}"
+                        data-role="toggle"
+                        {% if product.stock < 1 and not cart_item %}disabled{% endif %}>
+                    {% if cart_item %}К корзине{% else %}Добавить в корзину{% endif %}
                 </button>
+                <div class="product-quantity{% if cart_item %} is-visible{% endif %}"
+                     data-role="quantity"
+                     aria-hidden="{% if cart_item %}false{% else %}true{% endif %}">
+                    <button type="button" class="quantity-btn" data-action="decrease" aria-label="Уменьшить количество">−</button>
+                    <span class="quantity-value" data-role="value" aria-live="polite">{{ cart_item.quantity|default:1 }}</span>
+                    <button type="button" class="quantity-btn" data-action="increase" aria-label="Увеличить количество">+</button>
+                </div>
+                <p class="product-cart-error" data-role="error" hidden></p>
             </form>
             {% if product.stock < 1 %}
             <p class="product-unavailable">Товара нет в наличии.</p>
@@ -56,4 +71,5 @@
         </div>
     </aside>
 </div>
+<script src="{% static 'js/product_cart.js' %}"></script>
 {% endblock %}

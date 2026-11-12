@@ -87,6 +87,103 @@ def test_product_detail_page_shows_product(product):
 
 
 @pytest.mark.django_db
+def test_product_detail_has_cart_controls(product):
+    response = Client().get(reverse("shop:product_detail", args=[product.pk]))
+
+    content = response.content.decode()
+    assert "product-cart-controls" in content
+    assert reverse("shop:cart_set_quantity", args=[product.pk]) in content
+    assert "Добавить в корзину" in content
+    assert 'data-quantity="0"' in content
+
+
+@pytest.mark.django_db
+def test_product_detail_shows_existing_cart_state(product, client):
+    user = User.objects.create_user(username="cart-user", password="pass")
+    cart = Cart.objects.create(user=user)
+    CartItem.objects.create(cart=cart, product=product, quantity=2)
+    client.force_login(user)
+
+    response = client.get(reverse("shop:product_detail", args=[product.pk]))
+
+    content = response.content.decode()
+    assert "К корзине" in content
+    assert 'data-quantity="2"' in content
+    assert response.context["cart_item"].quantity == 2
+
+
+@pytest.mark.django_db
+def test_cart_set_quantity_add_update_and_remove(product):
+    client = Client()
+    url = reverse("shop:cart_set_quantity", args=[product.pk])
+
+    response = client.post(url, {"quantity": 2})
+    data = response.json()
+    assert data["quantity"] == 2
+    assert data["in_cart"] is True
+    assert CartItem.objects.get(product=product).quantity == 2
+
+    response = client.post(url, {"quantity": 4})
+    assert response.json()["quantity"] == 4
+    assert CartItem.objects.get(product=product).quantity == 4
+
+    response = client.post(url, {"quantity": 0})
+    data = response.json()
+    assert data["quantity"] == 0
+    assert data["in_cart"] is False
+    assert not CartItem.objects.filter(product=product).exists()
+
+
+@pytest.mark.django_db
+def test_cart_set_quantity_is_limited_by_stock(product):
+    response = Client().post(
+        reverse("shop:cart_set_quantity", args=[product.pk]),
+        {"quantity": 99},
+    )
+
+    assert response.json()["quantity"] == product.stock
+
+
+@pytest.mark.django_db
+def test_cart_set_quantity_rejects_invalid_value(product):
+    response = Client().post(
+        reverse("shop:cart_set_quantity", args=[product.pk]),
+        {"quantity": "abc"},
+    )
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_cart_set_quantity_requires_post(product):
+    response = Client().get(reverse("shop:cart_set_quantity", args=[product.pk]))
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_cart_set_quantity_does_not_change_another_user_cart(product):
+    first = User.objects.create_user(username="first-cart", password="pass")
+    second = User.objects.create_user(username="second-cart", password="pass")
+    first_item = CartItem.objects.create(
+        cart=Cart.objects.create(user=first),
+        product=product,
+        quantity=1,
+    )
+
+    client = Client()
+    client.force_login(second)
+    response = client.post(
+        reverse("shop:cart_set_quantity", args=[product.pk]),
+        {"quantity": 3},
+    )
+
+    assert response.json()["quantity"] == 3
+    first_item.refresh_from_db()
+    assert first_item.quantity == 1
+
+
+@pytest.mark.django_db
 def test_product_detail_page_hides_unavailable_product(product):
     product.available = False
     product.save(update_fields=["available"])

@@ -82,12 +82,16 @@ def product_detail(request, pk):
             user=request.user, content_type=content_type, object_id=product.pk
         ).exists()
 
+    cart = _get_cart(request)
+    cart_item = cart.items.filter(product=product).first() if cart else None
+
     return render(
         request,
         "shop/product_detail.html",
         {
             "product": product,
             "is_favorite": is_favorite,
+            "cart_item": cart_item,
         },
     )
 
@@ -112,12 +116,13 @@ def _get_cart(request, create=False):
     return cart
 
 
-def _parse_quantity(raw, default=None):
+def _parse_quantity(raw, default=None, allow_zero=False):
     try:
         quantity = int(raw)
     except (TypeError, ValueError):
         return default
-    if quantity < 1 or quantity > MAX_QUANTITY:
+    minimum = 0 if allow_zero else 1
+    if quantity < minimum or quantity > MAX_QUANTITY:
         return default
     return quantity
 
@@ -158,6 +163,43 @@ def cart_add(request, pk):
     item.save(update_fields=["quantity"])
 
     return redirect("shop:cart")
+
+
+@require_POST
+def cart_set_quantity(request, pk):
+    product = get_object_or_404(Product, pk=pk, available=True)
+    quantity = _parse_quantity(request.POST.get("quantity"), allow_zero=True)
+
+    if quantity is None:
+        return JsonResponse({"error": "Некорректное количество"}, status=400)
+
+    cart = _get_cart(request, create=quantity > 0 and product.stock > 0)
+    item = cart.items.filter(product=product).first() if cart else None
+
+    if quantity == 0 or product.stock < 1:
+        if item is not None:
+            item.delete()
+            item = None
+        quantity = 0
+    else:
+        quantity = min(quantity, product.stock, MAX_QUANTITY)
+        if item is None:
+            item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+        else:
+            item.quantity = quantity
+            item.save(update_fields=["quantity"])
+
+    items = list(cart.items.select_related("product")) if cart else []
+
+    return JsonResponse(
+        {
+            "quantity": quantity if item is not None else 0,
+            "item_id": item.pk if item is not None else None,
+            "in_cart": item is not None,
+            "total": str(_cart_total(items)),
+            "total_items": sum(cart_item.quantity for cart_item in items),
+        }
+    )
 
 
 @require_POST
