@@ -308,16 +308,27 @@ def test_cart_page_keeps_no_js_fallback(product):
 
 
 @pytest.mark.django_db
-def test_cart_checkout_shows_stub(product):
+def test_checkout_page_shows_form_and_cart_summary(product):
     client = Client()
     client.post(reverse("shop:cart_add", args=[product.pk]), {"quantity": 2})
 
-    response = client.post(reverse("shop:checkout"))
+    response = client.get(reverse("shop:checkout"))
 
     assert response.status_code == 200
     content = response.content.decode()
-    assert "Оплата пока недоступна" in content
+    assert "Оформление заказа" in content
+    assert product.name in content
     assert "200" in content
+    assert 'name="first_name"' in content
+    assert 'name="address"' in content
+
+
+@pytest.mark.django_db
+def test_checkout_redirects_to_cart_when_empty():
+    response = Client().get(reverse("shop:checkout"))
+
+    assert response.status_code == 302
+    assert response.url == reverse("shop:cart")
 
 
 @pytest.mark.django_db

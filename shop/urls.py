@@ -14,5 +14,7 @@ urlpatterns = [
     path("cart/set/<int:pk>/", views.cart_set_quantity, name="cart_set_quantity"),
     path("cart/update/<int:item_id>/", views.cart_update, name="cart_update"),
     path("cart/remove/<int:item_id>/", views.cart_remove, name="cart_remove"),
-    path("cart/checkout/", views.cart_checkout, name="checkout"),
+    path("cart/checkout/", views.checkout, name="checkout"),
+    path("payment/return/", views.payment_return, name="payment_return"),
+    path("payment/webhook/", views.payment_webhook, name="payment_webhook"),
 ]

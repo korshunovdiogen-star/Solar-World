@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block title %}Оформление заказа | Solar World{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="text-block" style="text-align: center; margin-bottom: 2rem;">
+        <h1>Оформление заказа</h1>
+    </div>
+
+    {% if test_mode %}
+    <p class="payment-test-notice">Тестовый режим ЮKassa: реальные деньги не списываются.</p>
+    {% endif %}
+
+    {% if not payments_configured %}
+    <div class="sci-fi-panel checkout-stub">
+        <p>Оплата временно недоступна: платёжный сервис не настроен.</p>
+        <p class="payment-hint">
+            Администратору: задайте переменные окружения
+            <code>YOOKASSA_SHOP_ID</code> и <code>YOOKASSA_SECRET_KEY</code>.
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="checkout-layout">
+        <form method="post" action="{% url 'shop:checkout' %}" class="sci-fi-panel checkout-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="payment-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% for field in form %}
+            <div class="checkout-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="field-error">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit"
+                    class="product-buy-btn checkout-submit"
+                    {% if not payments_configured %}disabled{% endif %}>
+                Перейти к оплате
+            </button>
+        </form>
+
+        <aside class="sci-fi-panel checkout-summary">
+            <h2 class="panel-header">Ваш заказ</h2>
+
+            <ul class="checkout-items">
+                {% for item in items %}
+                <li>
+                    <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                    <span>{{ item.total_price }} руб.</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="cart-total checkout-total">
+                <span>Итого:</span>
+                <strong>{{ total }} руб.</strong>
+            </div>
+
+            <a href="{% url 'shop:cart' %}" class="cart-back-link">Вернуться в корзину</a>
+        </aside>
+    </div>
+</div>
+{% endblock %}

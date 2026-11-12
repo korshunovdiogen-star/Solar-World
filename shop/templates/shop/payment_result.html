@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_additional %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block title %}Оплата | Solar World{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="text-block" style="text-align: center; margin-bottom: 2rem;">
+        <h1>Оплата</h1>
+    </div>
+
+    {% if test_mode %}
+    <p class="payment-test-notice">Тестовый режим ЮKassa: реальные деньги не списываются.</p>
+    {% endif %}
+
+    <div class="sci-fi-panel checkout-stub payment-result">
+        {% if state == 'paid' %}
+        <p class="payment-status payment-status-success">Заказ №{{ order.pk }} оплачен.</p>
+        <p>Сумма: <strong>{{ order.total }} руб.</strong></p>
+        <p>Тестовый платёж прошёл успешно, деньги не списаны.</p>
+        <a href="{% url 'shop:shop_catalog' %}" class="cart-back-link">Продолжить покупки</a>
+        {% elif state == 'cancelled' %}
+        <p class="payment-status payment-status-error">Платёж отменён.</p>
+        <p>Заказ №{{ order.pk }} не оплачен, товары остались в корзине.</p>
+        <a href="{% url 'shop:cart' %}" class="cart-back-link">Вернуться в корзину</a>
+        {% elif state == 'pending' %}
+        <p class="payment-status">Платёж обрабатывается.</p>
+        <p>Заказ №{{ order.pk }}. Обновите страницу через несколько секунд.</p>
+        <a href="{% url 'shop:cart' %}" class="cart-back-link">Вернуться в корзину</a>
+        {% else %}
+        <p class="payment-status payment-status-error">Не удалось проверить статус оплаты.</p>
+        <p>Заказ №{{ order.pk }}. Если платёж уже прошёл, статус обновится позже.</p>
+        <a href="{% url 'shop:cart' %}" class="cart-back-link">Вернуться в корзину</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

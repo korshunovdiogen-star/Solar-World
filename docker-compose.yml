@@ -51,6 +51,10 @@ services:
       - DB_PORT=5432
       - FASTAPI_URL=http://fastapi:8001
       - REDIS_URL=redis://redis:6379/1
+      - "YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID:-}"
+      - "YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY:-}"
+      - "PAYMENT_RETURN_URL=${PAYMENT_RETURN_URL:-}"
+      - "PAYMENT_TEST_MODE=${PAYMENT_TEST_MODE:-1}"
     command: >
       sh -c "python manage.py upgrade_user_model &&
              python manage.py migrate --noinput &&

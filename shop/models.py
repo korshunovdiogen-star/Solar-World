@@ -103,8 +103,12 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default="pending", verbose_name="Статус заказа"
     )
-    stripe_payment_intent_id = models.CharField(
-        max_length=255, blank=True, null=True, verbose_name="ID платежа Stripe"
+    payment_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        db_index=True,
+        verbose_name="ID платежа",
     )
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")

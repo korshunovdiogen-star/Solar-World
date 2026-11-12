@@ -25,6 +25,14 @@ FASTAPI_URL = env_str(
     FASTAPI_URLS["prod"] if IS_PRODUCTION else FASTAPI_URLS["local"],
 )
 
+# ЮKassa: тестовый магазин. Секреты задаются только через переменные окружения.
+YOOKASSA_SHOP_ID = env_str("YOOKASSA_SHOP_ID")
+YOOKASSA_SECRET_KEY = env_str("YOOKASSA_SECRET_KEY")
+YOOKASSA_API_URL = env_str("YOOKASSA_API_URL", "https://api.yookassa.ru/v3")
+PAYMENT_RETURN_URL = env_str("PAYMENT_RETURN_URL")
+PAYMENT_TEST_MODE = env_bool("PAYMENT_TEST_MODE", default=True)
+PAYMENT_REQUEST_TIMEOUT = env_int("PAYMENT_REQUEST_TIMEOUT", default=15)
+
 SECRET_KEY = env_str("SECRET_KEY")
 if not SECRET_KEY:
     raise ImproperlyConfigured(

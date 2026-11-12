@@ -61,7 +61,7 @@ class OrderAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Заказ", {"fields": ("total", "status", "stripe_payment_intent_id")}),
+        ("Оплата", {"fields": ("total", "status", "payment_id")}),
         ("Даты", {"fields": ("created", "updated")}),
     )
 

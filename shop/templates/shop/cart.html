@@ -79,8 +79,7 @@
             <strong data-role="cart-total">{{ total }} руб.</strong>
         </div>
 
-        <form method="post" action="{% url 'shop:checkout' %}" class="cart-checkout-form">
-            {% csrf_token %}
+        <form method="get" action="{% url 'shop:checkout' %}" class="cart-checkout-form">
             <button type="submit" class="product-buy-btn">Оплатить</button>
         </form>
     </div>
