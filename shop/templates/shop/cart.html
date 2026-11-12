@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static l10n %}
 
 {% block css_additional %}
 <link rel="stylesheet" href="{% static 'css/details.css' %}">
@@ -15,44 +15,86 @@
     </div>
 
     {% if items %}
-    <div class="cart-table sci-fi-panel">
-        {% for item in items %}
-        <div class="cart-row">
-            <div class="cart-product">
-                <a href="{% url 'shop:product_detail' item.product.pk %}">{{ item.product.name }}</a>
-                <span class="cart-price">{{ item.product.price }} руб. за шт.</span>
+    <div data-role="cart-content">
+        <div class="cart-table sci-fi-panel">
+            {% for item in items %}
+            <div class="cart-row"
+                 data-set-url="{% url 'shop:cart_set_quantity' item.product.pk %}"
+                 data-quantity="{{ item.quantity }}"
+                 data-stock="{{ item.product.stock }}"
+                 data-price="{{ item.product.price|unlocalize }}">
+                <div class="cart-product">
+                    <a href="{% url 'shop:product_detail' item.product.pk %}">{{ item.product.name }}</a>
+                    <span class="cart-price">{{ item.product.price }} руб. за шт.</span>
+                </div>
+
+                <div class="cart-quantity">
+                    <button type="button" class="cart-qty-btn" data-cart-action="decrease" aria-label="Уменьшить количество">−</button>
+                    <span class="cart-quantity-value" data-role="quantity" aria-live="polite">{{ item.quantity }}</span>
+                    <button type="button" class="cart-qty-btn" data-cart-action="increase" aria-label="Увеличить количество">+</button>
+                </div>
+
+                <div class="cart-sum" data-role="row-total">{{ item.total_price }} руб.</div>
+
+                <button type="button" class="cart-remove-btn" data-cart-action="remove" title="Удалить товар" aria-label="Удалить товар">🗑️</button>
+
+                <noscript>
+                    <style>
+                        .cart-quantity,
+                        .cart-remove-btn {
+                            display: none !important;
+                        }
+
+                        .cart-row {
+                            grid-template-columns: 1fr auto;
+                        }
+
+                        .cart-fallback {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                            grid-column: 1 / -1;
+                        }
+                    </style>
+                    <div class="cart-fallback">
+                        <form method="post" action="{% url 'shop:cart_update' item.pk %}" class="cart-quantity-form">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" aria-label="Количество">
+                            <button type="submit">Сохранить</button>
+                        </form>
+                        <form method="post" action="{% url 'shop:cart_remove' item.pk %}" class="cart-remove-form">
+                            {% csrf_token %}
+                            <button type="submit" class="cart-remove-btn">Удалить</button>
+                        </form>
+                    </div>
+                </noscript>
             </div>
-
-            <form method="post" action="{% url 'shop:cart_update' item.pk %}" class="cart-quantity-form">
-                {% csrf_token %}
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" aria-label="Количество">
-                <button type="submit">Обновить</button>
-            </form>
-
-            <div class="cart-sum">{{ item.total_price }} руб.</div>
-
-            <form method="post" action="{% url 'shop:cart_remove' item.pk %}" class="cart-remove-form">
-                {% csrf_token %}
-                <button type="submit" class="cart-remove-btn" title="Удалить товар" aria-label="Удалить товар">🗑️</button>
-            </form>
+            {% endfor %}
         </div>
-        {% endfor %}
+
+        <p class="cart-error" data-role="cart-error" hidden></p>
+
+        <div class="cart-total sci-fi-panel">
+            <span>Итого:</span>
+            <strong data-role="cart-total">{{ total }} руб.</strong>
+        </div>
+
+        <form method="post" action="{% url 'shop:checkout' %}" class="cart-checkout-form">
+            {% csrf_token %}
+            <button type="submit" class="product-buy-btn">Оплатить</button>
+        </form>
     </div>
 
-    <div class="cart-total sci-fi-panel">
-        <span>Итого:</span>
-        <strong>{{ total }} руб.</strong>
+    <div class="sci-fi-panel cart-empty" data-role="cart-empty" hidden>
+        <p>Корзина пуста.</p>
+        <a href="{% url 'shop:shop_catalog' %}" class="cart-back-link">Перейти в магазин</a>
     </div>
-
-    <form method="post" action="{% url 'shop:checkout' %}" class="cart-checkout-form">
-        {% csrf_token %}
-        <button type="submit" class="product-buy-btn">Оплатить</button>
-    </form>
     {% else %}
-    <div class="sci-fi-panel cart-empty">
+    <div class="sci-fi-panel cart-empty" data-role="cart-empty">
         <p>Корзина пуста.</p>
         <a href="{% url 'shop:shop_catalog' %}" class="cart-back-link">Перейти в магазин</a>
     </div>
     {% endif %}
 </div>
+<script src="{% static 'js/cart.js' %}"></script>
 {% endblock %}

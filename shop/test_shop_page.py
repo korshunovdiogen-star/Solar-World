@@ -262,6 +262,41 @@ def test_user_cannot_change_another_user_cart(product):
 
 
 @pytest.mark.django_db
+def test_cart_page_has_interactive_quantity_controls(product):
+    client = Client()
+    client.post(reverse("shop:cart_add", args=[product.pk]), {"quantity": 2})
+
+    response = client.get(reverse("shop:cart"))
+    content = response.content.decode()
+
+    assert 'data-cart-action="decrease"' in content
+    assert 'data-cart-action="increase"' in content
+    assert 'data-cart-action="remove"' in content
+    assert 'data-role="cart-total"' in content
+    assert 'data-role="cart-error"' in content
+    assert 'data-quantity="2"' in content
+    assert 'data-stock="5"' in content
+    assert 'data-price="100.00"' in content
+    assert reverse("shop:cart_set_quantity", args=[product.pk]) in content
+    assert "js/cart.js" in content
+    assert "Обновить" not in content
+
+
+@pytest.mark.django_db
+def test_cart_page_keeps_no_js_fallback(product):
+    client = Client()
+    client.post(reverse("shop:cart_add", args=[product.pk]), {"quantity": 2})
+    item = CartItem.objects.get(product=product)
+
+    response = client.get(reverse("shop:cart"))
+    content = response.content.decode()
+
+    assert reverse("shop:cart_update", args=[item.pk]) in content
+    assert reverse("shop:cart_remove", args=[item.pk]) in content
+    assert "<noscript>" in content
+
+
+@pytest.mark.django_db
 def test_cart_checkout_shows_stub(product):
     client = Client()
     client.post(reverse("shop:cart_add", args=[product.pk]), {"quantity": 2})
