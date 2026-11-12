@@ -140,6 +140,10 @@
     box-sizing: border-box;
 }
 
+.cart-container .text-block h1 {
+    text-align: center;
+}
+
 .cart-table {
     display: flex;
     flex-direction: column;
